@@ -9,14 +9,20 @@
 
 namespace DGR {
 
+class Dice;
+
 class Hero : public GameObject {
 private:
-
+    Dice* dice;
 
 public:
     Hero(const std::string &textureName, glm::vec2 position, glm::vec2 size);
 
     void draw(SpriteRenderer* spriteRenderer) override;
+
+    void drawHover(SpriteRenderer* spriteRenderer);
+
+    Dice* getDice() const;
 };
 
 }

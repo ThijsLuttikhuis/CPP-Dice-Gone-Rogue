@@ -6,20 +6,23 @@
 #define DICEGONEROGUE_GAMECONTROLLER_H
 
 #include <vector>
-#include "gameobject/GameObject.h"
-#include "Window.h"
+#include "gameobject/Hero.h"
+
 
 namespace DGR {
+
+class Window;
 
 class GameController {
 private:
     Window* window;
     SpriteRenderer* spriteRenderer;
 
-    std::vector<GameObject*> heroes;
+    std::vector<Hero*> heroes;
 public:
     explicit GameController(Window* window);
 
+    const std::vector<Hero*> &getHeroes() const;
 
     void update(double dt);
 

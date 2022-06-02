@@ -12,11 +12,12 @@
 
 int main() {
 
-    int width = 512;
-    int height = 288;
+    int width = 24*16;
+    int height = 24*9;
 
     auto* window = new DGR::Window(width, height);
     auto* dgrGame = new DGR::GameController(window);
+    window->setGameController(dgrGame);
 
     double t, dt, tPrev = 0.0;
     while (!window->shouldClose()) {

@@ -13,20 +13,15 @@
 namespace DGR {
 
 Texture2D::Texture2D(const std::string &fileName)
-      : internalFormat(GL_RGB), imageFormat(GL_RGB), wrapS(GL_REPEAT), wrapT(GL_REPEAT),
+      : internalFormat(GL_RGBA), imageFormat(GL_RGBA), wrapS(GL_REPEAT), wrapT(GL_REPEAT),
         filterMin(GL_LINEAR), filterMag(GL_LINEAR) {
 
     glGenTextures(1, &id);
 
     unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &channels, 0);
 
-    internalFormat = GL_RGBA;
-    imageFormat = GL_RGBA;
-
     // create Texture
-
     glBindTexture(GL_TEXTURE_2D, id);
-
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, data);
 
     // set Texture wrap and filter modes

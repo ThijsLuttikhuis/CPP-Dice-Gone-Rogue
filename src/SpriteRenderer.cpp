@@ -47,22 +47,25 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-void SpriteRenderer::drawSprite(const std::string &textureName, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color) {
+void SpriteRenderer::drawSprite(const std::string &textureName, glm::vec2 position, glm::vec2 size, float rotate,
+                                glm::vec3 color, float zIndex) {
 
-    shader->use();
+    if (!textures[textureName]) {
+        std::cout << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
+        exit(-1);
+    }
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));
-
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
-    this->shader->setMatrix4("model", model);
-
-    this->shader->setVector3f("spriteColor", color);
+    shader->use();
+    shader->setMatrix4("model", model);
+    shader->setVector3f("spriteColor", color);
+    shader->setFloat("zIndex", zIndex);
 
     glActiveTexture(GL_TEXTURE0);
     textures[textureName]->bind();

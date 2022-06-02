@@ -24,10 +24,17 @@ set(LIBS ${LIBS} GLAD)
 
 add_executable(DiceGoneRogue main.cpp
         src/glad.c
+        src/stb_image.h
+
         src/Window.cpp src/Window.h
         src/Shader.cpp src/Shader.h
         src/GameController.cpp src/GameController.h
-        src/InputHandler.cpp src/InputHandler.h src/gameobject/GameObject.cpp src/gameobject/GameObject.h src/Texture2D.cpp src/Texture2D.h src/stb_image.h src/SpriteRenderer.cpp src/SpriteRenderer.h src/gameobject/Hero.cpp src/gameobject/Hero.h)
+        src/InputHandler.cpp src/InputHandler.h
+        src/gameobject/GameObject.cpp src/gameobject/GameObject.h
+        src/Texture2D.cpp src/Texture2D.h
+        src/SpriteRenderer.cpp src/SpriteRenderer.h
+        src/gameobject/Hero.cpp src/gameobject/Hero.h
+        src/gameobject/Dice.cpp src/gameobject/Dice.h src/gameobject/Face.cpp src/gameobject/Face.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

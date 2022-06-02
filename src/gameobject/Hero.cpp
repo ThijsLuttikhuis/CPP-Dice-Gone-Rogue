@@ -3,23 +3,28 @@
 //
 
 #include "Hero.h"
+#include "Dice.h"
 
 namespace DGR {
 
-Hero::Hero(const std::string &textureName, glm::vec2 position, glm::vec2 size)
-      : GameObject(textureName, position, size) {
-
-
+Hero::Hero(const std::string &name, glm::vec2 position, glm::vec2 size)
+      : GameObject(name, position, size), dice(new Dice(name, this)) {
 }
 
 void Hero::draw(SpriteRenderer* spriteRenderer) {
-    spriteRenderer->drawSprite(textureName, position, size);
 
-    glm::vec2 diceTemplatePos(position.x - 32, position.y + 40);
-    glm::vec2 diceTemplateSize(size.x * 2, size.y*3/2);
+    spriteRenderer->drawSprite(name, position, size);
 
-    spriteRenderer->drawSprite("diceTemplate", diceTemplatePos, diceTemplateSize);
+}
 
+void Hero::drawHover(SpriteRenderer* spriteRenderer) {
+    if (hover) {
+        dice->draw(spriteRenderer);
+    }
+}
+
+Dice* Hero::getDice() const {
+    return dice;
 }
 
 }

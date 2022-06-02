@@ -7,6 +7,7 @@
 #include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
 #include <gameobject/Hero.h>
 #include "GameController.h"
+#include "Window.h"
 
 namespace DGR {
 
@@ -20,23 +21,45 @@ GameController::GameController(Window* window) : window(window) {
 
     spriteRenderer = new SpriteRenderer(shader, projection);
 
-    spriteRenderer->addTexture("wizard");
-    spriteRenderer->addTexture("druid");
-    spriteRenderer->addTexture("knight");
-    spriteRenderer->addTexture("diceTemplate");
 
-    for (int x = 0; x < 5; x++) {
-        glm::vec2 pos(2 * x * 32 + 32, 6 * 32);
+    spriteRenderer->addTexture("dice_template");
+    spriteRenderer->addTexture("dice_template_background");
+    spriteRenderer->addTexture("dice_face_template_background");
+    spriteRenderer->addTexture("dice_face_off");
+    spriteRenderer->addTexture("dice_face_on");
+
+    spriteRenderer->addTexture("rat");
+
+    spriteRenderer->addTexture("wizard");
+
+    spriteRenderer->addTexture("druid");
+
+    spriteRenderer->addTexture("paladin");
+
+    spriteRenderer->addTexture("knight");
+    spriteRenderer->addTexture("knight_damage");
+    spriteRenderer->addTexture("knight_shield");
+
+    std::vector<std::string> heroNames = {"knight", "druid", "paladin", "wizard"};
+    for (int x = 0; x < 7; x++) {
+        glm::vec2 pos(2 * x * 24 + 32, 5 * 32);
         glm::vec2 size(32, 32);
-        std::string textureName = (float) rand() / RAND_MAX > 0.66 ? "knight" :
-                                  (float) rand() / RAND_MAX > 0.66 ? "druid" :
-                                  "wizard";
+        std::string textureName = heroNames[(int)(4.0 * rand() / RAND_MAX)];
 
         auto* hero = new Hero(textureName, pos, size);
 
         heroes.push_back(hero);
     }
 
+    for (int x = 0; x < 7; x++) {
+        glm::vec2 pos(2 * x * 12 + 32, 2 * 32);
+        glm::vec2 size(16, 16);
+        std::string textureName = "rat";
+
+        auto* hero = new Hero(textureName, pos, size);
+
+        heroes.push_back(hero);
+    }
 }
 
 void GameController::update(double dt) {
@@ -50,14 +73,22 @@ void GameController::initialize() {
 
 void GameController::render() {
 
-    glClearColor(0.3f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto &hero : heroes) {
         hero->draw(spriteRenderer);
     }
 
+    for (auto &hero : heroes) {
+        hero->drawHover(spriteRenderer);
+    }
+
     window->swapBuffers();
+}
+
+const std::vector<Hero*> &GameController::getHeroes() const {
+    return heroes;
 }
 
 }

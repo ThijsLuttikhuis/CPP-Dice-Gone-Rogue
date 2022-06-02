@@ -7,17 +7,23 @@
 #include <iostream>
 
 #include "Window.h"
+#include "GameController.h"
+#include "gameobject/Dice.h"
 
 namespace DGR {
 
 Window* callback_window_ptr;
+
+void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
+    callback_window_ptr->handleMousePosition(xPos, yPos);
+}
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         if (action == GLFW_RELEASE) {
-            callback_window_ptr->handleMouseInput(xpos, ypos);
+            callback_window_ptr->handleMouseButton(xpos, ypos);
         }
     }
 }
@@ -41,6 +47,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     std::cout << "framebuffer size callback" << std::endl;
 
+    callback_window_ptr->setWindowSize(width, height);
     glViewport(0, 0, width, height);
 }
 
@@ -64,13 +71,14 @@ Window::Window(int width, int height)
     }
 
     glfwSetWindowAspectRatio(glfwWindow, 16, 9);
-    glfwSetWindowSizeLimits(glfwWindow, 480, 270, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowSizeLimits(glfwWindow, width, height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     glfwMakeContextCurrent(glfwWindow);
 
     // set callbacks
     glfwSetKeyCallback(glfwWindow, key_callback);
     glfwSetMouseButtonCallback(glfwWindow, mouse_button_callback);
+    glfwSetCursorPosCallback(glfwWindow, mouse_position_callback);
     glfwSetFramebufferSizeCallback(glfwWindow, framebuffer_size_callback);
     callback_window_ptr = this;
 
@@ -81,8 +89,15 @@ Window::Window(int width, int height)
     }
 
     glViewport(0, 0, width, height);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //glEnable(GL_ALPHA_TEST);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glClearDepth(1.0);
 
     const int wScreen = 1280;
     const int hScreen = 720;
@@ -109,8 +124,41 @@ int Window::getHeight() {
     return height;
 }
 
-void Window::handleMouseInput(double xPos, double yPos) {
+void Window::handleMouseButton(double xPos, double yPos) {
+    xPos *= (double) width / displayWidth;
+    yPos *= (double) height / displayHeight;
+
     std::cout << xPos << ", " << yPos << std::endl;
+}
+
+void Window::handleMousePosition(double xPos, double yPos) {
+    xPos *= (double) width / displayWidth;
+    yPos *= (double) height / displayHeight;
+
+    auto heroes = gameController->getHeroes();
+    for (auto &hero : heroes) {
+
+        if (hero->isMouseHovering(xPos, yPos)) {
+            hero->hoverMouse(true);
+        } else if (hero->getHoverMouse()) {
+            auto dice = hero->getDice();
+
+            if (dice->isMouseHovering(xPos, yPos)) {
+                dice->updateHoverMouse(xPos, yPos);
+            } else {
+                hero->hoverMouse(false);
+            }
+        }
+    }
+}
+
+void Window::setGameController(GameController* gameController_) {
+    gameController = gameController_;
+}
+
+void Window::setWindowSize(int displayWidth_, int displayHeight_) {
+    displayWidth = displayWidth_;
+    displayHeight = displayHeight_;
 }
 
 }

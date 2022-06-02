@@ -13,15 +13,28 @@ namespace DGR {
 
 class GameObject {
 protected:
-    std::string textureName;
+    std::string name;
 
     glm::vec2 position;
     glm::vec2 size;
 
+    bool hover = false;
 public:
-    GameObject(std::string textureName, glm::vec2 position, glm::vec2 size);
+    GameObject(std::string name, glm::vec2 position, glm::vec2 size);
+
+    const glm::vec2 &getPosition() const;
+
+    const glm::vec2 &getSize() const;
+
+    const std::string &getName() const;
+
+    void hoverMouse(bool hover);
 
     virtual void draw(SpriteRenderer* spriteRenderer);
+
+    bool isMouseHovering(double xPos, double yPos) const;
+
+    bool getHoverMouse() const;
 };
 
 }

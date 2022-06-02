@@ -22,7 +22,7 @@ public:
     ~SpriteRenderer();
 
     void drawSprite(const std::string &texture, glm::vec2 position, glm::vec2 size,
-                    float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
+                    float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float zIndex = 1.0);
 
     void addTexture(const std::string &name);
 };
