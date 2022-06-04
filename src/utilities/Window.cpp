@@ -9,6 +9,7 @@
 #include "Window.h"
 #include "GameController.h"
 #include "gameobject/Dice.h"
+#include "Constants.h"
 
 namespace DGR {
 
@@ -29,8 +30,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+#if DEBUG
     std::cout << "key callback" << std::endl;
-
+#endif
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -45,7 +47,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+#if DEBUG
     std::cout << "framebuffer size callback" << std::endl;
+#endif
 
     callback_window_ptr->setWindowSize(width, height);
     glViewport(0, 0, width, height);
@@ -128,7 +132,9 @@ void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
+#if DEBUG
     std::cout << xPos << ", " << yPos << std::endl;
+#endif
 }
 
 void Window::handleMousePosition(double xPos, double yPos) {

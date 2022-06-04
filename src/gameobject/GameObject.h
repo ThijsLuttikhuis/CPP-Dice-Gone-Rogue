@@ -5,9 +5,10 @@
 #ifndef DICEGONEROGUE_GAMEOBJECT_H
 #define DICEGONEROGUE_GAMEOBJECT_H
 
+#include <utility>
 #include <glm/vec3.hpp>
-#include "Texture2D.h"
-#include "SpriteRenderer.h"
+#include "shaders/Texture2D.h"
+#include "shaders/SpriteRenderer.h"
 
 namespace DGR {
 
@@ -15,26 +16,34 @@ class GameObject {
 protected:
     std::string name;
 
-    glm::vec2 position;
-    glm::vec2 size;
+    glm::vec2 position{};
+    glm::vec2 size{};
 
     bool hover = false;
 public:
+    GameObject() = default;
+
+    explicit GameObject(std::string name) : name(std::move(name)) {};
+
     GameObject(std::string name, glm::vec2 position, glm::vec2 size);
 
-    const glm::vec2 &getPosition() const;
+    [[nodiscard]] const glm::vec2 &getPosition() const;
 
-    const glm::vec2 &getSize() const;
+    [[nodiscard]] const glm::vec2 &getSize() const;
 
-    const std::string &getName() const;
+    [[nodiscard]] const std::string &getName() const;
+
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
+
+    [[nodiscard]] bool getHoverMouse() const;
+
+    void setPosition(glm::vec2 position_);
+
+    void setSize(glm::vec2 size);
 
     void hoverMouse(bool hover);
 
     virtual void draw(SpriteRenderer* spriteRenderer);
-
-    bool isMouseHovering(double xPos, double yPos) const;
-
-    bool getHoverMouse() const;
 };
 
 }

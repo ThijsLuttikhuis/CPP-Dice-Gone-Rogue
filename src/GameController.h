@@ -22,11 +22,11 @@ private:
 public:
     explicit GameController(Window* window);
 
-    const std::vector<Hero*> &getHeroes() const;
-
-    void update(double dt);
+    [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
 
     void initialize();
+
+    void update(double dt);
 
     void render();
 };

@@ -13,7 +13,7 @@ Hero::Hero(const std::string &name, glm::vec2 position, glm::vec2 size)
 
 void Hero::draw(SpriteRenderer* spriteRenderer) {
 
-    spriteRenderer->drawSprite(name, position, size);
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
 
 }
 
@@ -25,6 +25,14 @@ void Hero::drawHover(SpriteRenderer* spriteRenderer) {
 
 Dice* Hero::getDice() const {
     return dice;
+}
+
+void Hero::setDice(Dice* dice_) {
+    dice = dice_;
+}
+
+void Hero::setMaxHP(int maxHP_) {
+    maxHP = maxHP_;
 }
 
 }

@@ -7,7 +7,8 @@
 #include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
 #include <gameobject/Hero.h>
 #include "GameController.h"
-#include "Window.h"
+#include "utilities/Window.h"
+#include "iofilemanager/YamlReader.h"
 
 namespace DGR {
 
@@ -20,39 +21,23 @@ GameController::GameController(Window* window) : window(window) {
                                       -1.0f, 1.0f);
 
     spriteRenderer = new SpriteRenderer(shader, projection);
+    spriteRenderer->addAllTexturesInDir("textures");
 
+    YamlReader yamlReader;
+    yamlReader.readFile("heroes");
+    heroes = *(std::vector<Hero*>*) yamlReader.getData()->getFeature();
 
-    spriteRenderer->addTexture("dice_template");
-    spriteRenderer->addTexture("dice_template_background");
-    spriteRenderer->addTexture("dice_face_template_background");
-    spriteRenderer->addTexture("dice_face_off");
-    spriteRenderer->addTexture("dice_face_on");
-
-    spriteRenderer->addTexture("rat");
-
-    spriteRenderer->addTexture("wizard");
-
-    spriteRenderer->addTexture("druid");
-
-    spriteRenderer->addTexture("paladin");
-
-    spriteRenderer->addTexture("knight");
-    spriteRenderer->addTexture("knight_damage");
-    spriteRenderer->addTexture("knight_shield");
-
-    std::vector<std::string> heroNames = {"knight", "druid", "paladin", "wizard"};
-    for (int x = 0; x < 7; x++) {
-        glm::vec2 pos(2 * x * 24 + 32, 5 * 32);
+    int x = 0;
+    for (auto &hero : heroes) {
+        glm::vec2 pos(2 * x++ * 24 + 16, 5 * 32);
         glm::vec2 size(32, 32);
-        std::string textureName = heroNames[(int)(4.0 * rand() / RAND_MAX)];
 
-        auto* hero = new Hero(textureName, pos, size);
-
-        heroes.push_back(hero);
+        hero->setPosition(pos);
+        hero->setSize(size);
     }
 
     for (int x = 0; x < 7; x++) {
-        glm::vec2 pos(2 * x * 12 + 32, 2 * 32);
+        glm::vec2 pos(2 * (x+3) * 12 + 16, 2 * 32);
         glm::vec2 size(16, 16);
         std::string textureName = "rat";
 
@@ -60,6 +45,7 @@ GameController::GameController(Window* window) : window(window) {
 
         heroes.push_back(hero);
     }
+
 }
 
 void GameController::update(double dt) {

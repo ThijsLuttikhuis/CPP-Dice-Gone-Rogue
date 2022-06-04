@@ -11,6 +11,7 @@
 namespace DGR {
 
 class GameController;
+
 class Window {
 private:
     int width;
@@ -27,21 +28,21 @@ public:
 
     ~Window();
 
-    int getWidth();
+    [[nodiscard]] int getWidth();
 
-    int getHeight();
+    [[nodiscard]] int getHeight();
 
-    void setWindowSize(int width, int height);
+    [[nodiscard]] bool shouldClose();
 
-    bool shouldClose();
-
-    void swapBuffers();
+    void setGameController(GameController* gameController);
 
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
 
-    void setGameController(GameController* gameController);
+    void setWindowSize(int width, int height);
+
+    void swapBuffers();
 };
 
 }

@@ -3,11 +3,12 @@
 //
 
 #include "SpriteRenderer.h"
+#include "utilities/Constants.h"
 
-#include <glm/gtx/string_cast.hpp>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <filesystem>
+#include <string>
 
 namespace DGR {
 
@@ -47,8 +48,8 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-void SpriteRenderer::drawSprite(const std::string &textureName, glm::vec2 position, glm::vec2 size, float rotate,
-                                glm::vec3 color, float zIndex) {
+void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size,
+                                float rotate, glm::vec3 color, float alpha) {
 
     if (!textures[textureName]) {
         std::cout << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
@@ -65,6 +66,7 @@ void SpriteRenderer::drawSprite(const std::string &textureName, glm::vec2 positi
     shader->use();
     shader->setMatrix4("model", model);
     shader->setVector3f("spriteColor", color);
+    shader->setFloat("spriteAlpha", alpha);
     shader->setFloat("zIndex", zIndex);
 
     glActiveTexture(GL_TEXTURE0);
@@ -79,6 +81,25 @@ void SpriteRenderer::addTexture(const std::string &name) {
     std::string fileName = "../src/textures/" + name + ".png";
     auto texture = new Texture2D(fileName);
     textures[name] = texture;
+}
+
+void SpriteRenderer::addTexture(const std::string &fileDir, const std::string &name) {
+    auto texture = new Texture2D(fileDir);
+    textures[name] = texture;
+}
+
+void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
+    std::string dir = "../src/" + dirName + "/";
+    auto dit = std::filesystem::directory_iterator(dir);
+    for (const auto &entry : dit) {
+#if DEBUG
+        std::cout << entry.path() << std::endl;
+#endif
+        if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
+
+            addTexture(entry.path(), entry.path().stem());
+        }
+    }
 }
 
 }

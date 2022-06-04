@@ -7,17 +7,16 @@
 #include "GameObject.h"
 
 #include <utility>
-#include "SpriteRenderer.h"
+#include "shaders/SpriteRenderer.h"
 
 namespace DGR {
 
 GameObject::GameObject(std::string name, glm::vec2 position, glm::vec2 size)
       : name(std::move(name)), position(position), size(size) {
-
 }
 
 void GameObject::draw(SpriteRenderer* spriteRenderer) {
-    spriteRenderer->drawSprite(name, position, size);
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 
 const glm::vec2 &GameObject::getPosition() const {
@@ -43,6 +42,14 @@ bool GameObject::getHoverMouse() const {
 bool GameObject::isMouseHovering(double xPos, double yPos) const {
     return (xPos > position.x && xPos < position.x + size.x)
            && (yPos > position.y && yPos < position.y + size.y);
+}
+
+void GameObject::setPosition(glm::vec2 position_) {
+    position = position_;
+}
+
+void GameObject::setSize(glm::vec2 size_) {
+    size = size_;
 }
 
 }

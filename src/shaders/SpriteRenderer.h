@@ -6,8 +6,8 @@
 #define DICEGONEROGUE_SPRITERENDERER_H
 
 #include <map>
-#include "Shader.h"
-#include "Texture2D.h"
+#include "shaders/Shader.h"
+#include "shaders/Texture2D.h"
 
 namespace DGR {
 
@@ -19,12 +19,17 @@ private:
     std::map<std::string, Texture2D*> textures;
 public:
     SpriteRenderer(Shader* shader, glm::mat4 projection);
+
     ~SpriteRenderer();
 
-    void drawSprite(const std::string &texture, glm::vec2 position, glm::vec2 size,
-                    float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f), float zIndex = 1.0);
-
     void addTexture(const std::string &name);
+
+    void addAllTexturesInDir(const std::string &dirName);
+
+    void addTexture(const std::string &fileDir, const std::string &name);
+
+    void drawSprite(const std::string &texture, float zIndex, glm::vec2 position, glm::vec2 size, float rotate = 0.0f,
+                    glm::vec3 color = glm::vec3(1.0f), float alpha = 1.0f);
 };
 
 }

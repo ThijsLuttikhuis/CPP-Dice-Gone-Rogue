@@ -7,10 +7,11 @@ uniform float zIndex;
 
 uniform sampler2D sprite;
 uniform vec3 spriteColor;
+uniform float spriteAlpha;
 
 void main()
 {
-    color = vec4(spriteColor, 1.0) * texture(sprite, TexCoords);
+    color = vec4(spriteColor, spriteAlpha) * texture(sprite, TexCoords);
     if (color.a <= 0.0) {
         discard;
     }

@@ -8,7 +8,7 @@
 
 #include <string>
 #include <utility>
-#include "SpriteRenderer.h"
+#include "shaders/SpriteRenderer.h"
 #include "Face.h"
 
 namespace DGR {
@@ -19,21 +19,33 @@ class Dice {
 private:
     std::string name;
 
-    Hero* hero;
-    Face faces[6];
+    Hero* hero = nullptr;
+    Face faces[6]{};
 
 public:
     Dice(std::string name, Hero* hero);
 
-    glm::vec2 getPosition(bool backgroundPos = true) const;
+    Dice() = default;
 
-    glm::vec2 getSize(bool backgroundSize = true) const;
+    [[nodiscard]] Face* getFace(int index);
 
-    void draw(SpriteRenderer* spriteRenderer);
+    [[nodiscard]] glm::vec2 getPosition(bool backgroundPos = true) const;
 
-    bool isMouseHovering(double xPos, double yPos) const;
+    [[nodiscard]] glm::vec2 getSize(bool backgroundSize = true) const;
+
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
+
+    [[nodiscard]] const std::string &getName();
+
+    void setFace(Face face, int index);
+
+    void setHero(Hero* hero_);
+
+    void setName(const std::string &name_);
 
     void updateHoverMouse(double xPos, double yPos);
+
+    void draw(SpriteRenderer* spriteRenderer);
 };
 
 }

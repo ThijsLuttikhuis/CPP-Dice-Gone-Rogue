@@ -1,0 +1,132 @@
+heroes:
+  knight:
+    hp: 12;
+    dice:
+      face0:
+        damage: 20;
+      ;
+      face1:
+        damage: 2;
+      ;
+      face2:
+        damage: 3;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
+        shield: 3;
+      ;
+      face5:
+        shield: 2;
+      ;
+    ;
+  ;
+
+  rogue:
+    hp: 9;
+    dice:
+      face0:
+        damage: 2;
+        mod: "poison";
+      ;
+      face1:
+        damage: 2;
+        mod: "ranged";
+      ;
+      face2:
+        damage: 3;
+      ;
+      face3:
+        damage: 2;
+        mod: "ranged";
+      ;
+      face4:
+        shield: 3;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  paladin:
+    hp: 14;
+    dice:
+      face0:
+        damage_and_self_shield: 2;
+      ;
+      face1:
+        shield: 1;
+        mod: "sweeping_edge";
+        mod_1: "single_use";
+      ;
+      face2:
+        damage: 2;
+      ;
+      face3:
+        shield: 1;
+        mod: "sweeping_edge";
+        mod_1: "single_use";
+      ;
+      face4:
+        heal_and_shield: 2;
+      ;
+      face5:
+        mana: 2;
+      ;
+    ;
+  ;
+
+  wizard:
+    hp: 8;
+    dice:
+      face0:
+        mana: 4;
+      ;
+      face1:
+        mana: 2;
+      ;
+      face2:
+        shield_and_mana: 2;
+      ;
+      face3:
+        mana: 2;
+      ;
+      face4:
+        mana: 3;
+        mod: "single_use";
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  druid:
+    hp: 10;
+    dice:
+      face0:
+        damage: 2;
+        mod: "single_use";
+      ;
+      face1:
+        heal: 2;
+        mod: "ranged";
+      ;
+      face2:
+        damage: 3;
+      ;
+      face3:
+        damage: 2;
+        mod: "ranged";
+      ;
+      face4:
+        shield: 3;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+;

@@ -15,7 +15,7 @@ namespace DGR {
 
 class Shader {
 public:
-    unsigned int id;
+    unsigned int id{};
 
     Shader() {};
 

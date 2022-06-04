@@ -6,7 +6,7 @@
 #define DICEGONEROGUE_TEXTURE2D_H
 
 #include <string>
-#include "Shader.h"
+#include "shaders/Shader.h"
 
 namespace DGR {
 
@@ -26,7 +26,7 @@ private:
     unsigned int filterMin{};
     unsigned int filterMag{};
 public:
-    explicit Texture2D(const std::string& fileName);
+    explicit Texture2D(const std::string &fileName);
 
     void bind() const;
 };
