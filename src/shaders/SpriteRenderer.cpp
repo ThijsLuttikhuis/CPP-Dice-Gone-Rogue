@@ -48,12 +48,13 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size,
+void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2 position, glm::vec2 size,
                                 float rotate, glm::vec3 color, float alpha) {
 
     if (!textures[textureName]) {
-        std::cout << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
-        exit(-1);
+        std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
+
+        textureName = "no_texture";
     }
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -90,8 +91,8 @@ void SpriteRenderer::addTexture(const std::string &fileDir, const std::string &n
 
 void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     std::string dir = "../src/" + dirName + "/";
-    auto dit = std::filesystem::directory_iterator(dir);
-    for (const auto &entry : dit) {
+    auto dirIt = std::filesystem::directory_iterator(dir);
+    for (const auto &entry : dirIt) {
 #if DEBUG
         std::cout << entry.path() << std::endl;
 #endif

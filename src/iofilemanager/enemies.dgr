@@ -1,0 +1,98 @@
+characters:
+  rat:
+    hp: 6;
+    dice:
+      face0:
+        damage: 4;
+      ;
+      face1:
+        damage: 3;
+      ;
+      face2:
+        damage: 2;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
+        damage: 2;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  rat:
+    hp: 6;
+    dice:
+      face0:
+        damage: 4;
+      ;
+      face1:
+        damage: 3;
+      ;
+      face2:
+        damage: 2;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
+        damage: 2;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  rat:
+    hp: 6;
+    dice:
+      face0:
+        damage: 4;
+      ;
+      face1:
+        damage: 3;
+      ;
+      face2:
+        damage: 2;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
+        damage: 2;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  rat:
+    hp: 6;
+    dice:
+      face0:
+        damage: 4;
+      ;
+      face1:
+        damage: 3;
+      ;
+      face2:
+        damage: 2;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
+        damage: 2;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  ;

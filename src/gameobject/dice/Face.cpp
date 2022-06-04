@@ -4,10 +4,11 @@
 
 #include <iostream>
 #include "Face.h"
-#include "Dice.h"
+#include "gameobject/dice/Dice.h"
+#include "utilities/Constants.h"
+#include "FaceType.h"
 
 namespace DGR {
-
 
 const std::map<int, const glm::vec2> Face::faceDeltaPos = std::map<int, const glm::vec2>{
       {0, glm::vec2(2, 17)},
@@ -33,116 +34,12 @@ void Face::setName(const std::string &name_) {
     name = name_;
 }
 
-FaceModifier::modifier FaceModifier::stringToModifier(const std::string& modifierStr) {
-    if (modifierStr == "ranged") {
-        return FaceModifier::modifier::ranged;
-    }
-    if (modifierStr == "sweeping_edge") {
-        return FaceModifier::modifier::sweeping_edge;
-    }
-    if (modifierStr == "single_use") {
-        return FaceModifier::modifier::single_use;
-    }
-    if (modifierStr == "poison") {
-        return FaceModifier::modifier::poison;
-    }
-    if (modifierStr == "cleanse") {
-        return FaceModifier::modifier::cleanse;
-    }
-    if (modifierStr == "first_blood") {
-        return FaceModifier::modifier::first_blood;
-    }
 
-    std::cerr << "FaceModifier::stringToModifier: error: string is unknown: " << modifierStr << std::endl;
-    return FaceModifier::modifier::none;
-}
-
-bool FaceModifier::hasModifier(FaceModifier::modifier modifier) {
-    return modifiers & static_cast<unsigned int>(modifier);
-}
-
-unsigned int FaceModifier::getModifiers() {
-    return modifiers;
-}
-
-void FaceModifier::addModifier(const std::string &modifierStr) {
-    FaceModifier::modifier modifier_ = stringToModifier(modifierStr);
-    if (!hasModifier(modifier_)) {
-        modifiers += static_cast<unsigned int>(modifier_);
-    }
-}
-
-void FaceModifier::addModifier(FaceModifier::modifier modifier_) {
-    if (!hasModifier(modifier_)) {
-        modifiers += static_cast<unsigned int>(modifier_);
-    }
-}
-
-Face::Face(std::string name, Dice* dice, int face_, int value, faceType type, FaceModifier modifiers)
+Face::Face(std::string name, Dice* dice, int face_, int value, FaceType type, FaceModifier modifiers)
       : name(std::move(name)), dice(dice), face_(face_), value(value), type(type), modifiers(modifiers) {
 }
 
-glm::vec3 FaceModifier::toColor() {
-    if (modifiers == 0) {
-        return glm::vec3(1.0f);
-    }
-
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::ranged)) {
-        return glm::vec3(1.0f, 0.4f, 0.4f);
-    }
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::sweeping_edge)) {
-        return glm::vec3(4.0f, 4.5f, 1.0f);
-    }
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::single_use)) {
-        return glm::vec3(0.4f, 0.1f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::poison)) {
-        return glm::vec3(0.1f, 0.5f, 0.1f);
-    }
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::cleanse)) {
-        return glm::vec3(0.8f, 1.0f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(FaceModifier::modifier::first_blood)) {
-        return glm::vec3(0.0f, 0.9f, 0.7f);
-    }
-
-    return glm::vec3(1.0f);
-}
-
-
-std::string Face::faceTypeToString(faceType type) {
-    switch (type) {
-        case damage:
-            return "damage";
-        case mana:
-            return "mana";
-        case heal:
-            return "damage";
-        case shield:
-            return "shield";
-        case dodge:
-            return "damage";
-        case undying:
-            return "damage";
-        case heal_and_shield:
-            return "damage";
-        case heal_and_mana:
-            return "damage";
-        case shield_and_mana:
-            return "damage";
-        case damage_and_mana:
-            return "damage";
-        case damage_and_self_shield:
-            return "damage";
-        case empty:
-            return "damage";
-        default:
-            std::cerr << "Face::faceTypeToString: error, type string unknown: " << type << std::endl;
-            return "error";
-    }
-}
-
-void Face::setType(faceType type_) {
+void Face::setType(FaceType type_) {
     type = type_;
 }
 
@@ -214,7 +111,7 @@ void Face::drawFace(SpriteRenderer* spriteRenderer) {
     }
 
     //TODO: create sprites for every hero type
-    std::string textureName = "knight_" + faceTypeToString(type);
+    std::string textureName = "knight_" + type.toString();
     glm::vec3 textureColor = modifiers.toColor();
     spriteRenderer->drawSprite(textureName, 0.1f,
                                position, glm::vec2(11, 14), 0, textureColor);
@@ -227,10 +124,15 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer) {
     spriteRenderer->drawSprite("dice_face_template_background", 0.0f,
                                position + glm::vec2{5, -5}, backgroundSize);
 
-    std::string textureName = "knight_" + faceTypeToString(type);
+    std::string textureName = "knight_" + type.toString();
     glm::vec3 textureColor = modifiers.toColor();
     spriteRenderer->drawSprite(textureName, 0.1f,
                                position, glm::vec2(11, 14), 0, textureColor);
+
+#if DEBUG
+    std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
+              << type.toString() << " -- modifiers: " << modifiers.getModifiers() << std::endl;
+#endif
 }
 
 void Face::draw(SpriteRenderer* spriteRenderer) {

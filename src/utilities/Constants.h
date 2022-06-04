@@ -5,6 +5,6 @@
 #ifndef DICEGONEROGUE_CONSTANTS_H
 #define DICEGONEROGUE_CONSTANTS_H
 
-#define DEBUG false
+#define DEBUG true
 
 #endif //DICEGONEROGUE_CONSTANTS_H

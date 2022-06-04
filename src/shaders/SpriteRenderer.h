@@ -28,7 +28,7 @@ public:
 
     void addTexture(const std::string &fileDir, const std::string &name);
 
-    void drawSprite(const std::string &texture, float zIndex, glm::vec2 position, glm::vec2 size, float rotate = 0.0f,
+    void drawSprite(std::string texture, float zIndex, glm::vec2 position, glm::vec2 size, float rotate = 0.0f,
                     glm::vec3 color = glm::vec3(1.0f), float alpha = 1.0f);
 };
 

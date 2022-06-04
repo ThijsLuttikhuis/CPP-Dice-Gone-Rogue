@@ -8,7 +8,7 @@
 
 #include "Window.h"
 #include "GameController.h"
-#include "gameobject/Dice.h"
+#include "gameobject/dice/Dice.h"
 #include "Constants.h"
 
 namespace DGR {
@@ -153,6 +153,22 @@ void Window::handleMousePosition(double xPos, double yPos) {
                 dice->updateHoverMouse(xPos, yPos);
             } else {
                 hero->hoverMouse(false);
+            }
+        }
+    }
+
+    auto enemies = gameController->getEnemies();
+    for (auto &enemy : enemies) {
+
+        if (enemy->isMouseHovering(xPos, yPos)) {
+            enemy->hoverMouse(true);
+        } else if (enemy->getHoverMouse()) {
+            auto dice = enemy->getDice();
+
+            if (dice->isMouseHovering(xPos, yPos)) {
+                dice->updateHoverMouse(xPos, yPos);
+            } else {
+                enemy->hoverMouse(false);
             }
         }
     }

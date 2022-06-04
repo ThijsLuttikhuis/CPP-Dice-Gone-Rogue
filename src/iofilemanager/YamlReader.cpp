@@ -13,13 +13,15 @@ namespace DGR {
 
 YamlReader::YamlReader() {
 
-    keyToFunc["heroes"] = new YamlHandleHeroes();
+    keyToFunc["characters"] = new YamlHandleCharacters();
 
-    keyToFunc["knight"] = new YamlHandleHero("knight");
-    keyToFunc["rogue"] = new YamlHandleHero("rogue");
-    keyToFunc["paladin"] = new YamlHandleHero("paladin");
-    keyToFunc["druid"] = new YamlHandleHero("druid");
-    keyToFunc["wizard"] = new YamlHandleHero("wizard");
+    keyToFunc["knight"] = new YamlHandleCharacter("knight", stringCode::hero);
+    keyToFunc["rogue"] = new YamlHandleCharacter("rogue", stringCode::hero);
+    keyToFunc["paladin"] = new YamlHandleCharacter("paladin", stringCode::hero);
+    keyToFunc["druid"] = new YamlHandleCharacter("druid", stringCode::hero);
+    keyToFunc["wizard"] = new YamlHandleCharacter("wizard", stringCode::hero);
+
+    keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
 
     keyToFunc["dice"] = new YamlHandleDice();
     keyToFunc["face0"] = new YamlHandleFace(0);
@@ -37,8 +39,10 @@ YamlReader::YamlReader() {
     keyToFunc["heal"] = new YamlHandleInt(stringCode::shield);
     keyToFunc["damage_and_self_shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);
+    keyToFunc["dodge"] = new YamlHandleInt(stringCode::dodge);
     keyToFunc["shield_and_mana"] = new YamlHandleInt(stringCode::shield_and_mana);
     keyToFunc["heal_and_shield"] = new YamlHandleInt(stringCode::heal_and_shield);
+    keyToFunc["heal_and_mana"] = new YamlHandleInt(stringCode::heal_and_mana);
 
     keyToFunc["empty"] = new YamlHandleInt(stringCode::empty);
 }
@@ -85,17 +89,13 @@ void YamlReader::readFile(const std::string &name) {
 
             if (objectHandle[colonCounter]) {
                 objectHandle[colonCounter]->handle();
-
                 objectHandle[colonCounter - 1]->handle(objectHandle[colonCounter]);
-
+                objectHandle[colonCounter]->reset();
+                objectHandle[colonCounter] = nullptr;
             } else {
                 objectHandle[colonCounter - 1]->handle(word);
             }
 
-            if (objectHandle[colonCounter]) {
-                objectHandle[colonCounter]->reset();
-                objectHandle[colonCounter] = nullptr;
-            }
             colonCounter--;
         } else {
             word = worldStr.substr(i, posColon - i);
@@ -106,6 +106,7 @@ void YamlReader::readFile(const std::string &name) {
 
             if (objectHandle[colonCounter]) {
                 objectHandle[colonCounter - 1]->handle(objectHandle[colonCounter]);
+                objectHandle[colonCounter]->reset();
             }
             objectHandle[colonCounter] = keyToFunc.find(word) != keyToFunc.end() ? keyToFunc[word] : nullptr;
             colonCounter++;

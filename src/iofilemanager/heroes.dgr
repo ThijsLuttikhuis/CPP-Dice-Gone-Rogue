@@ -1,9 +1,9 @@
-heroes:
+characters:
   knight:
     hp: 12;
     dice:
       face0:
-        damage: 20;
+        damage: 4;
       ;
       face1:
         damage: 2;
@@ -35,17 +35,21 @@ heroes:
         mod: "ranged";
       ;
       face2:
-        damage: 3;
+        dodge: 0;
       ;
       face3:
         damage: 2;
         mod: "ranged";
       ;
       face4:
-        shield: 3;
+        damage: 2;
+        mod: "first_blood";
+        mod_1: "single_use";
       ;
       face5:
-        empty: 0;
+        damage: 2;
+          mod: "first_blood";
+          mod_1: "single_use";
       ;
     ;
   ;
@@ -108,18 +112,18 @@ heroes:
     dice:
       face0:
         damage: 2;
-        mod: "single_use";
+        mod: "growth";
       ;
       face1:
-        heal: 2;
-        mod: "ranged";
+        heal_and_mana: 2;
+        mod: "single_use";
       ;
       face2:
         damage: 3;
       ;
       face3:
-        damage: 2;
-        mod: "ranged";
+        heal_and_mana: 2;
+        mod: "single_use";
       ;
       face4:
         shield: 3;

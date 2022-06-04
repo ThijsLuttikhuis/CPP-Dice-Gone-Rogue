@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "gameobject/Hero.h"
-
+#include "gameobject/Enemy.h"
 
 namespace DGR {
 
@@ -19,16 +19,21 @@ private:
     SpriteRenderer* spriteRenderer;
 
     std::vector<Hero*> heroes;
+    std::vector<Enemy*> enemies;
+
 public:
     explicit GameController(Window* window);
 
     [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
+
+    [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
 
     void initialize();
 
     void update(double dt);
 
     void render();
+
 };
 
 }

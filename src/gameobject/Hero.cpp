@@ -3,36 +3,14 @@
 //
 
 #include "Hero.h"
-#include "Dice.h"
+#include "gameobject/dice/Dice.h"
+#include "utilities/Constants.h"
+#include <iostream>
 
 namespace DGR {
 
 Hero::Hero(const std::string &name, glm::vec2 position, glm::vec2 size)
-      : GameObject(name, position, size), dice(new Dice(name, this)) {
-}
-
-void Hero::draw(SpriteRenderer* spriteRenderer) {
-
-    spriteRenderer->drawSprite(name, 1.0f, position, size);
-
-}
-
-void Hero::drawHover(SpriteRenderer* spriteRenderer) {
-    if (hover) {
-        dice->draw(spriteRenderer);
-    }
-}
-
-Dice* Hero::getDice() const {
-    return dice;
-}
-
-void Hero::setDice(Dice* dice_) {
-    dice = dice_;
-}
-
-void Hero::setMaxHP(int maxHP_) {
-    maxHP = maxHP_;
+      : Character(name, position, size) {
 }
 
 }

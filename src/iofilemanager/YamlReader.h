@@ -16,15 +16,17 @@
 #include <fstream>
 #include <utility>
 #include <type_traits>
+#include <gameobject/Enemy.h>
 
 #include "gameobject/Hero.h"
-#include "gameobject/Dice.h"
+#include "gameobject/dice/Dice.h"
 
 namespace DGR {
 
 enum struct stringCode : int {
-    heroes,
+    characters,
     hero,
+    enemy,
     dice,
     face,
     mod,
@@ -77,47 +79,50 @@ public:
     };
 };
 
-class YamlHandleHeroes : public YamlHandle {
-    std::vector<Hero*>* heroes = new std::vector<Hero*>();
+class YamlHandleCharacters : public YamlHandle {
+    std::vector<Character*>* characters = new std::vector<Character*>();
 
 public:
-    YamlHandleHeroes() : YamlHandle(stringCode::heroes) {}
+    YamlHandleCharacters() : YamlHandle(stringCode::characters) {}
 
     void handle(YamlHandle* yamlHandle) override {
 #if DEBUG
-        std::cout << "yh.heroes: adding object" << std::endl;
+        std::cout << "yh.characters: adding object" << std::endl;
 #endif
         switch (yamlHandle->getType()) {
             case stringCode::hero:
-                heroes->push_back((Hero*) yamlHandle->getFeature());
+                characters->push_back((Character*) yamlHandle->getFeature());
+                break;
+            case stringCode::enemy:
+                characters->push_back((Character*) yamlHandle->getFeature());
                 break;
             default:
-                std::cerr << "[YamlHandleHeroes] unsupported feature: " <<
+                std::cerr << "[YamlHandleCharacters] unsupported feature: " <<
                           static_cast<int>(yamlHandle->getType()) << std::endl;
                 exit(4);
         }
     }
 
     void reset() override {
-        heroes = new std::vector<Hero*>();
+        characters = new std::vector<Character*>();
     };
 
     void* getFeature() override {
-        return (void*) heroes;
+        return (void*) characters;
     };
 };
 
-class YamlHandleHero : public YamlHandle {
+class YamlHandleCharacter : public YamlHandle {
     Dice* dice = nullptr;
     int maxHP{};
     std::string name;
 public:
-    explicit YamlHandleHero(std::string name) : YamlHandle(stringCode::hero), name(std::move(name)) {}
+    explicit YamlHandleCharacter(std::string name, stringCode stringCode)
+          : YamlHandle(stringCode), name(std::move(name)) {}
 
     void reset() override {
         dice = nullptr;
         maxHP = {};
-        name = "";
     };
 
     void handle(YamlHandle* yamlHandle) override {
@@ -129,19 +134,32 @@ public:
                 dice = (Dice*) yamlHandle->getFeature();
                 break;
             default:
-                std::cerr << "[YamlHandleHero] unsupported feature: " <<
+                std::cerr << "[YamlHandleCharacter] unsupported feature: " <<
                           static_cast<int>(yamlHandle->getType()) << std::endl;
                 exit(4);
         }
     }
 
     void* getFeature() override {
-        Hero* hero = new Hero(name);
-        hero->setMaxHP(maxHP);
-        hero->setDice(dice);
-        hero->getDice()->setHero(hero);
-        hero->getDice()->setName(hero->getName());
-        return (void*) hero;
+        Character* character;
+        switch (getType()) {
+            case stringCode::hero:
+                character = new Hero(name);
+                break;
+            case stringCode::enemy:
+                character = new Enemy(name);
+                break;
+            default:
+                std::cerr << "[YamlHandleCharacter] unknown character type: " <<
+                          static_cast<int>(getType()) << std::endl;
+                exit(4);
+        }
+
+        character->setMaxHP(maxHP);
+        character->setDice(dice);
+        character->getDice()->setCharacter(character);
+        character->getDice()->setName(character->getName());
+        return (void*) character;
     };
 };
 
@@ -186,52 +204,59 @@ public:
 };
 
 class YamlHandleFace : public YamlHandle {
-    int face_{};
-    int value{};
-    faceType type{};
-    FaceModifier modifiers{};
+    int face_;
+    int value = 0;
+    FaceType type = {};
+    FaceModifier modifiers = FaceModifier();
 public:
     explicit YamlHandleFace(int face_) : YamlHandle(stringCode::face), face_(face_) {};
 
     void reset() override {
-        face_ = {};
-        value = {};
-        type = {};
-        modifiers = {};
+        value = 0;
+        type = FaceType::empty;
+        modifiers = FaceModifier();
     }
 
     void handle(YamlHandle* yamlHandle) override {
         switch (yamlHandle->getType()) {
             case stringCode::damage:
-                type = faceType::damage;
+                type = FaceType::damage;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::shield:
-                type = faceType::shield;
+                type = FaceType::shield;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::heal:
-                type = faceType::heal;
+                type = FaceType::heal;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::mana:
-                type = faceType::mana;
+                type = FaceType::mana;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::shield_and_mana:
-                type = faceType::shield_and_mana;
+                type = FaceType::shield_and_mana;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::heal_and_shield:
-                type = faceType::heal_and_shield;
+                type = FaceType::heal_and_shield;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::damage_and_self_shield:
-                type = faceType::damage_and_self_shield;
+                type = FaceType::damage_and_self_shield;
                 value = *(int*) yamlHandle->getFeature();
                 break;
+            case stringCode::heal_and_mana:
+                type = FaceType::heal_and_mana;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::dodge:
+                type = FaceType::dodge;
+                value = 0;
+                break;
             case stringCode::empty:
-                type = faceType::empty;
+                type = FaceType::empty;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::mod:

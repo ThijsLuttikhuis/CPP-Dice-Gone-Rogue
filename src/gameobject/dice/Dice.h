@@ -13,17 +13,17 @@
 
 namespace DGR {
 
-class Hero;
+class Character;
 
 class Dice {
 private:
     std::string name;
 
-    Hero* hero = nullptr;
+    Character* character = nullptr;
     Face faces[6]{};
 
 public:
-    Dice(std::string name, Hero* hero);
+    Dice(std::string name, Character* character);
 
     Dice() = default;
 
@@ -39,7 +39,7 @@ public:
 
     void setFace(Face face, int index);
 
-    void setHero(Hero* hero_);
+    void setCharacter(Character* hero_);
 
     void setName(const std::string &name_);
 

@@ -7,33 +7,19 @@
 
 #include <utility>
 
-#include "GameObject.h"
+#include "Character.h"
 
 namespace DGR {
 
 class Dice;
 
-class Hero : public GameObject {
-private:
-    Dice* dice = nullptr;
-
-    int hp{};
-    int maxHP{};
+class Hero : public Character {
 
 public:
-    explicit Hero(std::string name) : GameObject(std::move(name)) {};
+    explicit Hero(std::string name) : Character(std::move(name)) {};
 
     Hero(const std::string &textureName, glm::vec2 position, glm::vec2 size);
 
-    [[nodiscard]] Dice* getDice() const;
-
-    void setDice(Dice* dice);
-
-    void setMaxHP(int i);
-
-    void draw(SpriteRenderer* spriteRenderer) override;
-
-    void drawHover(SpriteRenderer* spriteRenderer);
 };
 
 }

@@ -23,9 +23,9 @@ GameController::GameController(Window* window) : window(window) {
     spriteRenderer = new SpriteRenderer(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
 
-    YamlReader yamlReader;
-    yamlReader.readFile("heroes");
-    heroes = *(std::vector<Hero*>*) yamlReader.getData()->getFeature();
+    YamlReader yamlReaderHeroes;
+    yamlReaderHeroes.readFile("heroes");
+    heroes = *(std::vector<Hero*>*) yamlReaderHeroes.getData()->getFeature();
 
     int x = 0;
     for (auto &hero : heroes) {
@@ -36,14 +36,17 @@ GameController::GameController(Window* window) : window(window) {
         hero->setSize(size);
     }
 
-    for (int x = 0; x < 7; x++) {
-        glm::vec2 pos(2 * (x+3) * 12 + 16, 2 * 32);
+    YamlReader yamlReaderEnemies;
+    yamlReaderEnemies.readFile("enemies");
+    enemies = *(std::vector<Enemy*>*) yamlReaderEnemies.getData()->getFeature();
+
+    x = 0;
+    for (auto &enemy : enemies) {
+        glm::vec2 pos(2 * x++ * 24 + 16, 2 * 32);
         glm::vec2 size(16, 16);
-        std::string textureName = "rat";
 
-        auto* hero = new Hero(textureName, pos, size);
-
-        heroes.push_back(hero);
+        enemy->setPosition(pos);
+        enemy->setSize(size);
     }
 
 }
@@ -66,8 +69,16 @@ void GameController::render() {
         hero->draw(spriteRenderer);
     }
 
+    for (auto &enemy : enemies) {
+        enemy->draw(spriteRenderer);
+    }
+
     for (auto &hero : heroes) {
         hero->drawHover(spriteRenderer);
+    }
+
+    for (auto &enemy : enemies) {
+        enemy->drawHover(spriteRenderer);
     }
 
     window->swapBuffers();
@@ -75,6 +86,10 @@ void GameController::render() {
 
 const std::vector<Hero*> &GameController::getHeroes() const {
     return heroes;
+}
+
+const std::vector<Enemy*> &GameController::getEnemies() const {
+    return enemies;
 }
 
 }
