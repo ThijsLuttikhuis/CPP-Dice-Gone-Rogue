@@ -47,7 +47,7 @@ add_executable(DiceGoneRogue main.cpp
         src/gameobject/dice/FaceType.cpp        src/gameobject/dice/FaceType.h
         src/gameobject/Enemy.cpp src/gameobject/Enemy.h
         src/gameobject/Character.cpp src/gameobject/Character.h
-        src/utilities/Random.cpp src/utilities/Random.h)
+        src/utilities/Random.cpp src/utilities/Random.h src/shaders/TextRenderer.cpp src/shaders/TextRenderer.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

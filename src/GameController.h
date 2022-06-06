@@ -31,6 +31,7 @@ public:
 class GameController {
 private:
     Window* window;
+    TextRenderer* textRenderer;
     SpriteRenderer* spriteRenderer;
 
     GameStateManager gameState;
@@ -60,6 +61,8 @@ public:
     void pressButton(const std::string &buttonName);
 
     void reroll();
+
+    TextRenderer* getTextRenderer();
 };
 
 }

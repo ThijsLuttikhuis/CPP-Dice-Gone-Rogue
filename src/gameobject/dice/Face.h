@@ -14,6 +14,7 @@
 #include "FaceModifier.h"
 #include "FaceType.h"
 #include "Dice.h"
+#include <shaders/TextRenderer.h>
 
 namespace DGR {
 
@@ -31,13 +32,13 @@ private:
 
     bool hover = false;
 
-    static const std::map<int, const glm::vec2> faceDeltaPos;
-    static const std::map<int, const glm::vec2> tickValueDeltaPos;
+    static const std::vector<glm::vec2> faceDeltaPos;
+    static const std::vector<glm::vec2> tickValueDeltaPos;
 
 
     void drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos);
 
-    void drawFaceToolTip(SpriteRenderer* spriteRenderer);
+    void drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
 public:
     Face() = default;
@@ -76,7 +77,7 @@ public:
 
     void addModifier(const std::string &modifierStr);
 
-    void drawHover(SpriteRenderer* spriteRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer);
 
     void draw(SpriteRenderer* spriteRenderer);
 };

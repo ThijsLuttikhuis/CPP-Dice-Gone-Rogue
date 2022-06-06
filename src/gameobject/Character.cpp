@@ -17,13 +17,13 @@ void Character::draw(SpriteRenderer* spriteRenderer) {
     dice->draw(spriteRenderer);
 }
 
-void Character::drawHover(SpriteRenderer* spriteRenderer) {
+void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     if (hover) {
 #if DEBUG
         std::cout << "hover: " << getName() << " -- x: " << getPosition().x
                   << " -- y: " << getPosition().y << std::endl;
 #endif
-        dice->drawHover(spriteRenderer);
+        dice->drawHover(spriteRenderer, textRenderer);
     }
 }
 

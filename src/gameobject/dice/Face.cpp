@@ -7,24 +7,27 @@
 #include "gameobject/dice/Dice.h"
 #include "utilities/Constants.h"
 #include "FaceType.h"
+#include <sstream>
 
 namespace DGR {
 
-const std::map<int, const glm::vec2> Face::faceDeltaPos = std::map<int, const glm::vec2>{
-      {0, glm::vec2(2, 17)},
-      {1, glm::vec2(17, 2)},
-      {2, glm::vec2(17, 17)},
-      {3, glm::vec2(17, 32)},
-      {4, glm::vec2(32, 17)},
-      {5, glm::vec2(47, 17)}};
+const std::vector<glm::vec2> Face::faceDeltaPos = {{
+                                                         glm::vec2(2, 17),
+                                                         glm::vec2(17, 2),
+                                                         glm::vec2(17, 17),
+                                                         glm::vec2(17, 32),
+                                                         glm::vec2(32, 17),
+                                                         glm::vec2(47, 17)}};
 
-const std::map<int, const glm::vec2> Face::tickValueDeltaPos = std::map<int, const glm::vec2>{
-      {0, glm::vec2(11, 12)},
-      {1, glm::vec2(11, 10)},
-      {2, glm::vec2(11, 8)},
-      {3, glm::vec2(11, 6)},
-      {4, glm::vec2(11, 4)},
-      {5, glm::vec2(11, 2)}};
+
+const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
+                                                              glm::vec2(11, 12),
+                                                              glm::vec2(11, 10),
+                                                              glm::vec2(11, 8),
+                                                              glm::vec2(11, 6),
+                                                              glm::vec2(11, 4),
+                                                              glm::vec2(11, 2)}};
+
 
 bool checkBit(unsigned int value, unsigned int pos) {
     return value & (1u << (pos));
@@ -117,17 +120,26 @@ void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
                                position, glm::vec2(11, 14), 0, textureColor);
 }
 
-void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer) {
+void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer) {
     auto position = getPosition();
 
-    glm::vec2 backgroundSize = glm::vec2(32, 16);
+    glm::vec2 tooltipDPos(5, -5);
+    glm::vec2 tooltipSize(96, 1);
+
+    glm::vec2 backgroundSize = glm::vec2(96, 16);
     spriteRenderer->drawSprite("dice_face_template_background", 0.0f,
-                               position + glm::vec2{5, -5}, backgroundSize);
+                               position + tooltipDPos, backgroundSize);
 
     std::string textureName = "knight_" + type.toString();
     glm::vec3 textureColor = modifiers.toColor();
-    spriteRenderer->drawSprite(textureName, 0.1f,
-                               position, glm::vec2(11, 14), 0, textureColor);
+//    spriteRenderer->drawSprite(textureName, 0.1f,
+//                               position, glm::vec2(11, 14), 0, textureColor);
+
+    std::ostringstream tooltipOSS;
+    tooltipOSS << value << " " << type.toString() << "( " << modifiers.getModifiers() << " )";
+
+    textureRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize,
+                              TextRenderer::center, textureColor);
 
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
               << type.toString() << " -- modifiers: " << modifiers.getModifiers() << std::endl;
@@ -201,11 +213,11 @@ void Face::draw(SpriteRenderer* spriteRenderer) {
     drawFace(spriteRenderer, Dice::currentFacePos);
 }
 
-void Face::drawHover(SpriteRenderer* spriteRenderer) {
+void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     drawFace(spriteRenderer, Dice::diceLayoutPos);
 
     if (hover) {
-        drawFaceToolTip(spriteRenderer);
+        drawFaceToolTip(spriteRenderer, textRenderer);
     }
 }
 

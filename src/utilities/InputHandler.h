@@ -10,6 +10,7 @@
 #include <glm/vec2.hpp>
 #include "shaders/SpriteRenderer.h"
 #include <iostream>
+#include <shaders/TextRenderer.h>
 
 namespace DGR {
 
@@ -24,7 +25,8 @@ private:
     glm::vec2 pos;
     glm::vec2 size;
 public:
-    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size) : name(std::move(name)), pos(pos), size(size) {}
+    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size) : name(std::move(name)), pos(pos),
+                                                                            size(size) {}
 
     [[nodiscard]] const glm::vec2 &getPos() const {
         return pos;
@@ -42,8 +44,12 @@ public:
         return xPos > pos.x && xPos < pos.x + size.x && yPos > pos.y && yPos < pos.y + size.y;
     }
 
-    void draw(SpriteRenderer* spriteRenderer) {
+    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
         spriteRenderer->drawSprite(name, 0.1f, pos, size);
+
+//        std::string s = R"( !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~)";
+//        textRenderer->drawText(s, 0.0f, pos-glm::vec2(0, 80), size);
+
     }
 };
 
@@ -51,6 +57,7 @@ class InputHandler {
 private:
     GameController* gameController;
     SpriteRenderer* spriteRenderer;
+    TextRenderer* textRenderer;
 
     std::vector<Button*> buttons;
 public:

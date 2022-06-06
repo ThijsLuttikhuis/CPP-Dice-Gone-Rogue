@@ -12,8 +12,9 @@ namespace DGR {
 
 InputHandler::InputHandler(GameController* gameController) : gameController(gameController) {
       spriteRenderer = gameController->getSpriteRenderer();
+        textRenderer = gameController->getTextRenderer();
 
-      auto* button = new Button("button_reroll", {320,192}, {64,16});
+      auto* button = new Button("button_reroll", {288,192}, {64,16});
       buttons.push_back(button);
 }
 
@@ -70,7 +71,7 @@ void InputHandler::handleMousePosition(double xPos, double yPos) {
 
 void InputHandler::render() {
     for (auto &button : buttons) {
-        button->draw(spriteRenderer);
+        button->draw(spriteRenderer, textRenderer);
     }
 }
 

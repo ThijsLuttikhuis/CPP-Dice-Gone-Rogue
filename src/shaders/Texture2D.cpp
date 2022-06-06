@@ -13,12 +13,16 @@
 namespace DGR {
 
 Texture2D::Texture2D(const std::string &fileName)
-      : internalFormat(GL_RGBA), imageFormat(GL_RGBA), wrapS(GL_REPEAT), wrapT(GL_REPEAT),
-        filterMin(GL_LINEAR), filterMag(GL_LINEAR) {
+      : internalFormat(GL_RGBA), imageFormat(GL_RGBA), wrapS(GL_CLAMP_TO_BORDER), wrapT(GL_CLAMP_TO_BORDER),
+        filterMin(GL_NEAREST), filterMag(GL_NEAREST) {
 
     glGenTextures(1, &id);
 
     unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &channels, 0);
+    if (width == 0) {
+
+        std::cerr << "texture " << fileName << " cannot be loaded!" << std::endl;
+    }
 
     // create Texture
     glBindTexture(GL_TEXTURE_2D, id);
@@ -29,7 +33,6 @@ Texture2D::Texture2D(const std::string &fileName)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMin);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMag);
-
 
     glBindTexture(GL_TEXTURE_2D, 0);
 

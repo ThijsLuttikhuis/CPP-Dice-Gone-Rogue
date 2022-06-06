@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
 #include <gameobject/Hero.h>
+#include <shaders/TextRenderer.h>
 #include "GameController.h"
 #include "utilities/Window.h"
 #include "iofilemanager/YamlReader.h"
@@ -21,6 +22,8 @@ GameController::GameController(Window* window) : window(window) {
     glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(),
                                       (float) window->getHeight(), 0.0f,
                                       -1.0f, 1.0f);
+
+    textRenderer = new TextRenderer(shader, projection);
 
     spriteRenderer = new SpriteRenderer(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
@@ -83,11 +86,11 @@ void GameController::render() {
     }
 
     for (auto &hero : heroes) {
-        hero->drawHover(spriteRenderer);
+        hero->drawHover(spriteRenderer, textRenderer);
     }
 
     for (auto &enemy : enemies) {
-        enemy->drawHover(spriteRenderer);
+        enemy->drawHover(spriteRenderer, textRenderer);
     }
 
 }
@@ -104,11 +107,15 @@ SpriteRenderer* GameController::getSpriteRenderer() const {
     return spriteRenderer;
 }
 
+TextRenderer* GameController::getTextRenderer() {
+    return textRenderer;
+}
+
 void GameController::alignCharacterPositions(double dt) {
     const int width = window->getWidth();
     const int center = width / 2;
     const float moveSpeed = 100.0f;
-    const float maxDPos = moveSpeed * (float)dt;
+    const float maxDPos = moveSpeed * (float) dt;
     const int dWidth = 16;
 
     int totalWidth;
@@ -118,11 +125,11 @@ void GameController::alignCharacterPositions(double dt) {
     totalWidth = 0;
     for (auto &hero : heroes) {
         if (!hero->isDead()) {
-            totalWidth += dWidth + (int)hero->getSize().x;
+            totalWidth += dWidth + (int) hero->getSize().x;
         }
     }
 
-    left = (int)(center*0.7) - totalWidth/2;
+    left = (int) (center * 0.7) - totalWidth / 2;
     up = 5 * 32;
     for (auto &hero : heroes) {
         if (!hero->isDead()) {
@@ -133,13 +140,11 @@ void GameController::alignCharacterPositions(double dt) {
             if (glm::length(dPos) > maxDPos && glm::length(dPos) < moveSpeed) {
                 dPos = glm::normalize(dPos) * maxDPos;
                 hero->setPosition(pos + dPos);
-            }
-            else {
+            } else {
                 hero->setPosition(targetPos);
             }
-            left += dWidth + (int)hero->getSize().x;
-        }
-        else {
+            left += dWidth + (int) hero->getSize().x;
+        } else {
             hero->setPosition(-left, -up);
         }
     }
@@ -148,11 +153,11 @@ void GameController::alignCharacterPositions(double dt) {
     totalWidth = 0;
     for (auto &enemy : enemies) {
         if (!enemy->isDead()) {
-            totalWidth += dWidth + (int)enemy->getSize().x;
+            totalWidth += dWidth + (int) enemy->getSize().x;
         }
     }
 
-    left = (int)(center/0.7) - totalWidth/2;
+    left = (int) (center / 0.7) - totalWidth / 2;
     up = 2 * 32;
     for (auto &enemy : enemies) {
         if (!enemy->isDead()) {
@@ -165,9 +170,8 @@ void GameController::alignCharacterPositions(double dt) {
                 }
                 enemy->setPosition(pos + dPos);
             }
-            left += dWidth + (int)enemy->getSize().x;
-        }
-        else {
+            left += dWidth + (int) enemy->getSize().x;
+        } else {
             enemy->setPosition(-left, -up);
         }
     }
@@ -192,5 +196,6 @@ void GameController::reroll() {
         hero->roll();
     }
 }
+
 
 }

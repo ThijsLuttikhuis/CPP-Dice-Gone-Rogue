@@ -40,7 +40,7 @@ public:
 
     void draw(SpriteRenderer* spriteRenderer) override;
 
-    void drawHover(SpriteRenderer* spriteRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 
 }

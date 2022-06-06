@@ -8,6 +8,7 @@
 
 #include <string>
 #include <utility>
+#include <shaders/TextRenderer.h>
 #include "shaders/SpriteRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
@@ -55,7 +56,7 @@ public:
 
     void updateHoverMouse(double xPos, double yPos);
 
-    void drawHover(SpriteRenderer* spriteRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void draw(SpriteRenderer* spriteRenderer);
 

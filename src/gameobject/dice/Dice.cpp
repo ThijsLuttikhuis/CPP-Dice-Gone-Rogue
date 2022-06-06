@@ -93,7 +93,7 @@ void Dice::draw(SpriteRenderer* spriteRenderer) {
     faces[currentFace]->draw(spriteRenderer);
 }
 
-void Dice::drawHover(SpriteRenderer* spriteRenderer) {
+void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     glm::vec2 diceTemplateBackgroundPosition = getPosition();
     glm::vec2 diceTemplateBackgroundSize = getSize();
     spriteRenderer->drawSprite("dice_template_background", 0.9f,
@@ -105,7 +105,7 @@ void Dice::drawHover(SpriteRenderer* spriteRenderer) {
                                diceTemplatePosition, diceTemplateSize);
 
     for (auto &face : faces) {
-        face->drawHover(spriteRenderer);
+        face->drawHover(spriteRenderer, textRenderer);
     }
 
 }
