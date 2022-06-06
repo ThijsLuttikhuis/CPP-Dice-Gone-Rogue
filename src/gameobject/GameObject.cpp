@@ -52,4 +52,8 @@ void GameObject::setSize(glm::vec2 size_) {
     size = size_;
 }
 
+void GameObject::setPosition(int left, int up) {
+    setPosition(glm::vec2(left, up));
+}
+
 }

@@ -39,7 +39,15 @@ add_executable(DiceGoneRogue main.cpp
         src/shaders/Texture2D.cpp src/shaders/Texture2D.h
         src/shaders/SpriteRenderer.cpp src/shaders/SpriteRenderer.h
         src/gameobject/Hero.cpp src/gameobject/Hero.h
-        src/gameobject/dice/Dice.cpp src/gameobject/dice/Dice.h src/gameobject/dice/Face.cpp src/gameobject/dice/Face.h src/iofilemanager/YamlReader.cpp src/iofilemanager/YamlReader.h src/utilities/Constants.h src/gameobject/dice/FaceModifier.cpp src/gameobject/dice/FaceModifier.h src/gameobject/dice/FaceType.cpp src/gameobject/dice/FaceType.h src/gameobject/Enemy.cpp src/gameobject/Enemy.h src/gameobject/Character.cpp src/gameobject/Character.h)
+        src/gameobject/dice/Dice.cpp src/gameobject/dice/Dice.h
+        src/gameobject/dice/Face.cpp src/gameobject/dice/Face.h
+        src/iofilemanager/YamlReader.cpp src/iofilemanager/YamlReader.h
+        src/utilities/Constants.h
+        src/gameobject/dice/FaceModifier.cpp         src/gameobject/dice/FaceModifier.h
+        src/gameobject/dice/FaceType.cpp        src/gameobject/dice/FaceType.h
+        src/gameobject/Enemy.cpp src/gameobject/Enemy.h
+        src/gameobject/Character.cpp src/gameobject/Character.h
+        src/utilities/Random.cpp src/utilities/Random.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

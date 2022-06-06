@@ -10,12 +10,17 @@
 
 namespace DGR {
 
+class Face;
+
 class Character : public GameObject {
 private:
     Dice* dice = nullptr;
 
     int hp{};
     int maxHP{};
+
+    int poison;
+    int regen;
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
@@ -23,9 +28,15 @@ public:
 
     [[nodiscard]] Dice* getDice() const;
 
+    [[nodiscard]] bool isDead() const;
+
     void setDice(Dice* dice);
 
-    void setMaxHP(int i);
+    void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
+
+    void dealDamage(Face* face);
+
+    void roll();
 
     void draw(SpriteRenderer* spriteRenderer) override;
 

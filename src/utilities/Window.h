@@ -6,7 +6,9 @@
 #define DICEGONEROGUE_WINDOW_H
 
 #include "glad/glad.h"
+#include "InputHandler.h"
 #include <GLFW/glfw3.h>
+#include <gameobject/Character.h>
 
 namespace DGR {
 
@@ -23,6 +25,7 @@ private:
     GLFWwindow* glfwWindow;
 
     GameController* gameController;
+    InputHandler* inputHandler;
 public:
     Window(int width, int height);
 
@@ -43,6 +46,10 @@ public:
     void setWindowSize(int width, int height);
 
     void swapBuffers();
+
+    void handleMousePosition(DGR::Character* character, double xPos, double yPos);
+
+    void render();
 };
 
 }

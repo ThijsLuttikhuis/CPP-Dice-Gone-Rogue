@@ -9,15 +9,15 @@
 #include <string>
 #include <map>
 #include <utility>
-#include <glm-0.9.7.1/glm/vec2.hpp>
+#include <glm/vec2.hpp>
 #include <shaders/SpriteRenderer.h>
 #include "FaceModifier.h"
 #include "FaceType.h"
+#include "Dice.h"
 
 namespace DGR {
 
 class Dice;
-
 
 class Face {
 private:
@@ -35,7 +35,7 @@ private:
     static const std::map<int, const glm::vec2> tickValueDeltaPos;
 
 
-    void drawFace(SpriteRenderer* spriteRenderer);
+    void drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos);
 
     void drawFaceToolTip(SpriteRenderer* spriteRenderer);
 
@@ -48,13 +48,19 @@ public:
     Face(std::string name, Dice* dice, int face_,
          int value, FaceType type, FaceModifier modifiers);
 
-    [[nodiscard]] glm::vec2 getPosition() const;
+    [[nodiscard]] glm::vec2 getPosition(Dice::dicePos dicePos = Dice::diceLayoutPos) const;
 
     [[nodiscard]] glm::vec2 getSize() const;
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
 
     [[nodiscard]] int getFace_();
+
+    [[nodiscard]] int getValue();
+
+    [[nodiscard]] FaceType getType();
+
+    [[nodiscard]] FaceModifier getModifiers();
 
     void setValue(int value_);
 
@@ -70,8 +76,9 @@ public:
 
     void addModifier(const std::string &modifierStr);
 
-    void draw(SpriteRenderer* spriteRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer);
 
+    void draw(SpriteRenderer* spriteRenderer);
 };
 
 }

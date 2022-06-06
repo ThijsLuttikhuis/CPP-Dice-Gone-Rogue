@@ -132,55 +132,35 @@ void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-#if DEBUG
-    std::cout << xPos << ", " << yPos << std::endl;
-#endif
+    inputHandler->handleMouseButton(xPos, yPos);
 }
 
 void Window::handleMousePosition(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    auto heroes = gameController->getHeroes();
-    for (auto &hero : heroes) {
-
-        if (hero->isMouseHovering(xPos, yPos)) {
-            hero->hoverMouse(true);
-        } else if (hero->getHoverMouse()) {
-            auto dice = hero->getDice();
-
-            if (dice->isMouseHovering(xPos, yPos)) {
-                dice->updateHoverMouse(xPos, yPos);
-            } else {
-                hero->hoverMouse(false);
-            }
-        }
-    }
-
-    auto enemies = gameController->getEnemies();
-    for (auto &enemy : enemies) {
-
-        if (enemy->isMouseHovering(xPos, yPos)) {
-            enemy->hoverMouse(true);
-        } else if (enemy->getHoverMouse()) {
-            auto dice = enemy->getDice();
-
-            if (dice->isMouseHovering(xPos, yPos)) {
-                dice->updateHoverMouse(xPos, yPos);
-            } else {
-                enemy->hoverMouse(false);
-            }
-        }
-    }
+    inputHandler->handleMousePosition(xPos, yPos);
 }
 
 void Window::setGameController(GameController* gameController_) {
     gameController = gameController_;
+    inputHandler = new InputHandler(gameController_);
 }
 
 void Window::setWindowSize(int displayWidth_, int displayHeight_) {
     displayWidth = displayWidth_;
     displayHeight = displayHeight_;
+}
+
+void Window::render() {
+    glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    inputHandler->render();
+    gameController->render();
+
+    swapBuffers();
+
 }
 
 }

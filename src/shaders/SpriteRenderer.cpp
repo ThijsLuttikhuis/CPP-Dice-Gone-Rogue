@@ -52,8 +52,9 @@ void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2
                                 float rotate, glm::vec3 color, float alpha) {
 
     if (!textures[textureName]) {
+#if PRINT_NO_TEXTURE
         std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
-
+#endif
         textureName = "no_texture";
     }
 

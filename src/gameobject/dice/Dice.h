@@ -9,18 +9,28 @@
 #include <string>
 #include <utility>
 #include "shaders/SpriteRenderer.h"
-#include "Face.h"
+#include "FaceModifier.h"
+#include "FaceType.h"
 
 namespace DGR {
 
 class Character;
-
+class Face;
 class Dice {
+public:
+    enum dicePos {
+        backgroundPos,
+        diceLayoutPos,
+        currentFacePos
+    };
+
 private:
     std::string name;
 
     Character* character = nullptr;
-    Face faces[6]{};
+    Face* faces[6]{};
+
+    int currentFace = 0;
 
 public:
     Dice(std::string name, Character* character);
@@ -29,15 +39,15 @@ public:
 
     [[nodiscard]] Face* getFace(int index);
 
-    [[nodiscard]] glm::vec2 getPosition(bool backgroundPos = true) const;
+    [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = backgroundPos) const;
 
-    [[nodiscard]] glm::vec2 getSize(bool backgroundSize = true) const;
+    [[nodiscard]] glm::vec2 getSize(dicePos dicePos = backgroundPos) const;
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
 
     [[nodiscard]] const std::string &getName();
 
-    void setFace(Face face, int index);
+    void setFace(Face* face, int index);
 
     void setCharacter(Character* hero_);
 
@@ -45,7 +55,11 @@ public:
 
     void updateHoverMouse(double xPos, double yPos);
 
+    void drawHover(SpriteRenderer* spriteRenderer);
+
     void draw(SpriteRenderer* spriteRenderer);
+
+    void roll();
 };
 
 }

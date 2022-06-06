@@ -13,6 +13,8 @@
 namespace DGR {
 
 GameController::GameController(Window* window) : window(window) {
+    gameState = GameStateManager();
+
     auto* shader = new Shader();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
@@ -51,9 +53,20 @@ GameController::GameController(Window* window) : window(window) {
 
 }
 
-void GameController::update(double dt) {
+void GameController::update() {
+    static double t, dt, tPrev = 0.0;
+
     glfwPollEvents();
-    //std::cout << dt << std::endl;
+    t = glfwGetTime();
+
+    dt = t - tPrev;
+    tPrev = t;
+
+    alignCharacterPositions(dt);
+
+    if (gameState.isHeroesTurn()) {
+
+    }
 }
 
 void GameController::initialize() {
@@ -61,10 +74,6 @@ void GameController::initialize() {
 }
 
 void GameController::render() {
-
-    glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     for (auto &hero : heroes) {
         hero->draw(spriteRenderer);
     }
@@ -81,7 +90,6 @@ void GameController::render() {
         enemy->drawHover(spriteRenderer);
     }
 
-    window->swapBuffers();
 }
 
 const std::vector<Hero*> &GameController::getHeroes() const {
@@ -90,6 +98,99 @@ const std::vector<Hero*> &GameController::getHeroes() const {
 
 const std::vector<Enemy*> &GameController::getEnemies() const {
     return enemies;
+}
+
+SpriteRenderer* GameController::getSpriteRenderer() const {
+    return spriteRenderer;
+}
+
+void GameController::alignCharacterPositions(double dt) {
+    const int width = window->getWidth();
+    const int center = width / 2;
+    const float moveSpeed = 100.0f;
+    const float maxDPos = moveSpeed * (float)dt;
+    const int dWidth = 16;
+
+    int totalWidth;
+    int left, up;
+
+    // heroes
+    totalWidth = 0;
+    for (auto &hero : heroes) {
+        if (!hero->isDead()) {
+            totalWidth += dWidth + (int)hero->getSize().x;
+        }
+    }
+
+    left = (int)(center*0.7) - totalWidth/2;
+    up = 5 * 32;
+    for (auto &hero : heroes) {
+        if (!hero->isDead()) {
+            glm::vec2 targetPos(left, up);
+            glm::vec2 pos = hero->getPosition();
+            glm::vec2 dPos(targetPos - pos);
+
+            if (glm::length(dPos) > maxDPos && glm::length(dPos) < moveSpeed) {
+                dPos = glm::normalize(dPos) * maxDPos;
+                hero->setPosition(pos + dPos);
+            }
+            else {
+                hero->setPosition(targetPos);
+            }
+            left += dWidth + (int)hero->getSize().x;
+        }
+        else {
+            hero->setPosition(-left, -up);
+        }
+    }
+
+    // enemies
+    totalWidth = 0;
+    for (auto &enemy : enemies) {
+        if (!enemy->isDead()) {
+            totalWidth += dWidth + (int)enemy->getSize().x;
+        }
+    }
+
+    left = (int)(center/0.7) - totalWidth/2;
+    up = 2 * 32;
+    for (auto &enemy : enemies) {
+        if (!enemy->isDead()) {
+            auto targetPos = glm::vec2(left, up);
+            auto pos = enemy->getPosition();
+            if (pos != targetPos) {
+                auto dPos = glm::vec2(targetPos - pos);
+                if (glm::length(dPos) > maxDPos && glm::length(dPos) < moveSpeed) {
+                    dPos = glm::normalize(dPos) * maxDPos;
+                }
+                enemy->setPosition(pos + dPos);
+            }
+            left += dWidth + (int)enemy->getSize().x;
+        }
+        else {
+            enemy->setPosition(-left, -up);
+        }
+    }
+}
+
+void GameController::clickCharacter(Character* character) {
+    character->dealDamage(character->getDice()->getFace(0));
+}
+
+void GameController::pressButton(const std::string &buttonName) {
+    std::cout << "pressed a button!" << std::endl;
+
+    if (buttonName == "button_reroll") {
+        if (gameState.isHeroesTurn()) {
+            reroll();
+        }
+    }
+}
+
+void GameController::reroll() {
+    for (auto &hero : heroes) {
+        hero->roll();
+    }
 }
 
 }

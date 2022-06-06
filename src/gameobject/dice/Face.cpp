@@ -43,8 +43,8 @@ void Face::setType(FaceType type_) {
     type = type_;
 }
 
-void Face::drawFace(SpriteRenderer* spriteRenderer) {
-    auto position = getPosition();
+void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
+    auto position = getPosition(dicePos);
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
 
@@ -129,29 +129,29 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer) {
     spriteRenderer->drawSprite(textureName, 0.1f,
                                position, glm::vec2(11, 14), 0, textureColor);
 
-#if DEBUG
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
               << type.toString() << " -- modifiers: " << modifiers.getModifiers() << std::endl;
-#endif
-}
-
-void Face::draw(SpriteRenderer* spriteRenderer) {
-
-    drawFace(spriteRenderer);
-
-    if (hover) {
-        drawFaceToolTip(spriteRenderer);
-    }
 }
 
 void Face::setValue(int value_) {
     value = value_;
 }
 
-glm::vec2 Face::getPosition() const {
-    glm::vec2 dicePosition = dice->getPosition(false);
-
-    return dicePosition + faceDeltaPos.at(face_);
+glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
+    glm::vec2 dicePosition = dice->getPosition(dicePos);
+    switch (dicePos) {
+        case Dice::backgroundPos:
+            dicePosition + faceDeltaPos.at(face_);
+        case Dice::diceLayoutPos:
+            dicePosition += faceDeltaPos.at(face_);
+            break;
+        case Dice::currentFacePos:
+            break;
+        default:
+            std::cerr << "Face::getPosition: dicePos unknown: " << dicePos << std::endl;
+            break;
+    }
+    return dicePosition;
 }
 
 glm::vec2 Face::getSize() const {
@@ -183,6 +183,30 @@ void Face::addModifier(const std::string &modifierStr) {
 
 int Face::getFace_() {
     return face_;
+}
+
+int Face::getValue() {
+    return value;
+}
+
+FaceType Face::getType() {
+    return type;
+}
+
+FaceModifier Face::getModifiers() {
+    return modifiers;
+}
+
+void Face::draw(SpriteRenderer* spriteRenderer) {
+    drawFace(spriteRenderer, Dice::currentFacePos);
+}
+
+void Face::drawHover(SpriteRenderer* spriteRenderer) {
+    drawFace(spriteRenderer, Dice::diceLayoutPos);
+
+    if (hover) {
+        drawFaceToolTip(spriteRenderer);
+    }
 }
 
 }

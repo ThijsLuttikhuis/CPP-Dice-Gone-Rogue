@@ -39,6 +39,8 @@ public:
 
     void setPosition(glm::vec2 position_);
 
+    void setPosition(int left, int up);
+
     void setSize(glm::vec2 size);
 
     void hoverMouse(bool hover);

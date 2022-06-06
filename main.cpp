@@ -4,32 +4,23 @@
 
 #include <iostream>
 
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
-
+#include "utilities/Random.h"
 #include "utilities/Window.h"
 #include "GameController.h"
 
 int main() {
 
-    int width = 24*16;
-    int height = 24*9;
+    int width = 28*16;
+    int height = 28*9;
 
+    DGR::Random::initialize(0);
     auto* window = new DGR::Window(width, height);
     auto* dgrGame = new DGR::GameController(window);
     window->setGameController(dgrGame);
 
-    double t, dt, tPrev = 0.0;
     while (!window->shouldClose()) {
-
-        t = glfwGetTime();
-
-        dt = t - tPrev;
-        tPrev = t;
-
-        dgrGame->update(dt);
-
-        dgrGame->render();
+        dgrGame->update();
+        window->render();
     }
 
     return 0;

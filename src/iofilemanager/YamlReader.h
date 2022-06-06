@@ -20,6 +20,7 @@
 
 #include "gameobject/Hero.h"
 #include "gameobject/dice/Dice.h"
+#include "gameobject/dice/Face.h"
 
 namespace DGR {
 
@@ -164,7 +165,7 @@ public:
 };
 
 class YamlHandleDice : public YamlHandle {
-    Face faces[6];
+    Face* faces[6]{};
 
 public:
     explicit YamlHandleDice() : YamlHandle(stringCode::dice) {};
@@ -183,7 +184,7 @@ public:
             case stringCode::face:
                 face = (Face*) yamlHandle->getFeature();
                 index = face->getFace_();
-                faces[index] = *face;
+                faces[index] = face;
                 break;
             default:
                 std::cerr << "[YamlHandleDice] unsupported feature: " <<
