@@ -15,6 +15,11 @@ namespace DGR {
 SpriteRenderer::SpriteRenderer(Shader* shader, glm::mat4 projection)
       : shader(shader) {
 
+    specialSpritesToFunction.push_back(
+          std::make_pair<std::string, void (*)(SpriteRenderer* spriteRenderer, std::string texture, float zIndex,
+                                               glm::vec2 position, glm::vec2 size, float rotate,
+                                               glm::vec3 color, float alpha)>("box", drawBoxSprite));
+
     shader->use();
     shader->setInteger("sprite", 0);
     shader->setMatrix4("projection", projection);
@@ -48,8 +53,16 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
+
 void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2 position, glm::vec2 size,
                                 float rotate, glm::vec3 color, float alpha) {
+
+    for (auto &specialSprite : specialSpritesToFunction) {
+        if (textureName == specialSprite.first) {
+            specialSprite.second(this, textureName, zIndex, position, size, rotate, color, alpha);
+            return;
+        }
+    }
 
     if (!textures[textureName]) {
 #if PRINT_NO_TEXTURE
@@ -102,6 +115,28 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
             addTexture(entry.path(), entry.path().stem());
         }
     }
+}
+
+void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, std::string texture, float zIndex,
+                                   glm::vec2 position, glm::vec2 size, float drawEdges, glm::vec3 color, float alpha) {
+
+    std::string tex = "pixel";
+    float left = position.x;
+    float right = position.x + size.x;
+    float up = position.y;
+    float down = position.y + size.y;
+
+    // draw center
+        spriteRenderer->drawSprite(tex, zIndex, position, size, 0.0f, color, alpha);
+    if (drawEdges > 0.001f) {
+        // draw edges
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x+1, 1.0), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
+    }
+
+
 }
 
 }

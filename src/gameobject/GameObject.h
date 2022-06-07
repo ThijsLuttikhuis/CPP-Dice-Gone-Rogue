@@ -7,6 +7,7 @@
 
 #include <utility>
 #include <glm/vec3.hpp>
+#include <shaders/TextRenderer.h>
 #include "shaders/Texture2D.h"
 #include "shaders/SpriteRenderer.h"
 
@@ -45,7 +46,7 @@ public:
 
     void hoverMouse(bool hover);
 
-    virtual void draw(SpriteRenderer* spriteRenderer);
+    virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 
 }

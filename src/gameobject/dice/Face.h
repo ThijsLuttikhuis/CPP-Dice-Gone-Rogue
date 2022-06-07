@@ -38,7 +38,7 @@ private:
 
     void drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos);
 
-    void drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos);
 
 public:
     Face() = default;
@@ -55,13 +55,13 @@ public:
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
 
-    [[nodiscard]] int getFace_();
+    [[nodiscard]] int getFace_() const;
 
-    [[nodiscard]] int getValue();
+    [[nodiscard]] int getValue() const;
 
-    [[nodiscard]] FaceType getType();
+    [[nodiscard]] FaceType getType() const;
 
-    [[nodiscard]] FaceModifier getModifiers();
+    [[nodiscard]] FaceModifier getModifiers() const;
 
     void setValue(int value_);
 
@@ -77,7 +77,8 @@ public:
 
     void addModifier(const std::string &modifierStr);
 
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer,
+                   Dice::dicePos dicePos = Dice::diceLayoutPos);
 
     void draw(SpriteRenderer* spriteRenderer);
 };

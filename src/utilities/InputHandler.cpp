@@ -14,40 +14,42 @@ InputHandler::InputHandler(GameController* gameController) : gameController(game
       spriteRenderer = gameController->getSpriteRenderer();
         textRenderer = gameController->getTextRenderer();
 
-      auto* button = new Button("button_reroll", {288,192}, {64,16});
+      auto* button = new Button("button_reroll", {288,195}, {64,15});
+      button->setText("2 rerolls left");
       buttons.push_back(button);
 }
 
 void InputHandler::handleMouseButton(double xPos, double yPos) {
     for (auto &button : buttons) {
         if (button->isPressed(xPos, yPos)) {
-            gameController->pressButton(button->getName());
+            gameController->pressButton(button);
         }
     }
 
     auto heroes = gameController->getHeroes();
     for (auto &hero : heroes) {
-        if (hero->isMouseHovering(xPos, yPos)) {
+        if (hero->isMouseHovering(xPos, yPos, true)) {
             gameController->clickCharacter(hero);
         }
     }
 
     auto enemies = gameController->getEnemies();
     for (auto &enemy : enemies) {
-        if (enemy->isMouseHovering(xPos, yPos)) {
+        if (enemy->isMouseHovering(xPos, yPos, true)) {
             gameController->clickCharacter(enemy);
         }
     }
     std::cout << xPos << ", " << yPos << std::endl;
 }
 
-
 void InputHandler::handleMousePosition(Character* character, double xPos, double yPos) {
+    auto dice = character->getDice();
+    dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
+
     if (character->isMouseHovering(xPos, yPos)) {
         character->hoverMouse(true);
-    } else if (character->getHoverMouse()) {
-        auto dice = character->getDice();
-
+    }
+    else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {
             dice->updateHoverMouse(xPos, yPos);
         } else {

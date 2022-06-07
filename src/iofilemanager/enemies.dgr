@@ -6,10 +6,10 @@ characters:
         damage: 4;
       ;
       face1:
-        damage: 3;
+        damage: 2;
       ;
       face2:
-        damage: 2;
+        damage: 3;
       ;
       face3:
         damage: 2;
@@ -30,10 +30,10 @@ characters:
         damage: 4;
       ;
       face1:
-        damage: 3;
+        damage: 2;
       ;
       face2:
-        damage: 2;
+        damage: 3;
       ;
       face3:
         damage: 2;
@@ -54,10 +54,10 @@ characters:
         damage: 4;
       ;
       face1:
-        damage: 3;
+        damage: 2;
       ;
       face2:
-        damage: 2;
+        damage: 3;
       ;
       face3:
         damage: 2;
@@ -78,10 +78,10 @@ characters:
         damage: 4;
       ;
       face1:
-        damage: 3;
+        damage: 2;
       ;
       face2:
-        damage: 2;
+        damage: 3;
       ;
       face3:
         damage: 2;
@@ -94,5 +94,4 @@ characters:
       ;
     ;
   ;
-
   ;

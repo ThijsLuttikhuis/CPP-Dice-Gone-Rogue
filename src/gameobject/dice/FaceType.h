@@ -7,6 +7,7 @@
 
 
 #include <string>
+#include <utilities/BiDirectionalMap.h>
 
 namespace DGR {
 
@@ -27,6 +28,8 @@ public:
         damage_and_self_shield,
     };
 private:
+    static BiDirectionalMap<std::string, faceType> stringsAndFaceTypes;
+
     faceType type;
 public:
     FaceType() : type(faceType::empty) {}
@@ -37,9 +40,14 @@ public:
         type = t;
         return *this;
     }
+    bool operator ==(const faceType &t) {
+        return t == type;
+    }
 
-    std::string toString();
 
+    std::string &toString();
+
+    faceType getType();
 };
 
 }

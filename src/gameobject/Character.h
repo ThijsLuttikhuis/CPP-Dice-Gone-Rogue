@@ -16,11 +16,11 @@ class Character : public GameObject {
 private:
     Dice* dice = nullptr;
 
-    int hp{};
-    int maxHP{};
-
-    int poison;
-    int regen;
+    int hp = 0;
+    int maxHP = 0;
+    int shield = 0;
+    int poison = 0;
+    int regen = 0;
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
@@ -30,17 +30,33 @@ public:
 
     [[nodiscard]] bool isDead() const;
 
+    [[nodiscard]] bool getUsedDice() const;
+
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, bool alsoCurrentFacehover = false) const;
+
     void setDice(Dice* dice);
+
+    void setDiceLock(bool diceLock_);
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
-    void dealDamage(Face* face);
+    bool interact(Character* otherCharacter);
 
     void roll();
 
-    void draw(SpriteRenderer* spriteRenderer) override;
+    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
+    virtual std::string getCharacterType() = 0;
+
+    void toggleDiceLock();
+
+    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
+
+
+    void setUsedDice(bool usedDice);
+
 };
 
 }

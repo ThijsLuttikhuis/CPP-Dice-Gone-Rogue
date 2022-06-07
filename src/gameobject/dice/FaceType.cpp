@@ -7,36 +7,27 @@
 
 namespace DGR {
 
-std::string FaceType::toString() {
-    switch (type) {
-        case damage:
-            return "damage";
-        case mana:
-            return "mana";
-        case heal:
-            return "heal";
-        case shield:
-            return "shield";
-        case dodge:
-            return "dodge";
-        case undying:
-            return "undying";
-        case heal_and_shield:
-            return "heal_and_shield";
-        case heal_and_mana:
-            return "heal_and_mana";
-        case shield_and_mana:
-            return "shield_and_mana";
-        case damage_and_mana:
-            return "damage_and_mana";
-        case damage_and_self_shield:
-            return "damage_and_self_shield";
-        case empty:
-            return "empty";
-        default:
-            std::cerr << "Face::faceTypeToString: error, type string unknown: " << type << std::endl;
-            return "error";
-    }
+BiDirectionalMap<std::string, FaceType::faceType> FaceType::stringsAndFaceTypes =
+      BiDirectionalMap(std::vector<std::pair<std::string, FaceType::faceType>>{
+            {"empty",                  empty},
+            {"damage",                 damage},
+            {"mana",                   mana},
+            {"heal",                   heal},
+            {"shield",                 shield},
+            {"dodge",                  dodge},
+            {"undying",                undying},
+            {"heal and shield",        heal_and_shield},
+            {"heal and mana",          heal_and_mana},
+            {"damage and self shield", damage_and_self_shield},
+            {"shield and mana",        shield_and_mana}}
+      );
+
+std::string &FaceType::toString() {
+    return stringsAndFaceTypes.at(type);
+}
+
+FaceType::faceType FaceType::getType() {
+    return type;
 }
 
 }

@@ -22,11 +22,14 @@ class Button {
 private:
     std::string name;
 
+    glm::vec3 color;
+    std::string text;
+
     glm::vec2 pos;
     glm::vec2 size;
 public:
-    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size) : name(std::move(name)), pos(pos),
-                                                                            size(size) {}
+    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size, const glm::vec3 &color = glm::vec3(0.0f))
+          : name(std::move(name)), pos(pos), color(color), size(size) {}
 
     [[nodiscard]] const glm::vec2 &getPos() const {
         return pos;
@@ -45,11 +48,15 @@ public:
     }
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-        spriteRenderer->drawSprite(name, 0.1f, pos, size);
 
-//        std::string s = R"( !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~)";
-//        textRenderer->drawText(s, 0.0f, pos-glm::vec2(0, 80), size);
+        spriteRenderer->drawSprite("box", 1.0f, pos, size, 1.0f, glm::vec3(0.4), 0.0f);
 
+        textRenderer->drawText(text, 0.0f, pos, size, TextRenderer::center, color, 1.0f);
+
+    }
+
+    void setText(std::string text_) {
+        text = std::move(text_);
     }
 };
 

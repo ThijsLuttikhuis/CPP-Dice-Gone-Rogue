@@ -8,6 +8,8 @@
 
 #include <string>
 #include <glm/vec3.hpp>
+#include <map>
+#include "utilities/BiDirectionalMap.h"
 
 namespace DGR {
 
@@ -25,6 +27,8 @@ public:
         decay = 128,              // reduces by 1 every time used
     };
 private:
+    static BiDirectionalMap<std::string, modifier> stringsAndModifiers;
+
     unsigned int modifiers;
 public:
     FaceModifier() : modifiers(0) {}
@@ -32,6 +36,8 @@ public:
     explicit FaceModifier(unsigned int modifiers) : modifiers(modifiers) {};
 
     static modifier stringToModifier(const std::string &modifierStr);
+
+    std::string toString();
 
     glm::vec3 toColor();
 
@@ -44,6 +50,8 @@ public:
     void addModifier(const std::string &modifierStr);
 
 };
+
+
 
 }
 

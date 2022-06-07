@@ -111,6 +111,8 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 pos
                             textAlignment textAlignment, glm::vec3 color,
                             float alpha) {
 
+    glm::vec3 white = glm::vec3(1.0f);
+    glm::vec3 textColor = white;
     const glm::vec2 textStart = position;
 
     glm::vec2 currentTextPos = textStart + glm::vec2(1, 1);
@@ -120,7 +122,12 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 pos
     texture->bind();
 
     for (char i : text) {
+        if (i == '^') {
+            textColor = textColor == white ? color : white;
+            continue;
+        }
         int c = i - (int) ' ';
+
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(currentTextPos, 0.0f));
@@ -137,7 +144,7 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 pos
 
         shader->use();
         shader->setMatrix4("model", model);
-        shader->setVector3f("spriteColor", color);
+        shader->setVector3f("spriteColor", textColor);
         shader->setFloat("spriteAlpha", alpha);
         shader->setFloat("zIndex", zIndex);
 

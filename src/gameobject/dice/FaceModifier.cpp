@@ -4,36 +4,45 @@
 
 #include <iostream>
 #include "FaceModifier.h"
+#include <vector>
 
 namespace DGR {
 
+BiDirectionalMap<std::string, FaceModifier::modifier> FaceModifier::stringsAndModifiers =
+      BiDirectionalMap(std::vector<std::pair<std::string, FaceModifier::modifier>>{
+            {"none",          modifier::none},
+            {"ranged",        modifier::ranged},
+            {"sweeping edge", modifier::sweeping_edge},
+            {"single use",    modifier::single_use},
+            {"poison",        modifier::poison},
+            {"cleanse",       modifier::cleanse},
+            {"first blood",   modifier::first_blood},
+            {"growth",        modifier::growth},
+            {"decay",         modifier::decay}}
+      );
+
 FaceModifier::modifier FaceModifier::stringToModifier(const std::string &modifierStr) {
-    if (modifierStr == "ranged") {
-        return modifier::ranged;
+    modifier &mod = stringsAndModifiers.at(modifierStr);
+    return mod;
+}
+
+std::string FaceModifier::toString() {
+    std::string modString;
+    unsigned int maxMod = modifiers;
+    for (unsigned int i = 0; i < maxMod; i++) {
+        unsigned int m = 1u << i;
+        if (m > modifiers) {
+            break;
+        }
+        auto mod = (modifier)m;
+        if (hasModifier(mod)) {
+            if (!modString.empty()) {
+                modString += ", ";
+            }
+            modString += stringsAndModifiers.at(mod);
+        }
     }
-    if (modifierStr == "sweeping_edge") {
-        return modifier::sweeping_edge;
-    }
-    if (modifierStr == "single_use") {
-        return modifier::single_use;
-    }
-    if (modifierStr == "poison") {
-        return modifier::poison;
-    }
-    if (modifierStr == "cleanse") {
-        return modifier::cleanse;
-    }
-    if (modifierStr == "first_blood") {
-        return modifier::first_blood;
-    }
-    if (modifierStr == "growth") {
-        return modifier::growth;
-    }
-    if (modifierStr == "decay") {
-        return modifier::decay;
-    }
-    std::cerr << "FaceModifier::stringToModifier: error: string is unknown: " << modifierStr << std::endl;
-    return modifier::none;
+    return modString;
 }
 
 bool FaceModifier::hasModifier(modifier modifier) {
@@ -56,7 +65,6 @@ void FaceModifier::addModifier(modifier modifier_) {
         modifiers += static_cast<unsigned int>(modifier_);
     }
 }
-
 
 glm::vec3 FaceModifier::toColor() {
     if (modifiers == 0) {

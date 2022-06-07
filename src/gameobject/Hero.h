@@ -20,6 +20,10 @@ public:
 
     Hero(const std::string &textureName, glm::vec2 position, glm::vec2 size);
 
+    std::string getCharacterType() override {
+        return "hero";
+    }
+
 };
 
 }

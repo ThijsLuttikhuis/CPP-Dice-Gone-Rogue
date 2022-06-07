@@ -15,7 +15,7 @@ GameObject::GameObject(std::string name, glm::vec2 position, glm::vec2 size)
       : name(std::move(name)), position(position), size(size) {
 }
 
-void GameObject::draw(SpriteRenderer* spriteRenderer) {
+void GameObject::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 

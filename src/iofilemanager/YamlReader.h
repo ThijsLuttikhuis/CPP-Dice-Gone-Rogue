@@ -319,11 +319,14 @@ private:
 public:
     YamlReader();
 
+    static std::string trim(const std::string &str, const std::string &whitespace);
+
     void readFile(const std::string &string);
 
     YamlHandle* getData() {
         return handle;
     };
+
 };
 
 }

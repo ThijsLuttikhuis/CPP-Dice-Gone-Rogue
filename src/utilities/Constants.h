@@ -5,7 +5,7 @@
 #ifndef DICEGONEROGUE_CONSTANTS_H
 #define DICEGONEROGUE_CONSTANTS_H
 
-#define DEBUG false
+#define DEBUG true
 #define PRINT_NO_TEXTURE false
 
 #endif //DICEGONEROGUE_CONSTANTS_H

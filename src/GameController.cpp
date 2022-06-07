@@ -10,11 +10,12 @@
 #include "GameController.h"
 #include "utilities/Window.h"
 #include "iofilemanager/YamlReader.h"
+#include "GameStateManager.h"
 
 namespace DGR {
 
 GameController::GameController(Window* window) : window(window) {
-    gameState = GameStateManager();
+    gameState = new GameStateManager();
 
     auto* shader = new Shader();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
@@ -30,7 +31,7 @@ GameController::GameController(Window* window) : window(window) {
 
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
-    heroes = *(std::vector<Hero*>*) yamlReaderHeroes.getData()->getFeature();
+    auto heroes = *(std::vector<Hero*>*) yamlReaderHeroes.getData()->getFeature();
 
     int x = 0;
     for (auto &hero : heroes) {
@@ -41,9 +42,11 @@ GameController::GameController(Window* window) : window(window) {
         hero->setSize(size);
     }
 
+    gameState->setHeroes(heroes);
+
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
-    enemies = *(std::vector<Enemy*>*) yamlReaderEnemies.getData()->getFeature();
+    auto enemies = *(std::vector<Enemy*>*) yamlReaderEnemies.getData()->getFeature();
 
     x = 0;
     for (auto &enemy : enemies) {
@@ -54,6 +57,9 @@ GameController::GameController(Window* window) : window(window) {
         enemy->setSize(size);
     }
 
+    gameState->setEnemies(enemies);
+
+    gameState->reroll();
 }
 
 void GameController::update() {
@@ -67,9 +73,6 @@ void GameController::update() {
 
     alignCharacterPositions(dt);
 
-    if (gameState.isHeroesTurn()) {
-
-    }
 }
 
 void GameController::initialize() {
@@ -77,30 +80,31 @@ void GameController::initialize() {
 }
 
 void GameController::render() {
-    for (auto &hero : heroes) {
-        hero->draw(spriteRenderer);
+    for (auto &hero : gameState->getHeroes()) {
+        hero->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &enemy : enemies) {
-        enemy->draw(spriteRenderer);
+    for (auto &enemy : gameState->getEnemies()) {
+        enemy->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &hero : heroes) {
+    for (auto &hero : gameState->getHeroes()) {
         hero->drawHover(spriteRenderer, textRenderer);
     }
 
-    for (auto &enemy : enemies) {
+    for (auto &enemy : gameState->getEnemies()) {
         enemy->drawHover(spriteRenderer, textRenderer);
     }
 
+    gameState->render(spriteRenderer, textRenderer);
 }
 
 const std::vector<Hero*> &GameController::getHeroes() const {
-    return heroes;
+    return gameState->getHeroes();
 }
 
 const std::vector<Enemy*> &GameController::getEnemies() const {
-    return enemies;
+    return gameState->getEnemies();
 }
 
 SpriteRenderer* GameController::getSpriteRenderer() const {
@@ -123,7 +127,7 @@ void GameController::alignCharacterPositions(double dt) {
 
     // heroes
     totalWidth = 0;
-    for (auto &hero : heroes) {
+    for (auto &hero : gameState->getHeroes()) {
         if (!hero->isDead()) {
             totalWidth += dWidth + (int) hero->getSize().x;
         }
@@ -131,7 +135,7 @@ void GameController::alignCharacterPositions(double dt) {
 
     left = (int) (center * 0.7) - totalWidth / 2;
     up = 5 * 32;
-    for (auto &hero : heroes) {
+    for (auto &hero : gameState->getHeroes()) {
         if (!hero->isDead()) {
             glm::vec2 targetPos(left, up);
             glm::vec2 pos = hero->getPosition();
@@ -151,7 +155,7 @@ void GameController::alignCharacterPositions(double dt) {
 
     // enemies
     totalWidth = 0;
-    for (auto &enemy : enemies) {
+    for (auto &enemy : gameState->getEnemies()) {
         if (!enemy->isDead()) {
             totalWidth += dWidth + (int) enemy->getSize().x;
         }
@@ -159,7 +163,7 @@ void GameController::alignCharacterPositions(double dt) {
 
     left = (int) (center / 0.7) - totalWidth / 2;
     up = 2 * 32;
-    for (auto &enemy : enemies) {
+    for (auto &enemy : gameState->getEnemies()) {
         if (!enemy->isDead()) {
             auto targetPos = glm::vec2(left, up);
             auto pos = enemy->getPosition();
@@ -178,24 +182,55 @@ void GameController::alignCharacterPositions(double dt) {
 }
 
 void GameController::clickCharacter(Character* character) {
-    character->dealDamage(character->getDice()->getFace(0));
+    bool success = false;
+    Character* clickedCharacter;
+    switch (gameState->getGameState()) {
+        case GameStateManager::rolling_heroes:
+            if (character->getCharacterType() == "hero") {
+                character->toggleDiceLock();
+            }
+            break;
+        case GameStateManager::rolling_enemies:
+            break;
+        case GameStateManager::attack_block_heroes:
+            clickedCharacter = gameState->getClickedCharacter();
+            if (clickedCharacter) {
+                success = character->interact(clickedCharacter);
+                if (success) {
+                    clickedCharacter->setUsedDice(true);
+                }
+                gameState->setClickedCharacter(nullptr);
+
+            } else {
+                if (character->getCharacterType() == "hero") {
+                    if (!character->getUsedDice()) {
+                        success = character->interact(nullptr);
+                        if (success) {
+                            character->setUsedDice(true);
+                        } else {
+                            gameState->setClickedCharacter(character);
+                        }
+                    }
+                }
+            }
+            break;
+        case GameStateManager::attack_block_enemies:
+            break;
+    }
 }
 
-void GameController::pressButton(const std::string &buttonName) {
+void GameController::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
-    if (buttonName == "button_reroll") {
-        if (gameState.isHeroesTurn()) {
-            reroll();
+    if (button->getName() == "button_reroll") {
+        if (gameState->isHeroesTurn()) {
+            int rerollsLeft = gameState->reroll();
+            button->setText(std::to_string(rerollsLeft) + " rerolls left");
+            if (rerollsLeft == 0) {
+                gameState->setGameState(GameStateManager::attack_block_heroes);
+            }
         }
     }
 }
-
-void GameController::reroll() {
-    for (auto &hero : heroes) {
-        hero->roll();
-    }
-}
-
 
 }

@@ -120,29 +120,34 @@ void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
                                position, glm::vec2(11, 14), 0, textureColor);
 }
 
-void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer) {
-    auto position = getPosition();
+void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+    auto position = getPosition(dicePos);
 
+    int tooltipWidth = 96;
     glm::vec2 tooltipDPos(5, -5);
-    glm::vec2 tooltipSize(96, 1);
+    glm::vec2 tooltipSize(tooltipWidth, 1);
 
-    glm::vec2 backgroundSize = glm::vec2(96, 16);
-    spriteRenderer->drawSprite("dice_face_template_background", 0.0f,
-                               position + tooltipDPos, backgroundSize);
-
-    std::string textureName = "knight_" + type.toString();
-    glm::vec3 textureColor = modifiers.toColor();
-//    spriteRenderer->drawSprite(textureName, 0.1f,
-//                               position, glm::vec2(11, 14), 0, textureColor);
+    glm::vec2 backgroundSize = glm::vec2(tooltipWidth, 16);
+    spriteRenderer->drawSprite("box", 0.0f,
+                               position + tooltipDPos, backgroundSize, 0.0f, glm::vec3(0.1f), 0.9f);
 
     std::ostringstream tooltipOSS;
-    tooltipOSS << value << " " << type.toString() << "( " << modifiers.getModifiers() << " )";
+    if (value != 0) {
+        tooltipOSS << value << " ";
+    }
+    tooltipOSS << type.toString();
 
-    textureRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize,
-                              TextRenderer::center, textureColor);
+    auto modStr = modifiers.toString();
+    if (!modStr.empty()) {
+        tooltipOSS << " (^" << modStr << "^)";
+    }
+
+    glm::vec3 color = modifiers.toColor();
+    textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize,
+                              TextRenderer::center, color);
 
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
-              << type.toString() << " -- modifiers: " << modifiers.getModifiers() << std::endl;
+              << type.toString() << " -- modifiers: " << modifiers.toString() << std::endl;
 }
 
 void Face::setValue(int value_) {
@@ -153,7 +158,8 @@ glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
     glm::vec2 dicePosition = dice->getPosition(dicePos);
     switch (dicePos) {
         case Dice::backgroundPos:
-            dicePosition + faceDeltaPos.at(face_);
+            std::cerr << "Face::getPosition: dicePos backgroundPos should not be used" << std::endl;
+            return glm::vec2(0,0);
         case Dice::diceLayoutPos:
             dicePosition += faceDeltaPos.at(face_);
             break;
@@ -193,19 +199,19 @@ void Face::addModifier(const std::string &modifierStr) {
     modifiers.addModifier(modifierStr);
 }
 
-int Face::getFace_() {
+int Face::getFace_() const {
     return face_;
 }
 
-int Face::getValue() {
+int Face::getValue() const {
     return value;
 }
 
-FaceType Face::getType() {
+FaceType Face::getType() const {
     return type;
 }
 
-FaceModifier Face::getModifiers() {
+FaceModifier Face::getModifiers() const {
     return modifiers;
 }
 
@@ -213,11 +219,11 @@ void Face::draw(SpriteRenderer* spriteRenderer) {
     drawFace(spriteRenderer, Dice::currentFacePos);
 }
 
-void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    drawFace(spriteRenderer, Dice::diceLayoutPos);
+void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+    drawFace(spriteRenderer, dicePos);
 
     if (hover) {
-        drawFaceToolTip(spriteRenderer, textRenderer);
+        drawFaceToolTip(spriteRenderer, textRenderer, dicePos);
     }
 }
 

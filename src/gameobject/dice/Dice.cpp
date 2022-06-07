@@ -37,25 +37,27 @@ glm::vec2 Dice::getPosition(dicePos dicePos) const {
     return heroPosition + dPos;
 }
 
+bool Dice::isLocked() const {
+    return lock;
+}
+
 glm::vec2 Dice::getSize(dicePos dicePos) const {
     switch (dicePos) {
         case backgroundPos:
             return glm::vec2(80, 64);
         case currentFacePos:
-            return glm::vec2(64, 48);
-        case diceLayoutPos:
             return glm::vec2(15, 15);
+        case diceLayoutPos:
+            return glm::vec2(64, 48);
         default:
             std::cerr << "Dice::getSize: dicePos unknown: " << dicePos << std::endl;
             return glm::vec2(0, 0);
-
     }
-
 }
 
-bool Dice::isMouseHovering(double xPos, double yPos) const {
-    auto position = getPosition();
-    auto size = getSize();
+bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
+    auto position = getPosition(dicePos);
+    auto size = getSize(dicePos);
     return (xPos > position.x && xPos < position.x + size.x)
            && (yPos > position.y && yPos < position.y + size.y);
 }
@@ -70,6 +72,11 @@ void Dice::setFace(Face* face, int index) {
     faces[index] = face;
 }
 
+void Dice::setCurrentFaceHover(bool hoverCurrentFace_) {
+    hoverCurrentFace = hoverCurrentFace_;
+    faces[currentFace]->setHover(hoverCurrentFace_);
+}
+
 void Dice::setCharacter(Character* character_) {
     character = character_;
 }
@@ -81,39 +88,73 @@ void Dice::setName(const std::string &name_) {
     }
 }
 
-Face* Dice::getFace(int index) {
+Face* Dice::getFace(int index) const {
     return faces[index];
 }
 
-const std::string &Dice::getName() {
+const std::string &Dice::getName() const {
     return name;
 }
 
-void Dice::draw(SpriteRenderer* spriteRenderer) {
+void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     faces[currentFace]->draw(spriteRenderer);
+
+    if (lock) {
+        glm::vec2 lockPosition = getPosition(Dice::currentFacePos) + glm::vec2(-2, -2);
+        glm::vec2 lockSize = glm::vec2(11,14);
+        spriteRenderer->drawSprite("dice_lock", 0.05f,
+                                   lockPosition, lockSize, 0.0f, glm::vec3(1.0), 0.8f);
+    }
+
+    if (used) {
+        glm::vec2 usedPosition = getPosition(Dice::currentFacePos);
+        glm::vec2 usedSize = getSize(Dice::currentFacePos);
+        spriteRenderer->drawSprite("box", 0.05f,
+                                   usedPosition, usedSize, 0.0f, glm::vec3(1.0), 0.3f);
+    }
+
+    if (hoverCurrentFace) {
+        faces[currentFace]->drawHover(spriteRenderer, textRenderer, currentFacePos);
+    }
 }
 
 void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    glm::vec2 diceTemplateBackgroundPosition = getPosition();
-    glm::vec2 diceTemplateBackgroundSize = getSize();
-    spriteRenderer->drawSprite("dice_template_background", 0.9f,
-                               diceTemplateBackgroundPosition, diceTemplateBackgroundSize);
+    glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::backgroundPos);
+    glm::vec2 diceTemplateBackgroundSize = getSize(Dice::backgroundPos);
+    spriteRenderer->drawSprite("box", 0.9f,
+                               diceTemplateBackgroundPosition, diceTemplateBackgroundSize, 1.0f, glm::vec3(0.2f), 0.5f);
 
     glm::vec2 diceTemplatePosition = getPosition(Dice::diceLayoutPos);
-    glm::vec2 diceTemplateSize = getSize(Dice::currentFacePos);
+    glm::vec2 diceTemplateSize = getSize(Dice::diceLayoutPos);
     spriteRenderer->drawSprite("dice_template", 0.1f,
                                diceTemplatePosition, diceTemplateSize);
 
     for (auto &face : faces) {
         face->drawHover(spriteRenderer, textRenderer);
     }
-
 }
 
 void Dice::roll() {
-    std::cout <<"rolling" << std::endl;
+    std::cout << "rolling" << std::endl;
     int rng = Random::randInt(0, 5);
     currentFace = rng;
 }
+
+void Dice::setLocked(bool lock_) {
+    lock = lock_;
+}
+
+Face* Dice::getCurrentFace() const {
+    return faces[currentFace];
+}
+
+void Dice::setUsed(bool used_) {
+    used = used_;
+}
+
+bool Dice::isUsed() const {
+    return used;
+}
+
 
 }

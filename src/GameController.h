@@ -11,22 +11,11 @@
 
 namespace DGR {
 
+class Button;
+
 class Window;
 
-class GameStateManager {
-public:
-    enum gameState {
-
-    };
-private:
-    bool heroesTurn = true;
-
-public:
-    bool isHeroesTurn() {
-        return heroesTurn;
-    }
-
-};
+class GameStateManager;
 
 class GameController {
 private:
@@ -34,10 +23,7 @@ private:
     TextRenderer* textRenderer;
     SpriteRenderer* spriteRenderer;
 
-    GameStateManager gameState;
-
-    std::vector<Hero*> heroes;
-    std::vector<Enemy*> enemies;
+    GameStateManager* gameState;
 
 public:
     explicit GameController(Window* window);
@@ -58,9 +44,7 @@ public:
 
     void clickCharacter(Character* character);
 
-    void pressButton(const std::string &buttonName);
-
-    void reroll();
+    void pressButton(Button* button);
 
     TextRenderer* getTextRenderer();
 };

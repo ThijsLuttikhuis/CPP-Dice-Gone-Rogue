@@ -16,7 +16,9 @@
 namespace DGR {
 
 class Character;
+
 class Face;
+
 class Dice {
 public:
     enum dicePos {
@@ -30,23 +32,38 @@ private:
 
     Character* character = nullptr;
     Face* faces[6]{};
+    bool lock = false;
+    bool used = false;
 
     int currentFace = 0;
+    bool hoverCurrentFace = false;
 
 public:
     Dice(std::string name, Character* character);
 
     Dice() = default;
 
-    [[nodiscard]] Face* getFace(int index);
+    [[nodiscard]] Face* getCurrentFace() const;
+
+    [[nodiscard]] Face* getFace(int index) const;
 
     [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = backgroundPos) const;
 
     [[nodiscard]] glm::vec2 getSize(dicePos dicePos = backgroundPos) const;
 
-    [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, dicePos dicePos = backgroundPos) const;
 
-    [[nodiscard]] const std::string &getName();
+    [[nodiscard]] const std::string &getName() const;
+
+    [[nodiscard]] bool isLocked() const;
+
+    [[nodiscard]] bool isUsed() const;
+
+    void setLocked(bool lock_);
+
+    void setUsed(bool lock_);
+
+    void setCurrentFaceHover(bool hoverCurrentFace_);
 
     void setFace(Face* face, int index);
 
@@ -58,9 +75,11 @@ public:
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
-    void draw(SpriteRenderer* spriteRenderer);
+    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void roll();
+
+
 };
 
 }

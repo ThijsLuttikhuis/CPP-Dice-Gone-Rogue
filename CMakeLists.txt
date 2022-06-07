@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(DiceGoneRogue)
 
 
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wnone")
 set(CMAKE_CXX_FLAGS "-lstdc++fs" )
 
@@ -47,7 +47,9 @@ add_executable(DiceGoneRogue main.cpp
         src/gameobject/dice/FaceType.cpp        src/gameobject/dice/FaceType.h
         src/gameobject/Enemy.cpp src/gameobject/Enemy.h
         src/gameobject/Character.cpp src/gameobject/Character.h
-        src/utilities/Random.cpp src/utilities/Random.h src/shaders/TextRenderer.cpp src/shaders/TextRenderer.h)
+        src/utilities/Random.cpp src/utilities/Random.h
+        src/shaders/TextRenderer.cpp src/shaders/TextRenderer.h
+        src/utilities/BiDirectionalMap.h src/GameStateManager.cpp src/GameStateManager.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

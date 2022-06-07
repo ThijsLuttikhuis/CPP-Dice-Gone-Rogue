@@ -33,18 +33,32 @@ YamlReader::YamlReader() {
 
     keyToFunc["hp"] = new YamlHandleInt(stringCode::hp);
     keyToFunc["mod"] = new YamlHandleString(stringCode::mod);
-    keyToFunc["mod_1"] = new YamlHandleString(stringCode::mod);
+    keyToFunc["mod1"] = new YamlHandleString(stringCode::mod);
     keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
     keyToFunc["shield"] = new YamlHandleInt(stringCode::shield);
     keyToFunc["heal"] = new YamlHandleInt(stringCode::shield);
-    keyToFunc["damage_and_self_shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
+    keyToFunc["damage and self shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
+    keyToFunc["self shield and damage"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);
     keyToFunc["dodge"] = new YamlHandleInt(stringCode::dodge);
-    keyToFunc["shield_and_mana"] = new YamlHandleInt(stringCode::shield_and_mana);
-    keyToFunc["heal_and_shield"] = new YamlHandleInt(stringCode::heal_and_shield);
-    keyToFunc["heal_and_mana"] = new YamlHandleInt(stringCode::heal_and_mana);
-
+    keyToFunc["shield and mana"] = new YamlHandleInt(stringCode::shield_and_mana);
+    keyToFunc["mana and shield"] = new YamlHandleInt(stringCode::shield_and_mana);
+    keyToFunc["heal and shield"] = new YamlHandleInt(stringCode::heal_and_shield);
+    keyToFunc["shield and heal"] = new YamlHandleInt(stringCode::heal_and_shield);
+    keyToFunc["heal and mana"] = new YamlHandleInt(stringCode::heal_and_mana);
+    keyToFunc["mana and heal"] = new YamlHandleInt(stringCode::heal_and_mana);
     keyToFunc["empty"] = new YamlHandleInt(stringCode::empty);
+}
+
+std::string YamlReader::trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v") {
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+        return ""; // no content
+
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
 }
 
 void YamlReader::readFile(const std::string &name) {
@@ -61,9 +75,7 @@ void YamlReader::readFile(const std::string &name) {
     buffer << file.rdbuf();
     file.close();
 
-    std::string worldStr = buffer.str();
-    worldStr.erase(std::remove_if(worldStr.begin(), worldStr.end(), isspace), worldStr.end());
-
+    std::string worldStr = trim(buffer.str());
 
     std::string word;
     size_t i = 0;
@@ -77,7 +89,8 @@ void YamlReader::readFile(const std::string &name) {
         size_t posSemi = worldStr.find(';', i);
 
         if (posSemi < posColon) {
-            word = worldStr.substr(i, posSemi - i);
+            word = trim(worldStr.substr(i, posSemi - i));
+
 #if DEBUG
             std::cout << "\t" << posSemi << " ; " << word << std::endl;
 #endif
@@ -98,7 +111,7 @@ void YamlReader::readFile(const std::string &name) {
 
             colonCounter--;
         } else {
-            word = worldStr.substr(i, posColon - i);
+            word = trim(worldStr.substr(i, posColon - i));
 #if DEBUG
             std::cout << "\t" << posColon << " : " << word << std::endl;
 #endif
