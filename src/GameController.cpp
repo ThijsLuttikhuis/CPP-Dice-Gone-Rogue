@@ -195,7 +195,7 @@ void GameController::clickCharacter(Character* character) {
         case GameStateManager::attack_block_heroes:
             clickedCharacter = gameState->getClickedCharacter();
             if (clickedCharacter) {
-                success = character->interact(clickedCharacter);
+                success = character->interact(clickedCharacter, gameState);
                 if (success) {
                     clickedCharacter->setUsedDice(true);
                 }
@@ -204,7 +204,7 @@ void GameController::clickCharacter(Character* character) {
             } else {
                 if (character->getCharacterType() == "hero") {
                     if (!character->getUsedDice()) {
-                        success = character->interact(nullptr);
+                        success = character->interact(nullptr, gameState);
                         if (success) {
                             character->setUsedDice(true);
                         } else {

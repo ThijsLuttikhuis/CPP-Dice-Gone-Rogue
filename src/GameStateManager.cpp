@@ -62,6 +62,16 @@ void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* text
     if (clickedCharacter) {
         clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
     }
+
+    glm::vec2 manaPosition = glm::vec2(288, 216);
+    glm::vec2 manaSize = glm::vec2(16,16);
+    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
+    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
+    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
+}
+
+void GameStateManager::addMana(int mana_) {
+    mana += mana_;
 }
 
 }

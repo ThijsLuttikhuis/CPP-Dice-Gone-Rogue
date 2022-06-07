@@ -23,6 +23,7 @@ private:
     bool heroesTurn = true;
     gameState state = rolling_heroes;
     int rerolls = 3;
+    int mana = 0;
 
     Character* clickedCharacter = nullptr;
 
@@ -51,6 +52,8 @@ public:
     void setGameState(gameState state);
 
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
+    void addMana(int mana_);
 };
 
 }

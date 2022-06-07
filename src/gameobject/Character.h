@@ -12,6 +12,8 @@ namespace DGR {
 
 class Face;
 
+class GameStateManager;
+
 class Character : public GameObject {
 private:
     Dice* dice = nullptr;
@@ -40,7 +42,7 @@ public:
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
-    bool interact(Character* otherCharacter);
+    bool interact(Character* otherCharacter, GameStateManager* gameStateManager);
 
     void roll();
 
@@ -57,6 +59,9 @@ public:
 
     void setUsedDice(bool usedDice);
 
+    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
+    void addShield(int value);
 };
 
 }

@@ -146,8 +146,10 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
     textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize,
                               TextRenderer::center, color);
 
+#if DEBUG
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
               << type.toString() << " -- modifiers: " << modifiers.toString() << std::endl;
+#endif
 }
 
 void Face::setValue(int value_) {
