@@ -13,13 +13,6 @@
 namespace DGR {
 
 class TextRenderer {
-public:
-    enum textAlignment {
-        center,
-        leftTop,
-        leftCenter
-    };
-
 private:
     static const std::vector<int> letterWidths;
 
@@ -36,7 +29,7 @@ public:
     ~TextRenderer();
 
     void drawText(const std::string &texture, float zIndex, glm::vec2 position, glm::vec2 size,
-                  textAlignment textAlignment = center, glm::vec3 color = glm::vec3(0.0f), float alpha = 1.0f);
+                  glm::vec3 color = glm::vec3(0.0f), float alpha = 1.0f);
 };
 
 }

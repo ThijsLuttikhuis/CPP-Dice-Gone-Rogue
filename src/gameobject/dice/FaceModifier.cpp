@@ -26,7 +26,7 @@ FaceModifier::modifier FaceModifier::stringToModifier(const std::string &modifie
     return mod;
 }
 
-std::string FaceModifier::toString() {
+std::string FaceModifier::toString() const {
     std::string modString;
     unsigned int maxMod = modifiers;
     for (unsigned int i = 0; i < maxMod; i++) {
@@ -34,7 +34,7 @@ std::string FaceModifier::toString() {
         if (m > modifiers) {
             break;
         }
-        auto mod = (modifier)m;
+        auto mod = (modifier) m;
         if (hasModifier(mod)) {
             if (!modString.empty()) {
                 modString += ", ";
@@ -45,11 +45,23 @@ std::string FaceModifier::toString() {
     return modString;
 }
 
-bool FaceModifier::hasModifier(modifier modifier) {
+bool FaceModifier::hasModifier(modifier modifier) const {
     return modifiers & static_cast<unsigned int>(modifier);
 }
 
-unsigned int FaceModifier::getModifiers() {
+bool FaceModifier::removeModifier(modifier modifier) {
+    if (hasModifier(modifier)) {
+        modifiers -= static_cast<int>(modifier);
+        return true;
+    }
+    return false;
+}
+
+void FaceModifier::setModifiers(unsigned int modifiers_) {
+    modifiers = modifiers_;
+}
+
+unsigned int FaceModifier::getModifiers() const {
     return modifiers;
 }
 
@@ -66,7 +78,7 @@ void FaceModifier::addModifier(modifier modifier_) {
     }
 }
 
-glm::vec3 FaceModifier::toColor() {
+glm::vec3 FaceModifier::toColor() const {
     if (modifiers == 0) {
         return glm::vec3(1.0f);
     }

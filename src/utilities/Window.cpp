@@ -108,7 +108,7 @@ Window::Window(int width, int height)
     glfwSetWindowSize(glfwWindow, wScreen, hScreen);
 }
 
-bool Window::shouldClose() {
+bool Window::shouldClose() const {
     return glfwWindowShouldClose(glfwWindow);
 }
 
@@ -120,12 +120,16 @@ Window::~Window() {
     glfwTerminate();
 }
 
-int Window::getWidth() {
+int Window::getWidth() const {
     return width;
 }
 
-int Window::getHeight() {
+int Window::getHeight() const {
     return height;
+}
+
+std::vector<Button*> Window::getButtons() const {
+    return inputHandler->getButtons();
 }
 
 void Window::handleMouseButton(double xPos, double yPos) {
@@ -162,5 +166,6 @@ void Window::render() {
     swapBuffers();
 
 }
+
 
 }

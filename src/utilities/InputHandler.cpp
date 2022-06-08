@@ -7,16 +7,21 @@
 #include "GameController.h"
 #include <iostream>
 #include "Constants.h"
+#include "Button.h"
 
 namespace DGR {
 
 InputHandler::InputHandler(GameController* gameController) : gameController(gameController) {
-      spriteRenderer = gameController->getSpriteRenderer();
-        textRenderer = gameController->getTextRenderer();
+    spriteRenderer = gameController->getSpriteRenderer();
+    textRenderer = gameController->getTextRenderer();
 
-      auto* button = new Button("button_reroll", {288,195}, {64,15});
-      button->setText("2 rerolls left");
-      buttons.push_back(button);
+    auto* button1 = new Button("leftMainButton", {268, 195}, {80, 15});
+    button1->setText("2 rerolls left");
+    buttons.push_back(button1);
+
+    auto* button2 = new Button("rightMainButton", {352, 195}, {80, 15});
+    button2->setText("done rolling");
+    buttons.push_back(button2);
 }
 
 void InputHandler::handleMouseButton(double xPos, double yPos) {
@@ -48,8 +53,7 @@ void InputHandler::handleMousePosition(Character* character, double xPos, double
 
     if (character->isMouseHovering(xPos, yPos)) {
         character->hoverMouse(true);
-    }
-    else if (character->getHoverMouse()) {
+    } else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {
             dice->updateHoverMouse(xPos, yPos);
         } else {
@@ -75,6 +79,10 @@ void InputHandler::render() {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }
+}
+
+std::vector<Button*> InputHandler::getButtons() {
+    return buttons;
 }
 
 }

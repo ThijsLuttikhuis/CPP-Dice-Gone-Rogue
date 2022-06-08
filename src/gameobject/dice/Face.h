@@ -67,20 +67,27 @@ public:
 
     void setType(FaceType type);
 
+    void setType(FaceType::faceType type_);
+
+    void addModifier(FaceModifier::modifier modifier);
+
+    void addModifier(const std::string &modifierStr);
+
+    void setModifiers(unsigned int modifiers_);
+
     void setHover(bool hover_);
 
     void setName(const std::string &name_);
 
     void setDice(Dice* dice);
 
-    void addModifier(FaceModifier::modifier modifier);
-
-    void addModifier(const std::string &modifierStr);
-
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer,
                    Dice::dicePos dicePos = Dice::diceLayoutPos);
 
     void draw(SpriteRenderer* spriteRenderer);
+
+
+    void removeModifier(FaceModifier::modifier modifier);
 };
 
 }

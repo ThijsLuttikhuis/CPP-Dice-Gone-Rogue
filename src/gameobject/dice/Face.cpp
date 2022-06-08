@@ -42,6 +42,10 @@ Face::Face(std::string name, Dice* dice, int face_, int value, FaceType type, Fa
       : name(std::move(name)), dice(dice), face_(face_), value(value), type(type), modifiers(modifiers) {
 }
 
+void Face::setType(FaceType::faceType type_) {
+    type = type_;
+}
+
 void Face::setType(FaceType type_) {
     type = type_;
 }
@@ -143,8 +147,7 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
     }
 
     glm::vec3 color = modifiers.toColor();
-    textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize,
-                              TextRenderer::center, color);
+    textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize, color);
 
 #if DEBUG
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
@@ -161,7 +164,7 @@ glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
     switch (dicePos) {
         case Dice::backgroundPos:
             std::cerr << "Face::getPosition: dicePos backgroundPos should not be used" << std::endl;
-            return glm::vec2(0,0);
+            return glm::vec2(0, 0);
         case Dice::diceLayoutPos:
             dicePosition += faceDeltaPos.at(face_);
             break;
@@ -227,6 +230,14 @@ void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer,
     if (hover) {
         drawFaceToolTip(spriteRenderer, textRenderer, dicePos);
     }
+}
+
+void Face::setModifiers(unsigned int modifiers_) {
+    modifiers.setModifiers(modifiers_);
+}
+
+void Face::removeModifier(FaceModifier::modifier modifier) {
+    modifiers.removeModifier(modifier);
 }
 
 }

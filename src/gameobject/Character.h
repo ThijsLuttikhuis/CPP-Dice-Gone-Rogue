@@ -21,8 +21,13 @@ private:
     int hp = 0;
     int maxHP = 0;
     int shield = 0;
+    int incomingDamage = 0;
     int poison = 0;
     int regen = 0;
+    bool isDodging = false;
+    bool isUndying = false;
+    bool backRow = false;
+
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
@@ -36,13 +41,15 @@ public:
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos, bool alsoCurrentFacehover = false) const;
 
+    [[nodiscard]] int getIncomingDamage() const;
+
     void setDice(Dice* dice);
 
     void setDiceLock(bool diceLock_);
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
-    bool interact(Character* otherCharacter, GameStateManager* gameStateManager);
+    bool interact(Character* otherCharacter, GameStateManager* gameState);
 
     void roll();
 
@@ -62,6 +69,19 @@ public:
     void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void addShield(int value);
+
+    void applyDamageStep();
+
+    void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
+
+
+    void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
+
+    void applyFaceTypeShield(Face* face, GameStateManager* gameState);
+
+    void applyFaceModifierCleanse(Face* face, GameStateManager* gameState);
+
+    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
 };
 
 }

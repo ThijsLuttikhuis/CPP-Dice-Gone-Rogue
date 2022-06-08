@@ -106,10 +106,8 @@ TextRenderer::~TextRenderer() {
     }
 }
 
-
 void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 position, glm::vec2 size,
-                            textAlignment textAlignment, glm::vec3 color,
-                            float alpha) {
+                            glm::vec3 color, float alpha) {
 
     glm::vec3 white = glm::vec3(1.0f);
     glm::vec3 textColor = white;

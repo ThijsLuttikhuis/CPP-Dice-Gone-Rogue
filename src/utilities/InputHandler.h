@@ -16,49 +16,9 @@ namespace DGR {
 
 class GameController;
 
+class Button;
+
 class Character;
-
-class Button {
-private:
-    std::string name;
-
-    glm::vec3 color;
-    std::string text;
-
-    glm::vec2 pos;
-    glm::vec2 size;
-public:
-    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size, const glm::vec3 &color = glm::vec3(0.0f))
-          : name(std::move(name)), pos(pos), color(color), size(size) {}
-
-    [[nodiscard]] const glm::vec2 &getPos() const {
-        return pos;
-    }
-
-    [[nodiscard]] const glm::vec2 &getSize() const {
-        return size;
-    }
-
-    [[nodiscard]] const std::string &getName() const {
-        return name;
-    }
-
-    [[nodiscard]] bool isPressed(double xPos, double yPos) const {
-        return xPos > pos.x && xPos < pos.x + size.x && yPos > pos.y && yPos < pos.y + size.y;
-    }
-
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-
-        spriteRenderer->drawSprite("box", 1.0f, pos, size, 1.0f, glm::vec3(0.4), 0.0f);
-
-        textRenderer->drawText(text, 0.0f, pos, size, TextRenderer::center, color, 1.0f);
-
-    }
-
-    void setText(std::string text_) {
-        text = std::move(text_);
-    }
-};
 
 class InputHandler {
 private:
@@ -77,6 +37,8 @@ public:
     void handleMousePosition(Character* character, double xPos, double yPos);
 
     void render();
+
+    std::vector<Button*> getButtons();
 };
 
 }

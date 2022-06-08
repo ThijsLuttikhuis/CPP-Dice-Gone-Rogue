@@ -31,11 +31,13 @@ public:
 
     ~Window();
 
-    [[nodiscard]] int getWidth();
+    [[nodiscard]] int getWidth() const;
 
-    [[nodiscard]] int getHeight();
+    [[nodiscard]] int getHeight() const;
 
-    [[nodiscard]] bool shouldClose();
+    [[nodiscard]] bool shouldClose() const;
+
+    [[nodiscard]] std::vector<Button*> getButtons() const;
 
     void setGameController(GameController* gameController);
 
@@ -46,8 +48,6 @@ public:
     void setWindowSize(int width, int height);
 
     void swapBuffers();
-
-    void handleMousePosition(DGR::Character* character, double xPos, double yPos);
 
     void render();
 };

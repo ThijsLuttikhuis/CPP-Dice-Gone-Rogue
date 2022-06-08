@@ -49,7 +49,7 @@ add_executable(DiceGoneRogue main.cpp
         src/gameobject/Character.cpp src/gameobject/Character.h
         src/utilities/Random.cpp src/utilities/Random.h
         src/shaders/TextRenderer.cpp src/shaders/TextRenderer.h
-        src/utilities/BiDirectionalMap.h src/GameStateManager.cpp src/GameStateManager.h)
+        src/utilities/BiDirectionalMap.h src/GameStateManager.cpp src/GameStateManager.h src/utilities/Button.cpp src/utilities/Button.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

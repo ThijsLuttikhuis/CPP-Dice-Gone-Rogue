@@ -7,15 +7,17 @@
 #include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
 #include <gameobject/Hero.h>
 #include <shaders/TextRenderer.h>
+#include <utilities/Random.h>
 #include "GameController.h"
 #include "utilities/Window.h"
 #include "iofilemanager/YamlReader.h"
 #include "GameStateManager.h"
+#include "utilities/Button.h"
 
 namespace DGR {
 
-GameController::GameController(Window* window) : window(window) {
-    gameState = new GameStateManager();
+GameController::GameController(Window* window) {
+    gameState = new GameStateManager(window);
 
     auto* shader = new Shader();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
@@ -73,9 +75,14 @@ void GameController::update() {
 
     alignCharacterPositions(dt);
 
-}
-
-void GameController::initialize() {
+    //TODO: make enemy turn take a bit longer than "instantly" by adding animations etc
+    if (gameState->areEnemiesRolling()) {
+        gameState->reroll(false);
+        gameState->setNextGameState();
+    } else if (gameState->areEnemiesAttacking()) {
+        enemiesAttack();
+        gameState->setNextGameState();
+    }
 
 }
 
@@ -116,7 +123,7 @@ TextRenderer* GameController::getTextRenderer() {
 }
 
 void GameController::alignCharacterPositions(double dt) {
-    const int width = window->getWidth();
+    const int width = gameState->getWindow()->getWidth();
     const int center = width / 2;
     const float moveSpeed = 100.0f;
     const float maxDPos = moveSpeed * (float) dt;
@@ -182,7 +189,7 @@ void GameController::alignCharacterPositions(double dt) {
 }
 
 void GameController::clickCharacter(Character* character) {
-    bool success = false;
+    bool success;
     Character* clickedCharacter;
     switch (gameState->getGameState()) {
         case GameStateManager::rolling_heroes:
@@ -222,13 +229,75 @@ void GameController::clickCharacter(Character* character) {
 void GameController::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
-    if (button->getName() == "button_reroll") {
-        if (gameState->isHeroesTurn()) {
+    if (button->getName() == "leftMainButton") {
+        if (gameState->areHeroesRolling()) {
             int rerollsLeft = gameState->reroll();
             button->setText(std::to_string(rerollsLeft) + " rerolls left");
             if (rerollsLeft == 0) {
-                gameState->setGameState(GameStateManager::attack_block_heroes);
+                gameState->setNextGameState();
             }
+        } else if (gameState->areHeroesAttacking()) {
+            //TODO: UNDO..
+        }
+    }
+
+    if (button->getName() == "rightMainButton") {
+        if (gameState->areHeroesRolling()) {
+            gameState->setNextGameState();
+        } else if (gameState->areHeroesAttacking()) {
+            gameState->setNextGameState();
+        }
+    }
+}
+
+void GameController::enemiesAttack() {
+    auto heroes = gameState->getHeroes();
+    int nHeroes = heroes.size();
+
+    auto enemies = gameState->getEnemies();
+    int nEnemies = enemies.size();
+
+    bool success;
+    for (auto &enemy : enemies) {
+
+        if (enemy->isDead()) {
+            continue;
+        }
+        // check if you can interact with yourself
+        success = enemy->interact(nullptr, gameState);
+
+        // check if you can interact with an ally (=enemy from their perspective)
+        if (!success) {
+            int mostIncomingDamage = 0;
+            for (auto &otherEnemy : gameState->getEnemies()) {
+                mostIncomingDamage = std::max(mostIncomingDamage, otherEnemy->getIncomingDamage());
+            }
+            if (mostIncomingDamage > 0) {
+                for (auto &otherEnemy : enemies) {
+                    if (otherEnemy->getIncomingDamage() == mostIncomingDamage) {
+                        success = otherEnemy->interact(enemy, gameState);
+                    }
+                }
+            } else {
+                int rng = Random::randInt(0, nEnemies - 1);
+                success = enemies[rng]->interact(enemy, gameState);
+            }
+        }
+
+        // finally, check if you can interact with an enemy (=hero from their perspective)
+        if (!success) {
+            int rng;
+            while (true) {
+                rng = Random::randInt(0, nHeroes - 1);
+                if (!heroes[rng]->isDead()) {
+                    success = heroes[rng]->interact(enemy, gameState);
+                    break;
+                }
+            }
+        }
+
+        if (!success) {
+            std::cerr << "GameController::enemiesAttack(): ERROR in attack logic!" << std::endl;
         }
     }
 }

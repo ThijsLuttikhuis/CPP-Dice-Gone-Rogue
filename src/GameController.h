@@ -19,7 +19,6 @@ class GameStateManager;
 
 class GameController {
 private:
-    Window* window;
     TextRenderer* textRenderer;
     SpriteRenderer* spriteRenderer;
 
@@ -34,8 +33,6 @@ public:
 
     [[nodiscard]] SpriteRenderer* getSpriteRenderer() const;
 
-    void initialize();
-
     void update();
 
     void render();
@@ -47,6 +44,8 @@ public:
     void pressButton(Button* button);
 
     TextRenderer* getTextRenderer();
+
+    void enemiesAttack();
 };
 
 }

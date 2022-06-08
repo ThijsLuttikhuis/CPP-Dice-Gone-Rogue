@@ -37,13 +37,17 @@ public:
 
     static modifier stringToModifier(const std::string &modifierStr);
 
-    std::string toString();
+    [[nodiscard]] std::string toString() const;
 
-    glm::vec3 toColor();
+    [[nodiscard]] glm::vec3 toColor() const;
 
-    unsigned int getModifiers();
+    [[nodiscard]] unsigned int getModifiers() const;
 
-    bool hasModifier(modifier mod);
+    [[nodiscard]] bool hasModifier(modifier mod) const;
+
+    bool removeModifier(modifier modifier);
+
+    void setModifiers(unsigned int modifiers_);
 
     void addModifier(modifier modifier_);
 
