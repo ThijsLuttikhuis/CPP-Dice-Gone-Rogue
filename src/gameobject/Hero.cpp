@@ -3,9 +3,6 @@
 //
 
 #include "Hero.h"
-#include "gameobject/dice/Dice.h"
-#include "utilities/Constants.h"
-#include <iostream>
 
 namespace DGR {
 

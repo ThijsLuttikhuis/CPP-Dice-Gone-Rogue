@@ -7,8 +7,9 @@
 
 
 #include <string>
-#include <glm/vec3.hpp>
 #include <map>
+#include <glm/vec3.hpp>
+
 #include "utilities/BiDirectionalMap.h"
 
 namespace DGR {

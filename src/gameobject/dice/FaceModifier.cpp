@@ -3,8 +3,9 @@
 //
 
 #include <iostream>
-#include "FaceModifier.h"
 #include <vector>
+
+#include "FaceModifier.h"
 
 namespace DGR {
 

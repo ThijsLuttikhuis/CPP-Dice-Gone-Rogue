@@ -5,19 +5,17 @@
 #ifndef DICEGONEROGUE_YAMLREADER_H
 #define DICEGONEROGUE_YAMLREADER_H
 
+#include <utility>
 #include <string>
 #include <map>
-#include <utility>
 #include <vector>
-#include <iostream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <fstream>
-#include <utility>
 #include <type_traits>
-#include <gameobject/Enemy.h>
 
+#include "gameobject/Enemy.h"
 #include "gameobject/Hero.h"
 #include "gameobject/dice/Dice.h"
 #include "gameobject/dice/Face.h"

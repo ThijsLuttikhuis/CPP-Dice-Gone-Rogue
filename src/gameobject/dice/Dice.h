@@ -8,7 +8,8 @@
 
 #include <string>
 #include <utility>
-#include <shaders/TextRenderer.h>
+
+#include "shaders/TextRenderer.h"
 #include "shaders/SpriteRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
@@ -63,6 +64,8 @@ public:
 
     void setUsed(bool lock_);
 
+    void setCurrentFace(bool currentFace_);
+
     void setCurrentFaceHover(bool hoverCurrentFace_);
 
     void setFace(Face* face, int index);
@@ -80,6 +83,7 @@ public:
     void roll();
 
 
+    Dice* copy();
 };
 
 }

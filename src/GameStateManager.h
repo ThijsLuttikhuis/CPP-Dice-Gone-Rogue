@@ -6,7 +6,8 @@
 #define DICEGONEROGUE_GAMESTATEMANAGER_H
 
 #include <vector>
-#include <utilities/Window.h>
+
+#include "utilities/Window.h"
 #include "gameobject/Hero.h"
 #include "gameobject/Enemy.h"
 

@@ -10,11 +10,12 @@
 #include <map>
 #include <utility>
 #include <glm/vec2.hpp>
-#include <shaders/SpriteRenderer.h>
+
+#include "shaders/SpriteRenderer.h"
+#include "shaders/TextRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
 #include "Dice.h"
-#include <shaders/TextRenderer.h>
 
 namespace DGR {
 
@@ -88,6 +89,8 @@ public:
 
 
     void removeModifier(FaceModifier::modifier modifier);
+
+    Face* copy();
 };
 
 }

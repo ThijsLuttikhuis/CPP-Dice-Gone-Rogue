@@ -3,7 +3,6 @@
 //
 
 #include "FaceType.h"
-#include <iostream>
 
 namespace DGR {
 

@@ -2,12 +2,12 @@
 // Created by thijs on 01-06-22.
 //
 
-#include <iostream>
-#include "Face.h"
-#include "gameobject/dice/Dice.h"
-#include "utilities/Constants.h"
-#include "FaceType.h"
 #include <sstream>
+#include <iostream>
+
+#include "Face.h"
+#include "Dice.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 
@@ -238,6 +238,11 @@ void Face::setModifiers(unsigned int modifiers_) {
 
 void Face::removeModifier(FaceModifier::modifier modifier) {
     modifiers.removeModifier(modifier);
+}
+
+Face* Face::copy() {
+    auto copy = new Face(name, dice, face_, value, type, modifiers);
+    return copy;
 }
 
 }

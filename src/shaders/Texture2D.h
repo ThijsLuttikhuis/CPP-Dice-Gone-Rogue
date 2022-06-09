@@ -6,6 +6,7 @@
 #define DICEGONEROGUE_TEXTURE2D_H
 
 #include <string>
+
 #include "shaders/Shader.h"
 
 namespace DGR {

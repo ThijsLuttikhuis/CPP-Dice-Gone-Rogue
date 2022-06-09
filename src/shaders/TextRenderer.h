@@ -5,10 +5,10 @@
 #ifndef DICEGONEROGUE_TEXTRENDERER_H
 #define DICEGONEROGUE_TEXTRENDERER_H
 
+#include <vector>
 
 #include "shaders/Shader.h"
 #include "shaders/Texture2D.h"
-#include <vector>
 
 namespace DGR {
 

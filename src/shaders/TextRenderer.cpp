@@ -2,13 +2,14 @@
 // Created by thijs on 06-06-22.
 //
 
+#include <string>
+#include <filesystem>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "TextRenderer.h"
 #include "utilities/Constants.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
-#include <string>
-#include <filesystem>
+
 
 namespace DGR {
 

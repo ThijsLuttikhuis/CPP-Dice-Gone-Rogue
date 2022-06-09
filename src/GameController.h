@@ -6,6 +6,7 @@
 #define DICEGONEROGUE_GAMECONTROLLER_H
 
 #include <vector>
+
 #include "gameobject/Hero.h"
 #include "gameobject/Enemy.h"
 

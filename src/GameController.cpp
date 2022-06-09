@@ -4,10 +4,10 @@
 
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
-#include <gameobject/Hero.h>
-#include <shaders/TextRenderer.h>
-#include <utilities/Random.h>
+
+#include "gameobject/Hero.h"
+#include "shaders/TextRenderer.h"
+#include "utilities/Random.h"
 #include "GameController.h"
 #include "utilities/Window.h"
 #include "iofilemanager/YamlReader.h"

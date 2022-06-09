@@ -2,8 +2,8 @@
 // Created by thijs on 22-04-22.
 //
 
-#ifndef GATSP_RANDOM_H
-#define GATSP_RANDOM_H
+#ifndef DICEGONEROGUE_RANDOM_H
+#define DICEGONEROGUE_RANDOM_H
 
 #include <random>
 
@@ -44,4 +44,4 @@ public:
 }
 
 
-#endif //GATSP_RANDOM_H
+#endif //DICEGONEROGUE_RANDOM_H

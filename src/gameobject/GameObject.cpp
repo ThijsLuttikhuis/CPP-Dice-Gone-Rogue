@@ -3,10 +3,9 @@
 //
 
 
+#include <utility>
 
 #include "GameObject.h"
-
-#include <utility>
 #include "shaders/SpriteRenderer.h"
 
 namespace DGR {
@@ -16,6 +15,7 @@ GameObject::GameObject(std::string name, glm::vec2 position, glm::vec2 size)
 }
 
 void GameObject::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    (void)textRenderer;
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 

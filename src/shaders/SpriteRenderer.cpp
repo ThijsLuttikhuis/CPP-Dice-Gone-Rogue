@@ -2,13 +2,12 @@
 // Created by thijs on 30-05-22.
 //
 
-#include "SpriteRenderer.h"
-#include "utilities/Constants.h"
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include <filesystem>
 #include <string>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "SpriteRenderer.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 
@@ -120,6 +119,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
 void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, std::string texture, float zIndex,
                                    glm::vec2 position, glm::vec2 size, float drawEdges, glm::vec3 color, float alpha) {
 
+    (void)texture;
     std::string tex = "pixel";
     float left = position.x;
     float right = position.x + size.x;

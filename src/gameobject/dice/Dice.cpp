@@ -2,16 +2,16 @@
 // Created by thijs on 31-05-22.
 //
 
-#include "Dice.h"
-#include "gameobject/Hero.h"
 #include <utility>
 #include <iostream>
-#include <utilities/Random.h>
-#include "utilities/Constants.h"
+
+#include "Dice.h"
 #include "Face.h"
+#include "gameobject/Hero.h"
+#include "utilities/Random.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
-
 
 Dice::Dice(std::string name, Character* character) :
       name(std::move(name)), character(character) {
@@ -101,7 +101,7 @@ void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 
     if (lock) {
         glm::vec2 lockPosition = getPosition(Dice::currentFacePos) + glm::vec2(-2, -2);
-        glm::vec2 lockSize = glm::vec2(11,14);
+        glm::vec2 lockSize = glm::vec2(11, 14);
         spriteRenderer->drawSprite("dice_lock", 0.05f,
                                    lockPosition, lockSize, 0.0f, glm::vec3(1.0), 0.8f);
     }
@@ -148,6 +148,11 @@ Face* Dice::getCurrentFace() const {
     return faces[currentFace];
 }
 
+
+void Dice::setCurrentFace(bool currentFace_) {
+    currentFace = currentFace_;
+}
+
 void Dice::setUsed(bool used_) {
     used = used_;
 }
@@ -156,5 +161,23 @@ bool Dice::isUsed() const {
     return used;
 }
 
+Dice* Dice::copy() {
+    auto copy = new Dice();
+    copy->setName(name);
+
+    copy->setLocked(lock);
+    copy->setUsed(used);
+    copy->setCurrentFace(currentFace);
+    copy->setCurrentFaceHover(hoverCurrentFace);
+
+    Face* faceCopy;
+    for (int i = 0; i < 6; i++) {
+        faceCopy = faces[i]->copy();
+        faceCopy->setDice(copy);
+        copy->setFace(faceCopy, i);
+    }
+
+    return copy;
+}
 
 }

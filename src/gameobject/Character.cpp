@@ -2,10 +2,11 @@
 // Created by thijs on 04-06-22.
 //
 
-#include "Character.h"
 #include <iostream>
-#include <GameStateManager.h>
+
+#include "Character.h"
 #include "dice/Face.h"
+#include "GameStateManager.h"
 
 namespace DGR {
 
@@ -340,6 +341,7 @@ void Character::applyFaceTypeShield(Face* face, GameStateManager* gameState) {
 }
 
 void Character::applyFaceModifierCleanse(Face* face, GameStateManager* gameState) {
+    (void)face, (void)gameState;
     poison = 0;
 }
 
@@ -367,6 +369,23 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
         }
     }
     face->addModifier(FaceModifier::modifier::sweeping_edge);
+}
+
+Character* Character::makeUndamagedCopy() const {
+    auto* copy = new Character(name);
+
+    copy->setSize(size);
+    copy->setPosition(position);
+
+    copy->setMaxHP(maxHP);
+    copy->setDice(dice->copy());
+    copy->getDice()->setCharacter(copy);
+
+    return nullptr;
+}
+
+std::string Character::getCharacterType() {
+    return "character type not set";
 }
 
 }

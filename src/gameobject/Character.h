@@ -5,7 +5,7 @@
 #ifndef DICEGONEROGUE_CHARACTER_H
 #define DICEGONEROGUE_CHARACTER_H
 
-#include <gameobject/dice/Dice.h>
+#include "dice/Dice.h"
 #include "GameObject.h"
 
 namespace DGR {
@@ -43,6 +43,8 @@ public:
 
     [[nodiscard]] int getIncomingDamage() const;
 
+    [[nodiscard]] Character* makeUndamagedCopy() const;
+
     void setDice(Dice* dice);
 
     void setDiceLock(bool diceLock_);
@@ -57,12 +59,11 @@ public:
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
-    virtual std::string getCharacterType() = 0;
+    virtual std::string getCharacterType();
 
     void toggleDiceLock();
 
     void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
-
 
     void setUsedDice(bool usedDice);
 
@@ -74,7 +75,6 @@ public:
 
     void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
 
-
     void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
 
     void applyFaceTypeShield(Face* face, GameStateManager* gameState);
@@ -82,6 +82,7 @@ public:
     void applyFaceModifierCleanse(Face* face, GameStateManager* gameState);
 
     void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
+
 };
 
 }

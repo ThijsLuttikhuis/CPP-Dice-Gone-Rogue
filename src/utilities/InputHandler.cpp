@@ -2,12 +2,13 @@
 // Created by thijs on 30-05-22.
 //
 
-#include <gameobject/Character.h>
-#include "InputHandler.h"
-#include "GameController.h"
 #include <iostream>
+
 #include "Constants.h"
 #include "Button.h"
+#include "gameobject/Character.h"
+#include "InputHandler.h"
+#include "GameController.h"
 
 namespace DGR {
 

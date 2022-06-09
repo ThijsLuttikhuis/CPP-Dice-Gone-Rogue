@@ -176,10 +176,10 @@ Window* GameStateManager::getWindow() const {
 
 std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* character) {
     std::pair<Character*, Character*> neighbours(nullptr, nullptr);
-    unsigned long nHeroes = heroes.size();
-    for (unsigned long i = 0; i < nHeroes; i++) {
+    int nHeroes = heroes.size();
+    for (int i = 0; i < nHeroes; i++) {
         if (character == heroes[i]) {
-            unsigned long j = i-1;
+            int j = i-1;
             while (j >= 0) {
                 if (!heroes[j]->isDead()) {
                     std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
@@ -202,10 +202,10 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
             return neighbours;
         }
     }
-    unsigned long nEnemies = enemies.size();
-    for (unsigned long i = 0; i < nEnemies; i++) {
+    int nEnemies = enemies.size();
+    for (int i = 0; i < nEnemies; i++) {
         if (character == enemies[i]) {
-            unsigned long j = i-1;
+            int j = i-1;
             while (j >= 0) {
                 if (!enemies[j]->isDead()) {
                     neighbours.first = enemies[j];
