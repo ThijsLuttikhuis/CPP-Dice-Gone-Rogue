@@ -10,4 +10,8 @@ Hero::Hero(const std::string &name, glm::vec2 position, glm::vec2 size)
       : Character(name, position, size) {
 }
 
+std::string Hero::getCharacterType() const {
+    return "hero";
+}
+
 }

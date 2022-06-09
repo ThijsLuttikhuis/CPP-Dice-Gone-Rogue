@@ -21,11 +21,11 @@ BiDirectionalMap<std::string, FaceType::faceType> FaceType::stringsAndFaceTypes 
             {"shield and mana",        shield_and_mana}}
       );
 
-std::string &FaceType::toString() {
+const std::string &FaceType::toString() const {
     return stringsAndFaceTypes.at(type);
 }
 
-FaceType::faceType FaceType::getType() {
+FaceType::faceType FaceType::getType() const {
     return type;
 }
 

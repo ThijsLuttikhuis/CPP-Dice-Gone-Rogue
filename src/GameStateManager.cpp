@@ -15,30 +15,40 @@ Character* GameStateManager::getClickedCharacter() const {
     return clickedCharacter;
 }
 
+int GameStateManager::getRerolls() const {
+    return rerolls;
+}
+
 void GameStateManager::setClickedCharacter(Character* clickedCharacter_) {
     clickedCharacter = clickedCharacter_;
 }
 
-int GameStateManager::reroll(bool rollHeroes) {
-    if (rollHeroes) {
-        if (rerolls > 0) {
-            rerolls--;
+int GameStateManager::reroll() {
+
+    if (rerolls > 0) {
+        rerolls--;
+
+        if (areHeroesRolling()) {
             for (auto &hero : heroes) {
                 hero->roll();
+            }
+        } else if (areEnemiesRolling()) {
+            for (auto &enemy : enemies) {
+                enemy->roll();
             }
         }
 #ifdef DEBUG
         else {
-            std::cerr << "no rerolls remaining!" << std::endl;
-
+            std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
         }
 #endif
-    } else {
-        for (auto &enemy : enemies) {
-            enemy->roll();
-        }
-    }
 
+    }
+#ifdef DEBUG
+    else {
+    std::cerr << "GameStateManager::reroll: error, no rerolls remaining!" << std::endl;
+    }
+#endif
     return rerolls;
 }
 
@@ -105,10 +115,15 @@ void GameStateManager::setNextGameState() {
                 hero->setUsedDice(false);
                 hero->applyDamageStep();
             }
+            reroll();
             state = rolling_enemies;
             updateButtons();
             break;
         case rolling_enemies:
+            for (auto &enemy : enemies) {
+                enemy->setDiceLock(false);
+            }
+            rerolls = rerollsMax;
             state = attack_block_enemies;
             updateButtons();
             break;
@@ -130,7 +145,7 @@ void GameStateManager::updateButtons() {
         case rolling_heroes:
             for (auto &button : buttons) {
                 if (button->getName() == "leftMainButton") {
-                    button->setText("2 rerolls left");
+                    button->setText(std::to_string(getRerolls()) + " rerolls left");
                 } else if (button->getName() == "rightMainButton") {
                     button->setText("done rolling");
                 }
@@ -166,7 +181,6 @@ void GameStateManager::updateButtons() {
                 }
             }
             break;
-
     }
 }
 
@@ -179,7 +193,7 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
     int nHeroes = heroes.size();
     for (int i = 0; i < nHeroes; i++) {
         if (character == heroes[i]) {
-            int j = i-1;
+            int j = i - 1;
             while (j >= 0) {
                 if (!heroes[j]->isDead()) {
                     std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
@@ -189,7 +203,7 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
                 }
                 j--;
             }
-            j = i+1;
+            j = i + 1;
             while (j < nHeroes) {
                 if (!heroes[j]->isDead()) {
                     std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
@@ -205,7 +219,7 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
     int nEnemies = enemies.size();
     for (int i = 0; i < nEnemies; i++) {
         if (character == enemies[i]) {
-            int j = i-1;
+            int j = i - 1;
             while (j >= 0) {
                 if (!enemies[j]->isDead()) {
                     neighbours.first = enemies[j];
@@ -213,7 +227,7 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
                 }
                 j--;
             }
-            j = i+1;
+            j = i + 1;
             while (j < nHeroes) {
                 if (!enemies[j]->isDead()) {
                     neighbours.second = enemies[j];

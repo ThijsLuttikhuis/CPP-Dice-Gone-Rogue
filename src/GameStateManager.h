@@ -32,11 +32,13 @@ private:
     Character* clickedCharacter = nullptr;
 
     std::vector<Hero*> heroes;
-
     std::vector<Enemy*> enemies;
+
+    void updateButtons();
 public:
     explicit GameStateManager(Window* window) : window(window) {};
 
+    /// getters
     [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
 
     [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
@@ -53,25 +55,28 @@ public:
 
     [[nodiscard]] bool areEnemiesAttacking() const;
 
+    [[nodiscard]] int getRerolls() const;
+
     [[nodiscard]] Window* getWindow() const;
 
+    /// setters
     void setHeroes(const std::vector<Hero*> &heroes_);
 
     void setEnemies(const std::vector<Enemy*> &enemies);
 
     void setClickedCharacter(Character* clickedCharacter_);
 
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void setNextGameState();
 
-    int reroll(bool rollHeroes = true);
+    /// functions
+    int reroll();
 
     void addMana(int mana_);
 
-    void setNextGameState();
-
-    void updateButtons();
-
     std::pair<Character*, Character*> getNeighbours(Character* character);
+
+    /// render
+    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 
 }

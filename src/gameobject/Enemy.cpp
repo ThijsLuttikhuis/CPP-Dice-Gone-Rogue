@@ -10,4 +10,8 @@ Enemy::Enemy(const std::string &name, glm::vec2 position, glm::vec2 size)
       : Character(name, position, size) {
 }
 
+std::string Enemy::getCharacterType() const {
+    return "enemy";
+}
+
 }

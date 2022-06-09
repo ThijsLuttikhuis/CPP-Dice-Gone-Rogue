@@ -14,11 +14,6 @@ GameObject::GameObject(std::string name, glm::vec2 position, glm::vec2 size)
       : name(std::move(name)), position(position), size(size) {
 }
 
-void GameObject::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    (void)textRenderer;
-    spriteRenderer->drawSprite(name, 1.0f, position, size);
-}
-
 const glm::vec2 &GameObject::getPosition() const {
     return position;
 }
@@ -31,17 +26,17 @@ const std::string &GameObject::getName() const {
     return name;
 }
 
-void GameObject::hoverMouse(bool hover_) {
-    hover = hover_;
+bool GameObject::isMouseHovering(double xPos, double yPos) const {
+    return (xPos > position.x && xPos < position.x + size.x)
+           && (yPos > position.y && yPos < position.y + size.y);
 }
 
 bool GameObject::getHoverMouse() const {
     return hover;
 }
 
-bool GameObject::isMouseHovering(double xPos, double yPos) const {
-    return (xPos > position.x && xPos < position.x + size.x)
-           && (yPos > position.y && yPos < position.y + size.y);
+void GameObject::hoverMouse(bool hover_) {
+    hover = hover_;
 }
 
 void GameObject::setPosition(glm::vec2 position_) {
@@ -54,6 +49,11 @@ void GameObject::setSize(glm::vec2 size_) {
 
 void GameObject::setPosition(int left, int up) {
     setPosition(glm::vec2(left, up));
+}
+
+void GameObject::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    (void)textRenderer;
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 
 }

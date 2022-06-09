@@ -28,11 +28,24 @@ private:
     bool isUndying = false;
     bool backRow = false;
 
+    void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
+
+    void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
+
+    void applyFaceTypeShield(Face* face, GameStateManager* gameState);
+
+    void applyFaceModifierCleanse(Face* face, GameStateManager* gameState);
+
+    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
+
+    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
     Character(const std::string &textureName, glm::vec2 position, glm::vec2 size);
 
+    /// getters
     [[nodiscard]] Dice* getDice() const;
 
     [[nodiscard]] bool isDead() const;
@@ -45,44 +58,32 @@ public:
 
     [[nodiscard]] Character* makeUndamagedCopy() const;
 
+    [[nodiscard]] virtual std::string getCharacterType() const;
+
+    /// setters
     void setDice(Dice* dice);
 
     void setDiceLock(bool diceLock_);
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
-    bool interact(Character* otherCharacter, GameStateManager* gameState);
+    void setUsedDice(bool usedDice);
 
+    /// functions
     void roll();
-
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
-
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
-    virtual std::string getCharacterType();
 
     void toggleDiceLock();
 
-    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
-
-    void setUsedDice(bool usedDice);
-
-    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
-    void addShield(int value);
+    bool interact(Character* otherCharacter, GameStateManager* gameState);
 
     void applyDamageStep();
 
-    void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
+    /// render
+    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
 
-    void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
+    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
 
-    void applyFaceTypeShield(Face* face, GameStateManager* gameState);
-
-    void applyFaceModifierCleanse(Face* face, GameStateManager* gameState);
-
-    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
-
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 
 }

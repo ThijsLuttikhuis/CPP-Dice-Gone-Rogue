@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_GAMECONTROLLER_H
 #define DICEGONEROGUE_GAMECONTROLLER_H
 
+
 #include <vector>
 
 #include "gameobject/Hero.h"
@@ -25,18 +26,26 @@ private:
 
     GameStateManager* gameState;
 
+    double t{};
+    double dt{};
+    double tPrev = 0.0;
+
+    int animationCounter = 0;
+
 public:
     explicit GameController(Window* window);
 
+    /// getters
     [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
 
     [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
 
     [[nodiscard]] SpriteRenderer* getSpriteRenderer() const;
 
-    void update();
+    [[nodiscard]] TextRenderer* getTextRenderer() const;
 
-    void render();
+    /// functions
+    void update();
 
     void alignCharacterPositions(double dt);
 
@@ -44,11 +53,15 @@ public:
 
     void pressButton(Button* button);
 
-    TextRenderer* getTextRenderer();
-
     void enemiesAttack();
+
+    void enemyAttack(int index);
+
+    /// render
+    void render();
 };
 
 }
+
 
 #endif //DICEGONEROGUE_GAMECONTROLLER_H

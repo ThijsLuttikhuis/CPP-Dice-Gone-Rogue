@@ -14,85 +14,48 @@ Character::Character(const std::string &name, glm::vec2 position, glm::vec2 size
       : GameObject(name, position, size), dice(new Dice(name, this)) {
 }
 
-void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
-    glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
-    std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
+Character* Character::makeUndamagedCopy() const {
+    auto* copy = new Character(name);
 
-    spriteRenderer->drawSprite("box", 0.95, hpBarPosition, hpBarSize,
-                               1.0f, glm::vec3(0.2f), 0.5f);
-    textRenderer->drawText(hpText, 0.5, hpBarPosition, hpBarSize);
+    copy->setSize(size);
+    copy->setPosition(position);
 
-    float textDRight = 2;
-    float textDUp = 4;
+    copy->setMaxHP(maxHP);
+    copy->setDice(dice->copy());
+    copy->getDice()->setCharacter(copy);
 
-    if (shield > 0) {
-        float shieldPosRight = -6;
-        float shieldPosUp = -6;
-        glm::vec2 shieldPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight, shieldPosUp);
-        glm::vec2 shieldTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight + textDRight, shieldPosUp + textDUp);
-
-        glm::vec2 shieldSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("knight_shield", 0.7, shieldPosition, shieldSize,
-                                   0.0f, glm::vec3(0.1f), 0.5f);
-
-        textRenderer->drawText(std::to_string(shield), 0.5, shieldTextPosition, shieldSize);
-    }
-    if (incomingDamage > 0) {
-        float incDamagePosRight = -6;
-        float incDamagePosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight, incDamagePosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight + textDRight, incDamagePosUp + textDUp);
-
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("knight_damage", 0.7, incomingDamagePosition, incomingDamageSize,
-                                   90.0f, glm::vec3(0.1f), 0.5f);
-
-        textRenderer->drawText("^" + std::to_string(incomingDamage) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
-    }
-
-    if (poison > 0) {
-        float poisonPosRight = -22;
-        float poisonPosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight, poisonPosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight + textDRight, poisonPosUp + textDUp);
-
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("knight_mana", 0.7, incomingDamagePosition, incomingDamageSize,
-                                   90.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f);
-
-        textRenderer->drawText("^" + std::to_string(poison) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
-    }
-}
-
-void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    spriteRenderer->drawSprite(name, 1.0f, position, size);
-
-    drawHealthBar(spriteRenderer, textRenderer);
-
-    dice->draw(spriteRenderer, textRenderer);
-}
-
-void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    if (hover) {
-#if DEBUG
-        std::cout << "hover: " << getName() << " -- x: " << getPosition().x
-                  << " -- y: " << getPosition().y << std::endl;
-#endif
-        dice->drawHover(spriteRenderer, textRenderer);
-    }
+    return nullptr;
 }
 
 Dice* Character::getDice() const {
     return dice;
+}
+
+bool Character::getUsedDice() const {
+    return dice->isUsed();
+}
+
+bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) const {
+    bool heroHover = (xPos > position.x && xPos < position.x + size.x)
+                     && (yPos > position.y && yPos < position.y + size.y);
+
+    bool currentFaceHover = false;
+    if (alsoCurrentFace) {
+        currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::currentFacePos);
+    }
+    return heroHover || currentFaceHover;
+}
+
+int Character::getIncomingDamage() const {
+    return incomingDamage;
+}
+
+bool Character::isDead() const {
+    return hp <= 0;
+}
+
+std::string Character::getCharacterType() const {
+    return "character type not set";
 }
 
 void Character::setDice(Dice* dice_) {
@@ -106,8 +69,16 @@ void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
     }
 }
 
-bool Character::isDead() const {
-    return hp <= 0;
+void Character::setDiceLock(bool diceLock_) {
+    dice->setLocked(diceLock_);
+}
+
+void Character::toggleDiceLock() {
+    dice->setLocked(!dice->isLocked());
+}
+
+void Character::setUsedDice(bool usedDice) {
+    dice->setUsed(usedDice);
 }
 
 bool Character::interact(Character* otherCharacter, GameStateManager* gameState) {
@@ -118,7 +89,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
     // single character interactions
     if (!otherCharacter) {
         face = getDice()->getCurrentFace();
-        type = face->getType();
+        type = face->getFaceType();
 
         switch (type.getType()) {
             case FaceType::empty:
@@ -129,18 +100,18 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
                 success = true;
                 break;
             case FaceType::dodge:
+                isDodging = true;
                 success = true;
                 break;
             default:
                 break;
         }
-    }
-    else {
+    } else {
         // interaction with another character of the same type or not
         bool differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
 
         face = otherCharacter->getDice()->getCurrentFace();
-        type = face->getType();
+        type = face->getFaceType();
 
         switch (type.getType()) {
             case FaceType::damage:
@@ -184,7 +155,6 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
                 if (!differentCharacterType) {
                     gameState->addMana(face->getValue());
                     applyFaceTypeShield(face, gameState);
-
                     success = true;
                 }
                 break;
@@ -231,39 +201,14 @@ void Character::roll() {
     }
 }
 
-void Character::setDiceLock(bool diceLock_) {
-    dice->setLocked(diceLock_);
-}
-
-void Character::toggleDiceLock() {
-    dice->setLocked(!dice->isLocked());
-}
-
-void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) {
-    spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
-}
-
-bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) const {
-    bool heroHover = (xPos > position.x && xPos < position.x + size.x)
-                     && (yPos > position.y && yPos < position.y + size.y);
-
-    bool currentFaceHover = false;
-    if (alsoCurrentFace) {
-        currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::currentFacePos);
-    }
-    return heroHover || currentFaceHover;
-}
-
-void Character::setUsedDice(bool usedDice) {
-    dice->setUsed(usedDice);
-}
-
 void Character::applyDamageStep() {
-    incomingDamage -= shield;
-    if (incomingDamage > 0) {
-        hp -= incomingDamage;
-    }
 
+    if (!isDodging) {
+        incomingDamage -= shield;
+        if (incomingDamage > 0) {
+            hp -= incomingDamage;
+        }
+    }
     hp -= poison;
     hp += regen;
     hp = std::min(hp, maxHP);
@@ -275,38 +220,24 @@ void Character::applyDamageStep() {
     isUndying = false;
 }
 
-bool Character::getUsedDice() const {
-    return dice->isUsed();
-}
-
-void Character::addShield(int value) {
-    shield += value;
-}
-
-int Character::getIncomingDamage() const {
-    return incomingDamage;
-}
 
 void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
-    if (!isDodging) {
-        incomingDamage += value;
-        if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
-            poison += value;
+    if (modifiers.hasModifier(FaceModifier::modifier::first_blood)) {
+        if (hp == maxHP && incomingDamage == 0) {
+            value *= 2;
         }
-        if (modifiers.hasModifier(FaceModifier::modifier::first_blood)) {
-            //TODO: fix
-            if (hp == maxHP && incomingDamage == 0) {
-                incomingDamage += value;
-            }
-        }
+    }
+
+    incomingDamage += value;
+    if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
+        poison += value;
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
         applyFaceModifierSweepingEdge(FaceType::damage, face, gameState);
-
     }
 
 }
@@ -341,7 +272,7 @@ void Character::applyFaceTypeShield(Face* face, GameStateManager* gameState) {
 }
 
 void Character::applyFaceModifierCleanse(Face* face, GameStateManager* gameState) {
-    (void)face, (void)gameState;
+    (void) face, (void) gameState;
     poison = 0;
 }
 
@@ -371,21 +302,85 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
-Character* Character::makeUndamagedCopy() const {
-    auto* copy = new Character(name);
+void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
+    glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
+    std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
 
-    copy->setSize(size);
-    copy->setPosition(position);
+    spriteRenderer->drawSprite("box", 0.95, hpBarPosition, hpBarSize,
+                               1.0f, glm::vec3(0.2f), 0.5f);
+    textRenderer->drawText(hpText, 0.5, hpBarPosition, hpBarSize);
 
-    copy->setMaxHP(maxHP);
-    copy->setDice(dice->copy());
-    copy->getDice()->setCharacter(copy);
+    float textDRight = 2;
+    float textDUp = 4;
 
-    return nullptr;
+    if (shield > 0) {
+        float shieldPosRight = -size.x * 6.0f / 16.0f;
+        float shieldPosUp = -6;
+        glm::vec2 shieldPosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight, shieldPosUp);
+        glm::vec2 shieldTextPosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight + textDRight, shieldPosUp + textDUp);
+
+        glm::vec2 shieldSize = glm::vec2(11, 14);
+        spriteRenderer->drawSprite("hero_shield", 0.7, shieldPosition, shieldSize,
+                                   0.0f, glm::vec3(0.1f), 0.5f);
+
+        textRenderer->drawText(std::to_string(shield), 0.5, shieldTextPosition, shieldSize);
+    }
+    if (incomingDamage > 0) {
+        float incDamagePosRight = -size.x * 6.0f / 16.0f;
+        float incDamagePosUp = 6;
+        glm::vec2 incomingDamagePosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight, incDamagePosUp);
+        glm::vec2 incomingDamageTextPosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight + textDRight, incDamagePosUp + textDUp);
+
+        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
+        spriteRenderer->drawSprite("hero_damage", 0.7, incomingDamagePosition, incomingDamageSize,
+                                   90.0f, glm::vec3(0.1f), 0.5f);
+
+        textRenderer->drawText("^" + std::to_string(incomingDamage) + "^", 0.5,
+                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+    }
+
+    if (poison > 0) {
+        float poisonPosRight = -size.x * 22.0f / 16.0f;
+        float poisonPosUp = 6;
+        glm::vec2 incomingDamagePosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight, poisonPosUp);
+        glm::vec2 incomingDamageTextPosition =
+              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight + textDRight, poisonPosUp + textDUp);
+
+        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
+        spriteRenderer->drawSprite("hero_mana", 0.7, incomingDamagePosition, incomingDamageSize,
+                                   90.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f);
+
+        textRenderer->drawText("^" + std::to_string(poison) + "^", 0.5,
+                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+    }
 }
 
-std::string Character::getCharacterType() {
-    return "character type not set";
+void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
+
+    drawHealthBar(spriteRenderer, textRenderer);
+
+    dice->draw(spriteRenderer, textRenderer);
+}
+
+void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    if (hover) {
+#if DEBUG
+        std::cout << "hover: " << getName() << " -- x: " << getPosition().x
+                  << " -- y: " << getPosition().y << std::endl;
+#endif
+        dice->drawHover(spriteRenderer, textRenderer);
+    }
+}
+
+void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) {
+    spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
 
 }

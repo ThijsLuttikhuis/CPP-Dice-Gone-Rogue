@@ -126,7 +126,7 @@ characters:
         mod: "single use";
       ;
       face4:
-        shield: 3;
+        heal: 3;
       ;
       face5:
         empty: 0;

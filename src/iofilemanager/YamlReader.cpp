@@ -36,7 +36,7 @@ YamlReader::YamlReader() {
     keyToFunc["mod1"] = new YamlHandleString(stringCode::mod);
     keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
     keyToFunc["shield"] = new YamlHandleInt(stringCode::shield);
-    keyToFunc["heal"] = new YamlHandleInt(stringCode::shield);
+    keyToFunc["heal"] = new YamlHandleInt(stringCode::heal);
     keyToFunc["damage and self shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["self shield and damage"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);

@@ -44,6 +44,7 @@ public:
 
     Dice() = default;
 
+    /// getters
     [[nodiscard]] Face* getCurrentFace() const;
 
     [[nodiscard]] Face* getFace(int index) const;
@@ -60,6 +61,9 @@ public:
 
     [[nodiscard]] bool isUsed() const;
 
+    [[nodiscard]] Dice* copy() const;
+
+    /// setters
     void setLocked(bool lock_);
 
     void setUsed(bool lock_);
@@ -76,14 +80,13 @@ public:
 
     void updateHoverMouse(double xPos, double yPos);
 
+    /// functions
+    void roll();
+
+    /// render
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
-    void roll();
-
-
-    Dice* copy();
 };
 
 }

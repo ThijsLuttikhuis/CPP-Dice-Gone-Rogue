@@ -29,6 +29,7 @@ public:
 
     GameObject(std::string name, glm::vec2 position, glm::vec2 size);
 
+    /// getters
     [[nodiscard]] const glm::vec2 &getPosition() const;
 
     [[nodiscard]] const glm::vec2 &getSize() const;
@@ -39,6 +40,7 @@ public:
 
     [[nodiscard]] bool getHoverMouse() const;
 
+    /// setters
     void setPosition(glm::vec2 position_);
 
     void setPosition(int left, int up);
@@ -47,6 +49,7 @@ public:
 
     void hoverMouse(bool hover);
 
+    /// render
     virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 

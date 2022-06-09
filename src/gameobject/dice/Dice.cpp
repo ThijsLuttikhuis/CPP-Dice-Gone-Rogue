@@ -17,6 +17,29 @@ Dice::Dice(std::string name, Character* character) :
       name(std::move(name)), character(character) {
 }
 
+const std::string &Dice::getName() const {
+    return name;
+}
+
+Dice* Dice::copy() const {
+    auto copy = new Dice();
+    copy->setName(name);
+
+    copy->setLocked(lock);
+    copy->setUsed(used);
+    copy->setCurrentFace(currentFace);
+    copy->setCurrentFaceHover(hoverCurrentFace);
+
+    Face* faceCopy;
+    for (int i = 0; i < 6; i++) {
+        faceCopy = faces[i]->copy();
+        faceCopy->setDice(copy);
+        copy->setFace(faceCopy, i);
+    }
+
+    return copy;
+}
+
 glm::vec2 Dice::getPosition(dicePos dicePos) const {
     glm::vec2 heroPosition = character->getPosition();
     glm::vec2 dPos(0, 0);
@@ -62,6 +85,30 @@ bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
            && (yPos > position.y && yPos < position.y + size.y);
 }
 
+Face* Dice::getFace(int index) const {
+    return faces[index];
+}
+
+bool Dice::isUsed() const {
+    return used;
+}
+
+Face* Dice::getCurrentFace() const {
+    return faces[currentFace];
+}
+
+void Dice::setLocked(bool lock_) {
+    lock = lock_;
+}
+
+void Dice::setCurrentFace(bool currentFace_) {
+    currentFace = currentFace_;
+}
+
+void Dice::setUsed(bool used_) {
+    used = used_;
+}
+
 void Dice::updateHoverMouse(double xPos, double yPos) {
     for (auto &face : faces) {
         face->setHover(face->isMouseHovering(xPos, yPos));
@@ -88,12 +135,10 @@ void Dice::setName(const std::string &name_) {
     }
 }
 
-Face* Dice::getFace(int index) const {
-    return faces[index];
-}
-
-const std::string &Dice::getName() const {
-    return name;
+void Dice::roll() {
+    std::cout << "rolling" << std::endl;
+    int rng = Random::randInt(0, 5);
+    currentFace = rng;
 }
 
 void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
@@ -132,52 +177,6 @@ void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
     for (auto &face : faces) {
         face->drawHover(spriteRenderer, textRenderer);
     }
-}
-
-void Dice::roll() {
-    std::cout << "rolling" << std::endl;
-    int rng = Random::randInt(0, 5);
-    currentFace = rng;
-}
-
-void Dice::setLocked(bool lock_) {
-    lock = lock_;
-}
-
-Face* Dice::getCurrentFace() const {
-    return faces[currentFace];
-}
-
-
-void Dice::setCurrentFace(bool currentFace_) {
-    currentFace = currentFace_;
-}
-
-void Dice::setUsed(bool used_) {
-    used = used_;
-}
-
-bool Dice::isUsed() const {
-    return used;
-}
-
-Dice* Dice::copy() {
-    auto copy = new Dice();
-    copy->setName(name);
-
-    copy->setLocked(lock);
-    copy->setUsed(used);
-    copy->setCurrentFace(currentFace);
-    copy->setCurrentFaceHover(hoverCurrentFace);
-
-    Face* faceCopy;
-    for (int i = 0; i < 6; i++) {
-        faceCopy = faces[i]->copy();
-        faceCopy->setDice(copy);
-        copy->setFace(faceCopy, i);
-    }
-
-    return copy;
 }
 
 }
