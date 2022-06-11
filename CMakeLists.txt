@@ -17,12 +17,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 include_directories(src)
 
 add_subdirectory(include)
+add_subdirectory(include/glm-0.9.7.1)
+
 include_directories(include
         include/glfw-3.3.7/include/
         include/glm-0.9.7.1/)
 
-find_package(GLM REQUIRED)
-find_package(GLFW3 REQUIRED)
+#find_package(GLM REQUIRED)
+#find_package(GLFW3 REQUIRED)
 
 add_library(GLAD "src/glad.c")
 set(LIBS ${LIBS} GLAD)

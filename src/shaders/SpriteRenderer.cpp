@@ -112,7 +112,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
 
-            addTexture(entry.path(), entry.path().stem());
+            addTexture(entry.path().string(), entry.path().stem().string());
         }
     }
 }

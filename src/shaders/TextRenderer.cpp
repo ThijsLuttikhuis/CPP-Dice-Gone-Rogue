@@ -39,7 +39,7 @@ TextRenderer::TextRenderer(Shader* shader, glm::mat4 projection)
         std::cout << entry.path() << std::endl;
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
-            texture = new Texture2D(entry.path());
+            texture = new Texture2D(entry.path().string());
         }
     }
 

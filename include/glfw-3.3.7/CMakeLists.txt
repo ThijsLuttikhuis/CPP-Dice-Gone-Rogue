@@ -355,7 +355,7 @@ endif()
 
 #--------------------------------------------------------------------
 # Install files other than the library
-# The library is installed by src/CMakeLists.txt
+# The library is installed by src/glmConfig.cmake
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
     install(DIRECTORY include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

@@ -145,7 +145,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 #)
 #
 #### ASSIMP ###
-## AssImp already has a CMakeLists.txt so let's use these
+## AssImp already has a glmConfig.cmake so let's use these
 #
 ## Compile built-in, modified version of Zlib
 #include(CheckIncludeFile)
