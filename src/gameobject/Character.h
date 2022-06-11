@@ -12,11 +12,14 @@ namespace DGR {
 
 class Face;
 
+class Spell;
+
 class GameStateManager;
 
 class Character : public GameObject {
 private:
     Dice* dice = nullptr;
+    Spell* spell = nullptr;
 
     int hp = 0;
     int maxHP = 0;
@@ -60,6 +63,8 @@ public:
 
     [[nodiscard]] virtual std::string getCharacterType() const;
 
+    [[nodiscard]] Spell* getSpell() const;
+
     /// setters
     void setDice(Dice* dice);
 
@@ -68,6 +73,8 @@ public:
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
     void setUsedDice(bool usedDice);
+
+    void setSpell(Spell* spell_);
 
     /// functions
     void roll();
@@ -84,6 +91,10 @@ public:
     void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
+    bool interact(Spell* clickedSpell, GameStateManager* gameState);
+
+    void applySpellTypeDamage(Spell* spell, GameStateManager* gameState);
 };
 
 }

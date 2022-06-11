@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "utilities/Utilities.h"
 #include "GameObject.h"
 #include "shaders/SpriteRenderer.h"
 
@@ -27,8 +28,7 @@ const std::string &GameObject::getName() const {
 }
 
 bool GameObject::isMouseHovering(double xPos, double yPos) const {
-    return (xPos > position.x && xPos < position.x + size.x)
-           && (yPos > position.y && yPos < position.y + size.y);
+    return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
 bool GameObject::getHoverMouse() const {

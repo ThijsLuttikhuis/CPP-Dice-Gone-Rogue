@@ -6,6 +6,7 @@
 
 #include "Constants.h"
 #include "Button.h"
+#include "gameobject/spell/Spell.h"
 #include "gameobject/Character.h"
 #include "InputHandler.h"
 #include "GameController.h"
@@ -36,6 +37,13 @@ void InputHandler::handleMouseButton(double xPos, double yPos) {
     for (auto &hero : heroes) {
         if (hero->isMouseHovering(xPos, yPos, true)) {
             gameController->clickCharacter(hero);
+        }
+
+        auto spell = hero->getSpell();
+        if (spell) {
+            if (spell->isMouseHovering(xPos, yPos)) {
+                gameController->clickSpell(spell);
+            }
         }
     }
 
@@ -68,6 +76,11 @@ void InputHandler::handleMousePosition(double xPos, double yPos) {
     auto heroes = gameController->getHeroes();
     for (auto &hero : heroes) {
         handleMousePosition(hero, xPos, yPos);
+
+        auto spell = hero->getSpell();
+        if (spell) {
+            spell->setHover(spell->isMouseHovering(xPos, yPos));
+        }
     }
 
     auto enemies = gameController->getEnemies();

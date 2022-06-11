@@ -10,6 +10,7 @@
 #include "utilities/Window.h"
 #include "gameobject/Hero.h"
 #include "gameobject/Enemy.h"
+#include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
@@ -30,6 +31,7 @@ private:
     Window* window;
 
     Character* clickedCharacter = nullptr;
+    Spell* clickedSpell = nullptr;
 
     std::vector<Hero*> heroes;
     std::vector<Enemy*> enemies;
@@ -47,6 +49,8 @@ public:
 
     [[nodiscard]] Character* getClickedCharacter() const;
 
+    [[nodiscard]] Spell* getClickedSpell() const;
+
     [[nodiscard]] bool areHeroesRolling() const;
 
     [[nodiscard]] bool areEnemiesRolling() const;
@@ -57,6 +61,8 @@ public:
 
     [[nodiscard]] int getRerolls() const;
 
+    [[nodiscard]] int getMana() const;
+
     [[nodiscard]] Window* getWindow() const;
 
     /// setters
@@ -65,6 +71,8 @@ public:
     void setEnemies(const std::vector<Enemy*> &enemies);
 
     void setClickedCharacter(Character* clickedCharacter_);
+
+    void setClickedSpell(Spell* clickedSpell_);
 
     void setNextGameState();
 
@@ -77,6 +85,7 @@ public:
 
     /// render
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 };
 
 }

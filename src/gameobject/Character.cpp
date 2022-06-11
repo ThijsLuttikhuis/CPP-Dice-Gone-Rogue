@@ -3,9 +3,11 @@
 //
 
 #include <iostream>
+#include <utilities/Utilities.h>
 
 #include "Character.h"
 #include "dice/Face.h"
+#include "spell/Spell.h"
 #include "GameStateManager.h"
 
 namespace DGR {
@@ -36,8 +38,7 @@ bool Character::getUsedDice() const {
 }
 
 bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) const {
-    bool heroHover = (xPos > position.x && xPos < position.x + size.x)
-                     && (yPos > position.y && yPos < position.y + size.y);
+    bool heroHover = Utilities::isPositionInBox(xPos, yPos, position, size);
 
     bool currentFaceHover = false;
     if (alsoCurrentFace) {
@@ -56,6 +57,14 @@ bool Character::isDead() const {
 
 std::string Character::getCharacterType() const {
     return "character type not set";
+}
+
+Spell* Character::getSpell() const {
+    return spell;
+}
+
+void Character::setSpell(Spell* spell_) {
+    spell = spell_;
 }
 
 void Character::setDice(Dice* dice_) {
@@ -79,6 +88,38 @@ void Character::toggleDiceLock() {
 
 void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
+}
+
+bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
+    bool success = false;
+    SpellType type = clickedSpell->getType();
+
+    bool differentCharacterType = (getCharacterType() != clickedSpell->getCharacter()->getCharacterType());
+
+    switch (type.getType()) {
+        case SpellType::empty:
+            break;
+        case SpellType::damage:
+            if (differentCharacterType) {
+                if (!backRow) {
+                    applySpellTypeDamage(clickedSpell, gameState);
+                    success = true;
+                }
+            }
+            break;
+        case SpellType::heal:
+            break;
+        case SpellType::damage_or_shield:
+            break;
+        case SpellType::heal_or_shield:
+            break;
+        case SpellType::damage_if_full_health:
+            break;
+        case SpellType::kill_if_below_threshold:
+            break;
+    }
+
+    return success;
 }
 
 bool Character::interact(Character* otherCharacter, GameStateManager* gameState) {
@@ -220,6 +261,10 @@ void Character::applyDamageStep() {
     isUndying = false;
 }
 
+void Character::applySpellTypeDamage(Spell* spell_, GameStateManager* gameState) {
+    int value = spell_->getValue();
+    incomingDamage += value;
+}
 
 void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
     int value = face->getValue();
@@ -366,6 +411,10 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
 
     drawHealthBar(spriteRenderer, textRenderer);
 
+    if (spell) {
+        spell->draw(spriteRenderer, textRenderer);
+    }
+
     dice->draw(spriteRenderer, textRenderer);
 }
 
@@ -376,6 +425,10 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
                   << " -- y: " << getPosition().y << std::endl;
 #endif
         dice->drawHover(spriteRenderer, textRenderer);
+    }
+
+    if (spell && spell->getHover()) {
+        spell->drawSpellToolTip(spriteRenderer, textRenderer);
     }
 }
 

@@ -24,7 +24,7 @@ class Dice;
 class Face {
 private:
     std::string name;
-    Dice* dice{};
+    Dice* dice = nullptr;
 
     int face_{};
     int value{};

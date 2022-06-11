@@ -23,6 +23,7 @@ YamlReader::YamlReader() {
 
     keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
 
+    keyToFunc["spell"] = new YamlHandleSpell();
     keyToFunc["dice"] = new YamlHandleDice();
     keyToFunc["face0"] = new YamlHandleFace(0);
     keyToFunc["face1"] = new YamlHandleFace(1);
@@ -32,6 +33,8 @@ YamlReader::YamlReader() {
     keyToFunc["face5"] = new YamlHandleFace(5);
 
     keyToFunc["hp"] = new YamlHandleInt(stringCode::hp);
+    keyToFunc["name"] = new YamlHandleString(stringCode::name);
+    keyToFunc["cost"] = new YamlHandleInt(stringCode::cost);
     keyToFunc["mod"] = new YamlHandleString(stringCode::mod);
     keyToFunc["mod1"] = new YamlHandleString(stringCode::mod);
     keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
@@ -48,6 +51,12 @@ YamlReader::YamlReader() {
     keyToFunc["heal and mana"] = new YamlHandleInt(stringCode::heal_and_mana);
     keyToFunc["mana and heal"] = new YamlHandleInt(stringCode::heal_and_mana);
     keyToFunc["empty"] = new YamlHandleInt(stringCode::empty);
+
+    keyToFunc["damage or shield"] = new YamlHandleInt(stringCode::damage_or_shield);
+    keyToFunc["heal or shield"] = new YamlHandleInt(stringCode::heal_or_shield);
+    keyToFunc["damage if full health"] = new YamlHandleInt(stringCode::damage_if_full_health);
+    keyToFunc["kill if below threshold"] = new YamlHandleInt(stringCode::kill_if_below_threshold);
+
 }
 
 std::string YamlReader::trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v") {

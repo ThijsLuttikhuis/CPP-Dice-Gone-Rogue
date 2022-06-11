@@ -59,6 +59,8 @@ public:
 
     /// render
     void render();
+
+    void clickSpell(Spell* spell);
 };
 
 }

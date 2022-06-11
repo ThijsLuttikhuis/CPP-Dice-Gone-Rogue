@@ -13,6 +13,7 @@
 #include "iofilemanager/YamlReader.h"
 #include "GameStateManager.h"
 #include "utilities/Button.h"
+#include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
@@ -112,8 +113,7 @@ void GameController::update() {
                 int i = animationCounter / slowDown;
                 enemyAttack(i);
             }
-        }
-        else {
+        } else {
             animationCounter = 0;
             gameState->setNextGameState();
         }
@@ -186,9 +186,34 @@ void GameController::alignCharacterPositions(double dt) {
     }
 }
 
+void GameController::clickSpell(Spell* spell) {
+    switch (gameState->getGameState()) {
+        case GameStateManager::rolling_heroes:
+            break;
+        case GameStateManager::attack_block_heroes:
+            if (gameState->getClickedSpell() == spell) {
+                gameState->setClickedSpell(nullptr);
+            } else {
+                std::cout << gameState->getMana() << ", " << spell->getCost() << std::endl;
+                if (gameState->getMana() >= spell->getCost()) {
+                    std::cout << "done" << std::endl;
+                    std::cout << gameState->getMana() << ", " << spell->getCost() << std::endl;
+                    gameState->setClickedSpell(spell);
+                    gameState->setClickedCharacter(nullptr);
+                }
+            }
+            break;
+        case GameStateManager::rolling_enemies:
+            break;
+        case GameStateManager::attack_block_enemies:
+            break;
+    }
+}
+
 void GameController::clickCharacter(Character* character) {
     bool success;
     Character* clickedCharacter;
+    Spell* clickedSpell;
     switch (gameState->getGameState()) {
         case GameStateManager::rolling_heroes:
             if (character->getCharacterType() == "hero") {
@@ -198,6 +223,7 @@ void GameController::clickCharacter(Character* character) {
         case GameStateManager::rolling_enemies:
             break;
         case GameStateManager::attack_block_heroes:
+            clickedSpell = gameState->getClickedSpell();
             clickedCharacter = gameState->getClickedCharacter();
             if (clickedCharacter) {
                 success = character->interact(clickedCharacter, gameState);
@@ -205,18 +231,27 @@ void GameController::clickCharacter(Character* character) {
                     clickedCharacter->setUsedDice(true);
                 }
                 gameState->setClickedCharacter(nullptr);
-
-            } else {
-                if (character->getCharacterType() == "hero") {
-                    if (!character->getUsedDice()) {
-                        success = character->interact(nullptr, gameState);
-                        if (success) {
-                            character->setUsedDice(true);
-                        } else {
-                            gameState->setClickedCharacter(character);
-                        }
+                break;
+            }
+            if (clickedSpell) {
+                success = character->interact(clickedSpell, gameState);
+                if (success) {
+                    gameState->addMana(- clickedSpell->getCost());
+                }
+                gameState->setClickedSpell(nullptr);
+                break;
+            }
+            if (character->getCharacterType() == "hero") {
+                if (!character->getUsedDice()) {
+                    success = character->interact((Character*) nullptr, gameState);
+                    if (success) {
+                        character->setUsedDice(true);
+                    } else {
+                        gameState->setClickedCharacter(character);
+                        gameState->setClickedSpell(nullptr);
                     }
                 }
+                break;
             }
             break;
         case GameStateManager::attack_block_enemies:
@@ -269,7 +304,7 @@ void GameController::enemyAttack(int index) {
     }
 
     // check if you can interact with yourself
-    success = enemy->interact(nullptr, gameState);
+    success = enemy->interact((Character*) nullptr, gameState);
 
     // check if you can interact with an ally (=enemy from their perspective)
     if (!success) {
@@ -325,5 +360,6 @@ void GameController::render() {
 
     gameState->render(spriteRenderer, textRenderer);
 }
+
 
 }

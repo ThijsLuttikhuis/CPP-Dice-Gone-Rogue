@@ -15,7 +15,8 @@ characters:
         damage: 2;
       ;
       face4:
-        damage: 2;
+        damage: 1;
+        mod: "poison";
       ;
       face5:
         empty: 0;

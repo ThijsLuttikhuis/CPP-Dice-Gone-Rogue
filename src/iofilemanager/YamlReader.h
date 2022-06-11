@@ -19,12 +19,15 @@
 #include "gameobject/Hero.h"
 #include "gameobject/dice/Dice.h"
 #include "gameobject/dice/Face.h"
+#include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
 enum struct stringCode : int {
     characters,
+    name,
     hero,
+    cost,
     enemy,
     dice,
     face,
@@ -41,7 +44,13 @@ enum struct stringCode : int {
     shield_and_mana,
     damage_and_mana,
     damage_and_self_shield,
-    empty
+    spell,
+    damage_or_shield,
+    heal_or_shield,
+    damage_if_full_health,
+    kill_if_below_threshold,
+    empty,
+
 };
 
 class YamlHandle {
@@ -112,6 +121,7 @@ public:
 };
 
 class YamlHandleCharacter : public YamlHandle {
+    Spell* spell = nullptr;
     Dice* dice = nullptr;
     int maxHP{};
     std::string name;
@@ -120,6 +130,7 @@ public:
           : YamlHandle(stringCode), name(std::move(name)) {}
 
     void reset() override {
+        spell = nullptr;
         dice = nullptr;
         maxHP = {};
     };
@@ -128,6 +139,9 @@ public:
         switch (yamlHandle->getType()) {
             case stringCode::hp:
                 maxHP = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::spell:
+                spell = (Spell*) yamlHandle->getFeature();
                 break;
             case stringCode::dice:
                 dice = (Dice*) yamlHandle->getFeature();
@@ -155,6 +169,10 @@ public:
         }
 
         character->setMaxHP(maxHP);
+        if (spell) {
+            character->setSpell(spell);
+            character->getSpell()->setCharacter(character);
+        }
         character->setDice(dice);
         character->getDice()->setCharacter(character);
         character->getDice()->setName(character->getName());
@@ -192,7 +210,7 @@ public:
     }
 
     void* getFeature() override {
-        Dice* dice = new Dice();
+        auto* dice = new Dice();
         for (int i = 0; i < 6; i++) {
             dice->setFace(faces[i], i);
             dice->getFace(i)->setDice(dice);
@@ -271,6 +289,66 @@ public:
     void* getFeature() override {
         Face* face = new Face(face_, value, type, modifiers);
         return (void*) face;
+    };
+};
+
+
+class YamlHandleSpell : public YamlHandle {
+    std::string name;
+    int cost = 0;
+    int value = 0;
+    SpellType type = {};
+public:
+    explicit YamlHandleSpell() : YamlHandle(stringCode::spell) {};
+
+    void reset() override {
+        cost = 0;
+        value = 0;
+        type = SpellType::empty;
+    }
+
+    void handle(YamlHandle* yamlHandle) override {
+        switch (yamlHandle->getType()) {
+            case stringCode::name:
+                name = *(std::string*) yamlHandle->getFeature();
+                break;
+            case stringCode::cost:
+                cost = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::damage:
+                type = SpellType::damage;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::heal:
+                type = SpellType::heal;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::damage_or_shield:
+                type = SpellType::damage_or_shield;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::heal_or_shield:
+                type = SpellType::heal_or_shield;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::damage_if_full_health:
+                type = SpellType::damage_if_full_health;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::kill_if_below_threshold:
+                type = SpellType::kill_if_below_threshold;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            default:
+                std::cerr << "[YamlHandleSpell] unsupported feature: " <<
+                          static_cast<int>(yamlHandle->getType()) << std::endl;
+                exit(4);
+        }
+    }
+
+    void* getFeature() override {
+        auto* spell = new Spell(name, cost, value, type);
+        return (void*) spell;
     };
 };
 
