@@ -84,6 +84,11 @@ characters:
 
   wizard:
     hp: 8;
+    spell:
+      name: "Fireball";
+      damage: 6;
+      cost: 4;
+    ;
     dice:
       face0:
         mana: 4;
@@ -126,11 +131,11 @@ characters:
         mod: "single use";
       ;
       face4:
-        shield: 3;
+        heal: 3;
       ;
       face5:
         empty: 0;
       ;
     ;
   ;
-;
+  ;

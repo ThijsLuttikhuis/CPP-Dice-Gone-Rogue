@@ -15,6 +15,31 @@ characters:
         damage: 2;
       ;
       face4:
+        damage: 1;
+        mod: "poison";
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  rat:
+    hp: 6;
+    dice:
+      face0:
+        damage: 4;
+      ;
+      face1:
+        damage: 2;
+      ;
+      face2:
+        damage: 3;
+      ;
+      face3:
+        damage: 2;
+      ;
+      face4:
         damage: 2;
       ;
       face5:
@@ -22,6 +47,7 @@ characters:
       ;
     ;
   ;
+
 
   rat:
     hp: 6;

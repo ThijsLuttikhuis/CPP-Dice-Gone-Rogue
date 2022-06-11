@@ -10,11 +10,12 @@
 #include <map>
 #include <utility>
 #include <glm/vec2.hpp>
-#include <shaders/SpriteRenderer.h>
+
+#include "shaders/SpriteRenderer.h"
+#include "shaders/TextRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
 #include "Dice.h"
-#include <shaders/TextRenderer.h>
 
 namespace DGR {
 
@@ -23,7 +24,7 @@ class Dice;
 class Face {
 private:
     std::string name;
-    Dice* dice{};
+    Dice* dice = nullptr;
 
     int face_{};
     int value{};
@@ -35,11 +36,9 @@ private:
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
 
-
     void drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos);
 
     void drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos);
-
 public:
     Face() = default;
 
@@ -49,6 +48,7 @@ public:
     Face(std::string name, Dice* dice, int face_,
          int value, FaceType type, FaceModifier modifiers);
 
+    /// getters
     [[nodiscard]] glm::vec2 getPosition(Dice::dicePos dicePos = Dice::diceLayoutPos) const;
 
     [[nodiscard]] glm::vec2 getSize() const;
@@ -59,11 +59,18 @@ public:
 
     [[nodiscard]] int getValue() const;
 
-    [[nodiscard]] FaceType getType() const;
+    [[nodiscard]] FaceType getFaceType() const;
 
     [[nodiscard]] FaceModifier getModifiers() const;
 
+    [[nodiscard]] Face* makeCopy() const;
+
+    /// setters
+    void setName(const std::string &name_);
+
     void setValue(int value_);
+
+    void setHover(bool hover_);
 
     void setType(FaceType type);
 
@@ -73,23 +80,21 @@ public:
 
     void addModifier(const std::string &modifierStr);
 
+    void removeModifier(FaceModifier::modifier modifier);
+
     void setModifiers(unsigned int modifiers_);
-
-    void setHover(bool hover_);
-
-    void setName(const std::string &name_);
 
     void setDice(Dice* dice);
 
+    /// render
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer,
                    Dice::dicePos dicePos = Dice::diceLayoutPos);
 
     void draw(SpriteRenderer* spriteRenderer);
 
-
-    void removeModifier(FaceModifier::modifier modifier);
 };
 
 }
+
 
 #endif //DICEGONEROGUE_FACE_H

@@ -6,9 +6,12 @@
 #define DICEGONEROGUE_GAMESTATEMANAGER_H
 
 #include <vector>
-#include <utilities/Window.h>
+#include <utilities/AttackOrder.h>
+
+#include "utilities/Window.h"
 #include "gameobject/Hero.h"
 #include "gameobject/Enemy.h"
+#include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
@@ -29,13 +32,18 @@ private:
     Window* window;
 
     Character* clickedCharacter = nullptr;
+    Spell* clickedSpell = nullptr;
 
     std::vector<Hero*> heroes;
-
     std::vector<Enemy*> enemies;
-public:
-    explicit GameStateManager(Window* window) : window(window) {};
 
+    AttackOrder* attackOrder = nullptr;
+
+    void updateButtons();
+public:
+    explicit GameStateManager(Window* window) : window(window) { };
+
+    /// getters
     [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
 
     [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
@@ -43,6 +51,8 @@ public:
     [[nodiscard]] gameState getGameState() const;
 
     [[nodiscard]] Character* getClickedCharacter() const;
+
+    [[nodiscard]] Spell* getClickedSpell() const;
 
     [[nodiscard]] bool areHeroesRolling() const;
 
@@ -52,25 +62,37 @@ public:
 
     [[nodiscard]] bool areEnemiesAttacking() const;
 
+    [[nodiscard]] int getRerolls() const;
+
+    [[nodiscard]] int getMana() const;
+
     [[nodiscard]] Window* getWindow() const;
 
+    [[nodiscard]] AttackOrder* getAttackOrder() const;
+
+    /// setters
     void setHeroes(const std::vector<Hero*> &heroes_);
 
     void setEnemies(const std::vector<Enemy*> &enemies);
 
     void setClickedCharacter(Character* clickedCharacter_);
 
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
-    int reroll(bool rollHeroes = true);
-
-    void addMana(int mana_);
+    void setClickedSpell(Spell* clickedSpell_);
 
     void setNextGameState();
 
-    void updateButtons();
+    void setAttackOrder(AttackOrder* attackOrder_);
+
+    /// functions
+    int reroll();
+
+    void addMana(int mana_);
 
     std::pair<Character*, Character*> getNeighbours(Character* character);
+
+    /// render
+    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 };
 
 }

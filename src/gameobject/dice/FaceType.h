@@ -36,18 +36,20 @@ public:
 
     explicit FaceType(const faceType &type) : type(type) {};
 
+    /// getters
+    [[nodiscard]] const std::string &toString() const;
+
+    [[nodiscard]] faceType getType() const;
+
+    /// overloads
     FaceType &operator =(const faceType &t) {
         type = t;
         return *this;
     }
+
     bool operator ==(const faceType &t) {
         return t == type;
     }
-
-
-    std::string &toString();
-
-    faceType getType();
 };
 
 }

@@ -5,10 +5,11 @@
 #ifndef DICEGONEROGUE_WINDOW_H
 #define DICEGONEROGUE_WINDOW_H
 
-#include "glad/glad.h"
-#include "InputHandler.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <gameobject/Character.h>
+
+#include "InputHandler.h"
+#include "gameobject/Character.h"
 
 namespace DGR {
 
@@ -19,13 +20,13 @@ private:
     int width;
     int height;
 
-    int displayWidth;
-    int displayHeight;
+    int displayWidth{};
+    int displayHeight{};
 
-    GLFWwindow* glfwWindow;
+    GLFWwindow* glfwWindow = nullptr;
 
-    GameController* gameController;
-    InputHandler* inputHandler;
+    GameController* gameController = nullptr;
+    InputHandler* inputHandler = nullptr;
 public:
     Window(int width, int height);
 

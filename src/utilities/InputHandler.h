@@ -5,12 +5,13 @@
 #ifndef DICEGONEROGUE_INPUTHANDLER_H
 #define DICEGONEROGUE_INPUTHANDLER_H
 
+#include <iostream>
 #include <utility>
 #include <vector>
 #include <glm/vec2.hpp>
+
 #include "shaders/SpriteRenderer.h"
-#include <iostream>
-#include <shaders/TextRenderer.h>
+#include "shaders/TextRenderer.h"
 
 namespace DGR {
 

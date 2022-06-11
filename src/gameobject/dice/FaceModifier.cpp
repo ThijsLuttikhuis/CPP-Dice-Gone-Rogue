@@ -3,8 +3,9 @@
 //
 
 #include <iostream>
-#include "FaceModifier.h"
 #include <vector>
+
+#include "FaceModifier.h"
 
 namespace DGR {
 
@@ -45,6 +46,42 @@ std::string FaceModifier::toString() const {
     return modString;
 }
 
+glm::vec3 FaceModifier::toColor() const {
+    if (modifiers == 0) {
+        return glm::vec3(1.0f);
+    }
+
+    if (modifiers & static_cast<unsigned int>(modifier::ranged)) {
+        return glm::vec3(0.9f, 0.5f, 0.5f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::sweeping_edge)) {
+        return glm::vec3(1.5f, 2.0f, 0.6f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::poison)) {
+        return glm::vec3(0.2f, 0.7f, 0.1f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::cleanse)) {
+        return glm::vec3(0.8f, 1.0f, 0.7f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::first_blood)) {
+        return glm::vec3(1.5f, 0.4f, 0.2f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::growth)) {
+        return glm::vec3(1.0f, 1.4f, 1.0f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::decay)) {
+        return glm::vec3(1.0f, 0.8f, 0.8f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::single_use)) {
+        return glm::vec3(1.0f, 0.5f, 1.0f);
+    }
+    return glm::vec3(1.0f);
+}
+
+unsigned int FaceModifier::getModifiers() const {
+    return modifiers;
+}
+
 bool FaceModifier::hasModifier(modifier modifier) const {
     return modifiers & static_cast<unsigned int>(modifier);
 }
@@ -61,10 +98,6 @@ void FaceModifier::setModifiers(unsigned int modifiers_) {
     modifiers = modifiers_;
 }
 
-unsigned int FaceModifier::getModifiers() const {
-    return modifiers;
-}
-
 void FaceModifier::addModifier(const std::string &modifierStr) {
     modifier modifier_ = stringToModifier(modifierStr);
     if (!hasModifier(modifier_)) {
@@ -77,33 +110,5 @@ void FaceModifier::addModifier(modifier modifier_) {
         modifiers += static_cast<unsigned int>(modifier_);
     }
 }
-
-glm::vec3 FaceModifier::toColor() const {
-    if (modifiers == 0) {
-        return glm::vec3(1.0f);
-    }
-
-    if (modifiers & static_cast<unsigned int>(modifier::ranged)) {
-        return glm::vec3(1.0f, 0.4f, 0.4f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::sweeping_edge)) {
-        return glm::vec3(4.0f, 4.5f, 1.0f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::single_use)) {
-        return glm::vec3(0.4f, 0.1f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::poison)) {
-        return glm::vec3(0.1f, 0.5f, 0.1f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::cleanse)) {
-        return glm::vec3(0.8f, 1.0f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::first_blood)) {
-        return glm::vec3(0.0f, 0.9f, 0.7f);
-    }
-
-    return glm::vec3(1.0f);
-}
-
 
 }

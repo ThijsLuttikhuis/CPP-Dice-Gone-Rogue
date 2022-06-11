@@ -8,7 +8,8 @@
 
 #include <string>
 #include <utility>
-#include <shaders/TextRenderer.h>
+
+#include "shaders/TextRenderer.h"
 #include "shaders/SpriteRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
@@ -43,6 +44,7 @@ public:
 
     Dice() = default;
 
+    /// getters
     [[nodiscard]] Face* getCurrentFace() const;
 
     [[nodiscard]] Face* getFace(int index) const;
@@ -59,9 +61,14 @@ public:
 
     [[nodiscard]] bool isUsed() const;
 
+    [[nodiscard]] Dice* makeCopy() const;
+
+    /// setters
     void setLocked(bool lock_);
 
     void setUsed(bool lock_);
+
+    void setCurrentFace(int currentFace_);
 
     void setCurrentFaceHover(bool hoverCurrentFace_);
 
@@ -73,13 +80,13 @@ public:
 
     void updateHoverMouse(double xPos, double yPos);
 
+    /// functions
+    void roll();
+
+    /// render
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
-    void roll();
-
-
 };
 
 }

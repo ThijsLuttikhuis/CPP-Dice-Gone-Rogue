@@ -2,13 +2,13 @@
 // Created by thijs on 06-06-22.
 //
 
+#include <string>
+#include <filesystem>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "TextRenderer.h"
 #include "utilities/Constants.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
-#include <string>
-#include <filesystem>
 
 namespace DGR {
 
@@ -106,27 +106,61 @@ TextRenderer::~TextRenderer() {
     }
 }
 
-void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 position, glm::vec2 size,
+void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
                             glm::vec3 color, float alpha) {
 
     glm::vec3 white = glm::vec3(1.0f);
     glm::vec3 textColor = white;
-    const glm::vec2 textStart = position;
 
     glm::vec2 currentTextPos = textStart + glm::vec2(1, 1);
-    glm::vec2 letterSize(5, 7);
 
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
 
-    for (char i : text) {
-        if (i == '^') {
+    std::vector<int> wordVAO = {};
+    for (char letter : text) {
+        /// add letter to word
+        if (letter != '^') {
+            wordVAO.push_back(letter - (int) ' ');
+        }
+
+        /// if a space is found, display word
+        if (letter == ' ' || letter == '^') {
+            currentTextPos = displayWord(currentTextPos, textStart, size, wordVAO, textColor, alpha, zIndex);
+            wordVAO = {};
+        }
+
+        /// special text color
+        if (letter == '^') {
             textColor = textColor == white ? color : white;
             continue;
         }
-        int c = i - (int) ' ';
+    }
 
+    /// display final word
+    currentTextPos = displayWord(currentTextPos, textStart, size, wordVAO, textColor, alpha, zIndex);
+}
 
+glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart, const glm::vec2 &size,
+                                    const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha,
+                                    float zIndex) {
+
+    glm::vec2 currentTextPos = initialTextPos;
+    glm::vec2 letterSize(5, 7);
+
+    /// check word width
+    float wordWidth = 0.0f;
+    for (auto &letterVAO : wordVAO) {
+        wordWidth += letterWidths[letterVAO] + 1.0f;
+    }
+
+    /// check if the word should be put on a new line
+    if (currentTextPos.x + wordWidth > textStart.x + size.x) {
+        currentTextPos = glm::vec2(textStart.x + 1, currentTextPos.y + letterSize.y + 1);
+    }
+
+    /// display word
+    for (auto &letterVAO : wordVAO) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(currentTextPos, 0.0f));
         model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
@@ -134,23 +168,20 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 pos
         model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
         model = glm::scale(model, glm::vec3(letterSize, 1.0f));
 
-        currentTextPos += glm::vec2(letterWidths[c] + 1, 0);
-
-        if (currentTextPos.x + letterSize.x > textStart.x + size.x) {
-            currentTextPos = glm::vec2(textStart.x + 1, currentTextPos.y + letterSize.y + 1);
-        }
+        currentTextPos += glm::vec2(letterWidths[letterVAO] + 1, 0);
 
         shader->use();
         shader->setMatrix4("model", model);
-        shader->setVector3f("spriteColor", textColor);
+        shader->setVector3f("spriteColor", color);
         shader->setFloat("spriteAlpha", alpha);
         shader->setFloat("zIndex", zIndex);
 
-        glBindVertexArray(this->quadVAO[c]);
+        glBindVertexArray(this->quadVAO[letterVAO]);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
     }
 
-    glBindVertexArray(0);
+    return currentTextPos;
 }
 
 }

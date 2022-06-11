@@ -2,12 +2,12 @@
 // Created by thijs on 30-05-22.
 //
 
-#include <glad/glad.h>
 #include <iostream>
+#include <glad/glad.h>
+
 #include "Texture2D.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-
 #include "stb_image.h"
 
 namespace DGR {

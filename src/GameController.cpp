@@ -4,15 +4,16 @@
 
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm-0.9.7.1/glm/gtx/string_cast.hpp>
-#include <gameobject/Hero.h>
-#include <shaders/TextRenderer.h>
-#include <utilities/Random.h>
+
+#include "gameobject/Hero.h"
+#include "shaders/TextRenderer.h"
+#include "utilities/Random.h"
 #include "GameController.h"
 #include "utilities/Window.h"
 #include "iofilemanager/YamlReader.h"
 #include "GameStateManager.h"
 #include "utilities/Button.h"
+#include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
@@ -27,7 +28,6 @@ GameController::GameController(Window* window) {
                                       -1.0f, 1.0f);
 
     textRenderer = new TextRenderer(shader, projection);
-
     spriteRenderer = new SpriteRenderer(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
 
@@ -62,48 +62,9 @@ GameController::GameController(Window* window) {
     gameState->setEnemies(enemies);
 
     gameState->reroll();
-}
 
-void GameController::update() {
-    static double t, dt, tPrev = 0.0;
-
-    glfwPollEvents();
-    t = glfwGetTime();
-
-    dt = t - tPrev;
-    tPrev = t;
-
-    alignCharacterPositions(dt);
-
-    //TODO: make enemy turn take a bit longer than "instantly" by adding animations etc
-    if (gameState->areEnemiesRolling()) {
-        gameState->reroll(false);
-        gameState->setNextGameState();
-    } else if (gameState->areEnemiesAttacking()) {
-        enemiesAttack();
-        gameState->setNextGameState();
-    }
-
-}
-
-void GameController::render() {
-    for (auto &hero : gameState->getHeroes()) {
-        hero->draw(spriteRenderer, textRenderer);
-    }
-
-    for (auto &enemy : gameState->getEnemies()) {
-        enemy->draw(spriteRenderer, textRenderer);
-    }
-
-    for (auto &hero : gameState->getHeroes()) {
-        hero->drawHover(spriteRenderer, textRenderer);
-    }
-
-    for (auto &enemy : gameState->getEnemies()) {
-        enemy->drawHover(spriteRenderer, textRenderer);
-    }
-
-    gameState->render(spriteRenderer, textRenderer);
+    auto attackOrder = new AttackOrder(gameState);
+    gameState->setAttackOrder(attackOrder);
 }
 
 const std::vector<Hero*> &GameController::getHeroes() const {
@@ -118,8 +79,48 @@ SpriteRenderer* GameController::getSpriteRenderer() const {
     return spriteRenderer;
 }
 
-TextRenderer* GameController::getTextRenderer() {
+TextRenderer* GameController::getTextRenderer() const {
     return textRenderer;
+}
+
+void GameController::update() {
+
+    glfwPollEvents();
+    t = glfwGetTime();
+
+    dt = t - tPrev;
+    tPrev = t;
+
+    alignCharacterPositions(dt);
+
+    //TODO: add animations etc
+    int slowDown = 30;
+    if (gameState->areEnemiesRolling()) {
+        animationCounter++;
+        if (animationCounter % slowDown == 0) {
+            gameState->reroll();
+            for (auto &enemy : getEnemies()) {
+                auto currentFace = enemy->getDice()->getCurrentFace()->getFace_();
+                if (currentFace == 0 || currentFace == 2) {
+                    enemy->setDiceLock(true);
+                }
+            }
+        }
+        if (gameState->getRerolls() == 0) {
+            gameState->setNextGameState();
+            animationCounter = 0;
+        }
+    } else if (gameState->areEnemiesAttacking()) {
+        if (animationCounter < (int) getEnemies().size() * slowDown) {
+            if ((animationCounter++ % slowDown) == 0) {
+                int i = animationCounter / slowDown;
+                enemyAttack(i);
+            }
+        } else {
+            animationCounter = 0;
+            gameState->setNextGameState();
+        }
+    }
 }
 
 void GameController::alignCharacterPositions(double dt) {
@@ -188,9 +189,34 @@ void GameController::alignCharacterPositions(double dt) {
     }
 }
 
+void GameController::clickSpell(Spell* spell) {
+    switch (gameState->getGameState()) {
+        case GameStateManager::rolling_heroes:
+            break;
+        case GameStateManager::attack_block_heroes:
+            if (gameState->getClickedSpell() == spell) {
+                gameState->setClickedSpell(nullptr);
+            } else {
+                std::cout << gameState->getMana() << ", " << spell->getCost() << std::endl;
+                if (gameState->getMana() >= spell->getCost()) {
+                    std::cout << "done" << std::endl;
+                    std::cout << gameState->getMana() << ", " << spell->getCost() << std::endl;
+                    gameState->setClickedSpell(spell);
+                    gameState->setClickedCharacter(nullptr);
+                }
+            }
+            break;
+        case GameStateManager::rolling_enemies:
+            break;
+        case GameStateManager::attack_block_enemies:
+            break;
+    }
+}
+
 void GameController::clickCharacter(Character* character) {
     bool success;
     Character* clickedCharacter;
+    Spell* clickedSpell;
     switch (gameState->getGameState()) {
         case GameStateManager::rolling_heroes:
             if (character->getCharacterType() == "hero") {
@@ -200,6 +226,7 @@ void GameController::clickCharacter(Character* character) {
         case GameStateManager::rolling_enemies:
             break;
         case GameStateManager::attack_block_heroes:
+            clickedSpell = gameState->getClickedSpell();
             clickedCharacter = gameState->getClickedCharacter();
             if (clickedCharacter) {
                 success = character->interact(clickedCharacter, gameState);
@@ -207,18 +234,27 @@ void GameController::clickCharacter(Character* character) {
                     clickedCharacter->setUsedDice(true);
                 }
                 gameState->setClickedCharacter(nullptr);
-
-            } else {
-                if (character->getCharacterType() == "hero") {
-                    if (!character->getUsedDice()) {
-                        success = character->interact(nullptr, gameState);
-                        if (success) {
-                            character->setUsedDice(true);
-                        } else {
-                            gameState->setClickedCharacter(character);
-                        }
+                break;
+            }
+            if (clickedSpell) {
+                success = character->interact(clickedSpell, gameState);
+                if (success) {
+                    gameState->addMana(- clickedSpell->getCost());
+                }
+                gameState->setClickedSpell(nullptr);
+                break;
+            }
+            if (character->getCharacterType() == "hero") {
+                if (!character->getUsedDice()) {
+                    success = character->interact((Character*) nullptr, gameState);
+                    if (success) {
+                        character->setUsedDice(true);
+                    } else {
+                        gameState->setClickedCharacter(character);
+                        gameState->setClickedSpell(nullptr);
                     }
                 }
+                break;
             }
             break;
         case GameStateManager::attack_block_enemies:
@@ -237,7 +273,7 @@ void GameController::pressButton(Button* button) {
                 gameState->setNextGameState();
             }
         } else if (gameState->areHeroesAttacking()) {
-            //TODO: UNDO..
+            gameState->getAttackOrder()->undo();
         }
     }
 
@@ -251,55 +287,82 @@ void GameController::pressButton(Button* button) {
 }
 
 void GameController::enemiesAttack() {
+    for (int i = 0; i < (int) gameState->getEnemies().size(); i++) {
+        enemyAttack(i);
+    }
+}
+
+void GameController::enemyAttack(int index) {
     auto heroes = gameState->getHeroes();
     int nHeroes = heroes.size();
 
     auto enemies = gameState->getEnemies();
     int nEnemies = enemies.size();
 
+    auto enemy = enemies[index];
     bool success;
-    for (auto &enemy : enemies) {
 
-        if (enemy->isDead()) {
-            continue;
+    if (enemy->isDead()) {
+        return;
+    }
+
+    // check if you can interact with yourself
+    success = enemy->interact((Character*) nullptr, gameState);
+
+    // check if you can interact with an ally (=enemy from their perspective)
+    if (!success) {
+        int mostIncomingDamage = 0;
+        for (auto &otherEnemy : gameState->getEnemies()) {
+            mostIncomingDamage = std::max(mostIncomingDamage, otherEnemy->getIncomingDamage());
         }
-        // check if you can interact with yourself
-        success = enemy->interact(nullptr, gameState);
-
-        // check if you can interact with an ally (=enemy from their perspective)
-        if (!success) {
-            int mostIncomingDamage = 0;
-            for (auto &otherEnemy : gameState->getEnemies()) {
-                mostIncomingDamage = std::max(mostIncomingDamage, otherEnemy->getIncomingDamage());
-            }
-            if (mostIncomingDamage > 0) {
-                for (auto &otherEnemy : enemies) {
-                    if (otherEnemy->getIncomingDamage() == mostIncomingDamage) {
-                        success = otherEnemy->interact(enemy, gameState);
-                    }
-                }
-            } else {
-                int rng = Random::randInt(0, nEnemies - 1);
-                success = enemies[rng]->interact(enemy, gameState);
-            }
-        }
-
-        // finally, check if you can interact with an enemy (=hero from their perspective)
-        if (!success) {
-            int rng;
-            while (true) {
-                rng = Random::randInt(0, nHeroes - 1);
-                if (!heroes[rng]->isDead()) {
-                    success = heroes[rng]->interact(enemy, gameState);
-                    break;
+        if (mostIncomingDamage > 0) {
+            for (auto &otherEnemy : enemies) {
+                if (otherEnemy->getIncomingDamage() == mostIncomingDamage) {
+                    success = otherEnemy->interact(enemy, gameState);
                 }
             }
-        }
-
-        if (!success) {
-            std::cerr << "GameController::enemiesAttack(): ERROR in attack logic!" << std::endl;
+        } else {
+            int rng = Random::randInt(0, nEnemies - 1);
+            success = enemies[rng]->interact(enemy, gameState);
         }
     }
+
+    // finally, check if you can interact with an enemy (=hero from their perspective)
+    if (!success) {
+        int rng;
+        while (true) {
+            rng = Random::randInt(0, nHeroes - 1);
+            if (!heroes[rng]->isDead()) {
+                success = heroes[rng]->interact(enemy, gameState);
+                break;
+            }
+        }
+    }
+
+    if (!success) {
+        std::cerr << "GameController::enemiesAttack(): ERROR in attack logic!" << std::endl;
+    }
 }
+
+void GameController::render() {
+    for (auto &hero : gameState->getHeroes()) {
+        hero->draw(spriteRenderer, textRenderer);
+    }
+
+    for (auto &enemy : gameState->getEnemies()) {
+        enemy->draw(spriteRenderer, textRenderer);
+    }
+
+    for (auto &hero : gameState->getHeroes()) {
+        hero->drawHover(spriteRenderer, textRenderer);
+    }
+
+    for (auto &enemy : gameState->getEnemies()) {
+        enemy->drawHover(spriteRenderer, textRenderer);
+    }
+
+    gameState->render(spriteRenderer, textRenderer);
+}
+
 
 }

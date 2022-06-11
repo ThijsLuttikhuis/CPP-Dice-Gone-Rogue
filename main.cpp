@@ -2,11 +2,10 @@
 // Created by thijs on 27-05-22.
 //
 
-#include <iostream>
 
+#include "GameController.h"
 #include "utilities/Random.h"
 #include "utilities/Window.h"
-#include "GameController.h"
 
 int main() {
 

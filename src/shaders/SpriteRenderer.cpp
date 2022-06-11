@@ -2,13 +2,12 @@
 // Created by thijs on 30-05-22.
 //
 
-#include "SpriteRenderer.h"
-#include "utilities/Constants.h"
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include <filesystem>
 #include <string>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "SpriteRenderer.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 
@@ -16,7 +15,7 @@ SpriteRenderer::SpriteRenderer(Shader* shader, glm::mat4 projection)
       : shader(shader) {
 
     specialSpritesToFunction.push_back(
-          std::make_pair<std::string, void (*)(SpriteRenderer* spriteRenderer, std::string texture, float zIndex,
+          std::make_pair<std::string, void (*)(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
                                                glm::vec2 position, glm::vec2 size, float rotate,
                                                glm::vec3 color, float alpha)>("box", drawBoxSprite));
 
@@ -54,7 +53,7 @@ SpriteRenderer::~SpriteRenderer() {
 }
 
 
-void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2 position, glm::vec2 size,
+void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size,
                                 float rotate, glm::vec3 color, float alpha) {
 
     for (auto &specialSprite : specialSpritesToFunction) {
@@ -62,13 +61,6 @@ void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2
             specialSprite.second(this, textureName, zIndex, position, size, rotate, color, alpha);
             return;
         }
-    }
-
-    if (!textures[textureName]) {
-#if PRINT_NO_TEXTURE
-        std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
-#endif
-        textureName = "no_texture";
     }
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -85,7 +77,15 @@ void SpriteRenderer::drawSprite(std::string textureName, float zIndex, glm::vec2
     shader->setFloat("zIndex", zIndex);
 
     glActiveTexture(GL_TEXTURE0);
-    textures[textureName]->bind();
+
+    if (textures[textureName]) {
+        textures[textureName]->bind();
+    } else {
+#if PRINT_NO_TEXTURE
+        std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
+#endif
+        textures["no_texture"]->bind();
+    }
 
     glBindVertexArray(this->quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -117,9 +117,10 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     }
 }
 
-void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, std::string texture, float zIndex,
+void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
                                    glm::vec2 position, glm::vec2 size, float drawEdges, glm::vec3 color, float alpha) {
 
+    (void) texture;
     std::string tex = "pixel";
     float left = position.x;
     float right = position.x + size.x;
@@ -127,16 +128,18 @@ void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, std::string t
     float down = position.y + size.y;
 
     // draw center
-        spriteRenderer->drawSprite(tex, zIndex, position, size, 0.0f, color, alpha);
+    spriteRenderer->drawSprite(tex, zIndex, position, size, 0.0f, color, alpha);
     if (drawEdges > 0.001f) {
         // draw edges
         spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x+1, 1.0), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), 0.0f, color, 1.0);
         spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
         spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
     }
+}
 
-
+bool SpriteRenderer::hasTexture(const std::string &textureName) {
+    return textures[textureName];
 }
 
 }

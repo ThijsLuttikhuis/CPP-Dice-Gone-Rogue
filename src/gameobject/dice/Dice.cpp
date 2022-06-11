@@ -2,19 +2,43 @@
 // Created by thijs on 31-05-22.
 //
 
-#include "Dice.h"
-#include "gameobject/Hero.h"
 #include <utility>
 #include <iostream>
-#include <utilities/Random.h>
-#include "utilities/Constants.h"
+
+#include "Dice.h"
 #include "Face.h"
+#include "gameobject/Hero.h"
+#include "utilities/Random.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 
-
 Dice::Dice(std::string name, Character* character) :
       name(std::move(name)), character(character) {
+}
+
+const std::string &Dice::getName() const {
+    return name;
+}
+
+Dice* Dice::makeCopy() const {
+    auto copy = new Dice();
+
+    Face* faceCopy;
+    for (int i = 0; i < 6; i++) {
+        faceCopy = faces[i]->makeCopy();
+        faceCopy->setDice(copy);
+        copy->setFace(faceCopy, i);
+    }
+
+    copy->setName(name);
+
+    copy->setLocked(lock);
+    copy->setUsed(used);
+    copy->setCurrentFace(currentFace);
+    copy->setCurrentFaceHover(hoverCurrentFace);
+
+    return copy;
 }
 
 glm::vec2 Dice::getPosition(dicePos dicePos) const {
@@ -62,6 +86,30 @@ bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
            && (yPos > position.y && yPos < position.y + size.y);
 }
 
+Face* Dice::getFace(int index) const {
+    return faces[index];
+}
+
+bool Dice::isUsed() const {
+    return used;
+}
+
+Face* Dice::getCurrentFace() const {
+    return faces[currentFace];
+}
+
+void Dice::setLocked(bool lock_) {
+    lock = lock_;
+}
+
+void Dice::setCurrentFace(int currentFace_) {
+    currentFace = currentFace_;
+}
+
+void Dice::setUsed(bool used_) {
+    used = used_;
+}
+
 void Dice::updateHoverMouse(double xPos, double yPos) {
     for (auto &face : faces) {
         face->setHover(face->isMouseHovering(xPos, yPos));
@@ -88,12 +136,9 @@ void Dice::setName(const std::string &name_) {
     }
 }
 
-Face* Dice::getFace(int index) const {
-    return faces[index];
-}
-
-const std::string &Dice::getName() const {
-    return name;
+void Dice::roll() {
+    int rng = Random::randInt(0, 5);
+    currentFace = rng;
 }
 
 void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
@@ -101,7 +146,7 @@ void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 
     if (lock) {
         glm::vec2 lockPosition = getPosition(Dice::currentFacePos) + glm::vec2(-2, -2);
-        glm::vec2 lockSize = glm::vec2(11,14);
+        glm::vec2 lockSize = glm::vec2(11, 14);
         spriteRenderer->drawSprite("dice_lock", 0.05f,
                                    lockPosition, lockSize, 0.0f, glm::vec3(1.0), 0.8f);
     }
@@ -133,28 +178,5 @@ void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
         face->drawHover(spriteRenderer, textRenderer);
     }
 }
-
-void Dice::roll() {
-    std::cout << "rolling" << std::endl;
-    int rng = Random::randInt(0, 5);
-    currentFace = rng;
-}
-
-void Dice::setLocked(bool lock_) {
-    lock = lock_;
-}
-
-Face* Dice::getCurrentFace() const {
-    return faces[currentFace];
-}
-
-void Dice::setUsed(bool used_) {
-    used = used_;
-}
-
-bool Dice::isUsed() const {
-    return used;
-}
-
 
 }

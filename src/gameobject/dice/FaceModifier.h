@@ -7,8 +7,9 @@
 
 
 #include <string>
-#include <glm/vec3.hpp>
 #include <map>
+#include <glm/vec3.hpp>
+
 #include "utilities/BiDirectionalMap.h"
 
 namespace DGR {
@@ -19,12 +20,12 @@ public:
         none = 0,
         ranged = 1,               // damage enemies in back row
         sweeping_edge = 2,        // damage the enemies left and right of the target
-        single_use = 4,           // can only be used a single time
         poison = 8,               // debuff - keeps damaging the target every turn
         cleanse = 16,             // clears debuffs
         first_blood = 32,         // deals 2x damage on full hp targets
-        growth = 64,              // grows by 1 every time used
-        decay = 128,              // reduces by 1 every time used
+        growth = 262144,          // grows by 1 every time used
+        decay = 524288,           // reduces by 1 every time used
+        single_use = 1048576,     // can only be used a single time
     };
 private:
     static BiDirectionalMap<std::string, modifier> stringsAndModifiers;
@@ -37,6 +38,7 @@ public:
 
     static modifier stringToModifier(const std::string &modifierStr);
 
+    /// getters
     [[nodiscard]] std::string toString() const;
 
     [[nodiscard]] glm::vec3 toColor() const;
@@ -45,6 +47,7 @@ public:
 
     [[nodiscard]] bool hasModifier(modifier mod) const;
 
+    /// setters
     bool removeModifier(modifier modifier);
 
     void setModifiers(unsigned int modifiers_);
@@ -52,10 +55,7 @@ public:
     void addModifier(modifier modifier_);
 
     void addModifier(const std::string &modifierStr);
-
 };
-
-
 
 }
 

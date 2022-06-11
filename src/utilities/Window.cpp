@@ -2,8 +2,6 @@
 // Created by thijs on 30-05-22.
 //
 
-
-
 #include <iostream>
 
 #include "Window.h"
@@ -16,10 +14,14 @@ namespace DGR {
 Window* callback_window_ptr;
 
 void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
+    (void)window;
+
     callback_window_ptr->handleMousePosition(xPos, yPos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    (void)mods;
+
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -30,6 +32,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+    (void)scancode, (void)mode;
+
 #if DEBUG
     std::cout << "key callback" << std::endl;
 #endif
@@ -47,6 +51,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    (void)window;
 #if DEBUG
     std::cout << "framebuffer size callback" << std::endl;
 #endif
