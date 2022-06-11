@@ -63,7 +63,7 @@ public:
 
     [[nodiscard]] FaceModifier getModifiers() const;
 
-    [[nodiscard]] Face* copy() const;
+    [[nodiscard]] Face* makeCopy() const;
 
     /// setters
     void setName(const std::string &name_);

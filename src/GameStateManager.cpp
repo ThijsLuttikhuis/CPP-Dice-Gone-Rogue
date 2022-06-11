@@ -26,6 +26,14 @@ int GameStateManager::getMana() const {
     return mana;
 }
 
+AttackOrder* GameStateManager::getAttackOrder() const {
+    return attackOrder;
+}
+
+void GameStateManager::setAttackOrder(AttackOrder* attackOrder_) {
+    attackOrder = attackOrder_;
+}
+
 void GameStateManager::setClickedCharacter(Character* clickedCharacter_) {
     clickedCharacter = clickedCharacter_;
 }
@@ -48,16 +56,13 @@ int GameStateManager::reroll() {
                 enemy->roll();
             }
         }
-#ifdef DEBUG
         else {
             std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
         }
-#endif
-
     }
 #ifdef DEBUG
     else {
-    std::cerr << "GameStateManager::reroll: error, no rerolls remaining!" << std::endl;
+    std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
     }
 #endif
     return rerolls;
@@ -123,6 +128,9 @@ void GameStateManager::setNextGameState() {
                 hero->setDiceLock(false);
             }
             rerolls = rerollsMax;
+            attackOrder->setCharacters(heroes, enemies);
+            attackOrder->setCharacters(heroes, enemies);
+
             state = attack_block_heroes;
             updateButtons();
             break;
@@ -131,8 +139,8 @@ void GameStateManager::setNextGameState() {
                 hero->setUsedDice(false);
                 hero->applyDamageStep();
             }
-            reroll();
             state = rolling_enemies;
+            reroll();
             updateButtons();
             break;
         case rolling_enemies:
@@ -148,8 +156,8 @@ void GameStateManager::setNextGameState() {
                 enemy->setUsedDice(false);
                 enemy->applyDamageStep();
             }
-            reroll();
             state = rolling_heroes;
+            reroll();
             updateButtons();
             break;
     }

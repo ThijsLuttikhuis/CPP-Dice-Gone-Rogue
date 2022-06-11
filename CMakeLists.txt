@@ -49,7 +49,7 @@ add_executable(DiceGoneRogue main.cpp
         src/gameobject/Character.cpp src/gameobject/Character.h
         src/utilities/Random.cpp src/utilities/Random.h
         src/shaders/TextRenderer.cpp src/shaders/TextRenderer.h
-        src/utilities/BiDirectionalMap.h src/GameStateManager.cpp src/GameStateManager.h src/utilities/Button.cpp src/utilities/Button.h src/utilities/Utilities.cpp src/utilities/Utilities.h src/gameobject/spell/Spell.cpp src/gameobject/spell/Spell.h src/gameobject/spell/SpellType.cpp src/gameobject/spell/SpellType.h)
+        src/utilities/BiDirectionalMap.h src/GameStateManager.cpp src/GameStateManager.h src/utilities/Button.cpp src/utilities/Button.h src/utilities/Utilities.cpp src/utilities/Utilities.h src/gameobject/spell/Spell.cpp src/gameobject/spell/Spell.h src/gameobject/spell/SpellType.cpp src/gameobject/spell/SpellType.h src/utilities/AttackOrder.cpp src/utilities/AttackOrder.h)
 
 target_link_libraries(DiceGoneRogue
         ${LIBS}

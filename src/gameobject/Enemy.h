@@ -20,6 +20,8 @@ public:
     Enemy(const std::string &textureName, glm::vec2 position, glm::vec2 size);
 
     [[nodiscard]] std::string getCharacterType() const override;
+
+    [[nodiscard]] Enemy* makeCopy() const;
 };
 
 }

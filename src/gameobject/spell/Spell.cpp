@@ -10,14 +10,25 @@
 
 namespace DGR {
 
+Spell* Spell::makeCopy() const {
+    auto* copy = new Spell(name, cost, value, type);
+    copy->setCharacter(character);
+
+    return copy;
+}
+
 glm::vec2 Spell::getPosition() const {
 
     glm::vec2 characterPosition = character->getPosition();
-    glm::vec2 dPos = glm::vec2(-6, character->getSize().y + 36);
+    glm::vec2 dPos = glm::vec2(-6, character->getSize().y + 44);
     return characterPosition + dPos;
 }
 
 bool Spell::isMouseHovering(double xPos, double yPos) const {
+    if (type == SpellType::empty) {
+        return false;
+    }
+
     auto position = getPosition();
     auto size = getSize();
     return Utilities::isPositionInBox(xPos, yPos, position, size);
@@ -58,6 +69,10 @@ void Spell::setCharacter(Character* character_) {
 }
 
 void Spell::drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    if (type == SpellType::empty) {
+        return;
+    }
+
     auto position = getPosition();
 
     int tooltipWidth = 96;
@@ -79,6 +94,12 @@ void Spell::drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textR
 }
 
 void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    (void)textRenderer;
+
+    if (type == SpellType::empty) {
+        return;
+    }
+
     auto position = getPosition();
     auto size = getSize();
 
@@ -86,10 +107,15 @@ void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 }
 
 void Spell::drawBox(SpriteRenderer* spriteRenderer, glm::highp_vec3 color) {
+    if (type == SpellType::empty) {
+        return;
+    }
+
     auto position = getPosition();
     auto size = getSize();
 
     spriteRenderer->drawSprite("box", 0.0f, position, size, 1.0f, color, 0.0f);
 }
+
 
 }

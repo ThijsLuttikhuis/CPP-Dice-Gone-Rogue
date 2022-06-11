@@ -17,7 +17,7 @@ class Spell;
 class GameStateManager;
 
 class Character : public GameObject {
-private:
+protected:
     Dice* dice = nullptr;
     Spell* spell = nullptr;
 
@@ -43,6 +43,7 @@ private:
 
     void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
+    void setCopyParameters(Character* copy) const;
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
@@ -59,8 +60,6 @@ public:
 
     [[nodiscard]] int getIncomingDamage() const;
 
-    [[nodiscard]] Character* makeUndamagedCopy() const;
-
     [[nodiscard]] virtual std::string getCharacterType() const;
 
     [[nodiscard]] Spell* getSpell() const;
@@ -70,11 +69,27 @@ public:
 
     void setDiceLock(bool diceLock_);
 
+    void setHP(int hp);
+
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
+
+    void setIncomingDamage(int incomingDamage_);
+
+    void setPoison(int poison_);
+
+    void setBackRow(bool backRow_);
+
+    void setRegen(int regen_);
 
     void setUsedDice(bool usedDice);
 
     void setSpell(Spell* spell_);
+
+    void setDodging(bool isDodging_);
+
+    void setUndying(bool isUndying_);
+
+    void setShield(int shield_);
 
     /// functions
     void roll();
@@ -95,6 +110,7 @@ public:
     bool interact(Spell* clickedSpell, GameStateManager* gameState);
 
     void applySpellTypeDamage(Spell* spell, GameStateManager* gameState);
+
 };
 
 }

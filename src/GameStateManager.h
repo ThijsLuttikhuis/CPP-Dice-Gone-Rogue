@@ -6,6 +6,7 @@
 #define DICEGONEROGUE_GAMESTATEMANAGER_H
 
 #include <vector>
+#include <utilities/AttackOrder.h>
 
 #include "utilities/Window.h"
 #include "gameobject/Hero.h"
@@ -36,9 +37,11 @@ private:
     std::vector<Hero*> heroes;
     std::vector<Enemy*> enemies;
 
+    AttackOrder* attackOrder = nullptr;
+
     void updateButtons();
 public:
-    explicit GameStateManager(Window* window) : window(window) {};
+    explicit GameStateManager(Window* window) : window(window) { };
 
     /// getters
     [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
@@ -65,6 +68,8 @@ public:
 
     [[nodiscard]] Window* getWindow() const;
 
+    [[nodiscard]] AttackOrder* getAttackOrder() const;
+
     /// setters
     void setHeroes(const std::vector<Hero*> &heroes_);
 
@@ -75,6 +80,8 @@ public:
     void setClickedSpell(Spell* clickedSpell_);
 
     void setNextGameState();
+
+    void setAttackOrder(AttackOrder* attackOrder_);
 
     /// functions
     int reroll();

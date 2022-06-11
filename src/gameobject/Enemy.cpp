@@ -3,6 +3,7 @@
 //
 
 #include "Enemy.h"
+#include "spell/Spell.h"
 
 namespace DGR {
 
@@ -12,6 +13,12 @@ Enemy::Enemy(const std::string &name, glm::vec2 position, glm::vec2 size)
 
 std::string Enemy::getCharacterType() const {
     return "enemy";
+}
+
+Enemy* Enemy::makeCopy() const {
+    auto* copy = new Enemy(name);
+    Character::setCopyParameters(copy);
+    return copy;
 }
 
 }

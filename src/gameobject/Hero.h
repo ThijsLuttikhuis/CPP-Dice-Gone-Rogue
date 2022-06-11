@@ -22,6 +22,7 @@ public:
 
     [[nodiscard]] std::string getCharacterType() const override;
 
+    [[nodiscard]] Hero* makeCopy() const;
 };
 
 }

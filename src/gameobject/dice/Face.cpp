@@ -33,7 +33,7 @@ Face::Face(std::string name, Dice* dice, int face_, int value, FaceType type, Fa
       : name(std::move(name)), dice(dice), face_(face_), value(value), type(type), modifiers(modifiers) {
 }
 
-Face* Face::copy() const {
+Face* Face::makeCopy() const {
     auto copy = new Face(name, dice, face_, value, type, modifiers);
     return copy;
 }

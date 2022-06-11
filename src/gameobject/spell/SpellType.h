@@ -40,7 +40,7 @@ public:
         return *this;
     }
 
-    bool operator ==(const spellType &t) {
+    bool operator ==(const spellType &t) const {
         return t == type;
     }
 

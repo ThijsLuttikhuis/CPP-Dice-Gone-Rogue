@@ -50,6 +50,8 @@ public:
 
     [[nodiscard]] int getValue() const;
 
+    [[nodiscard]] Spell* makeCopy() const;
+
     /// setters
     void setCharacter(Character* character_);
 

@@ -173,6 +173,11 @@ public:
             character->setSpell(spell);
             character->getSpell()->setCharacter(character);
         }
+        else {
+            auto* spell_ = new Spell("empty", 0, 0, SpellType(SpellType::empty));
+            character->setSpell(spell_);
+            character->getSpell()->setCharacter(character);
+        }
         character->setDice(dice);
         character->getDice()->setCharacter(character);
         character->getDice()->setName(character->getName());

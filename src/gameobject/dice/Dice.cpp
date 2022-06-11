@@ -21,21 +21,22 @@ const std::string &Dice::getName() const {
     return name;
 }
 
-Dice* Dice::copy() const {
+Dice* Dice::makeCopy() const {
     auto copy = new Dice();
+
+    Face* faceCopy;
+    for (int i = 0; i < 6; i++) {
+        faceCopy = faces[i]->makeCopy();
+        faceCopy->setDice(copy);
+        copy->setFace(faceCopy, i);
+    }
+
     copy->setName(name);
 
     copy->setLocked(lock);
     copy->setUsed(used);
     copy->setCurrentFace(currentFace);
     copy->setCurrentFaceHover(hoverCurrentFace);
-
-    Face* faceCopy;
-    for (int i = 0; i < 6; i++) {
-        faceCopy = faces[i]->copy();
-        faceCopy->setDice(copy);
-        copy->setFace(faceCopy, i);
-    }
 
     return copy;
 }
@@ -101,7 +102,7 @@ void Dice::setLocked(bool lock_) {
     lock = lock_;
 }
 
-void Dice::setCurrentFace(bool currentFace_) {
+void Dice::setCurrentFace(int currentFace_) {
     currentFace = currentFace_;
 }
 
@@ -136,7 +137,6 @@ void Dice::setName(const std::string &name_) {
 }
 
 void Dice::roll() {
-    std::cout << "rolling" << std::endl;
     int rng = Random::randInt(0, 5);
     currentFace = rng;
 }

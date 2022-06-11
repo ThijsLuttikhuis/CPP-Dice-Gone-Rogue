@@ -16,19 +16,6 @@ Character::Character(const std::string &name, glm::vec2 position, glm::vec2 size
       : GameObject(name, position, size), dice(new Dice(name, this)) {
 }
 
-Character* Character::makeUndamagedCopy() const {
-    auto* copy = new Character(name);
-
-    copy->setSize(size);
-    copy->setPosition(position);
-
-    copy->setMaxHP(maxHP);
-    copy->setDice(dice->copy());
-    copy->getDice()->setCharacter(copy);
-
-    return nullptr;
-}
-
 Dice* Character::getDice() const {
     return dice;
 }
@@ -67,8 +54,24 @@ void Character::setSpell(Spell* spell_) {
     spell = spell_;
 }
 
+void Character::setPoison(int poison_) {
+    poison = poison_;
+}
+
+void Character::setBackRow(bool backRow_) {
+    backRow = backRow_;
+}
+
+void Character::setRegen(int regen_) {
+    regen = regen_;
+}
+
 void Character::setDice(Dice* dice_) {
     dice = dice_;
+}
+
+void Character::setHP(int hp_) {
+    hp = hp_;
 }
 
 void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
@@ -76,6 +79,18 @@ void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
     if (setHPToMaxHP) {
         hp = maxHP_;
     }
+}
+
+void Character::setUndying(bool isUndying_) {
+    isUndying = isUndying_;
+}
+
+void Character::setDodging(bool isDodging_) {
+    isDodging = isDodging_;
+}
+
+void Character::setIncomingDamage(int incomingDamage_) {
+    incomingDamage = incomingDamage_;
 }
 
 void Character::setDiceLock(bool diceLock_) {
@@ -91,7 +106,10 @@ void Character::setUsedDice(bool usedDice) {
 }
 
 bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
+    Spell* spellCopy = clickedSpell->makeCopy();
+
     bool success = false;
+
     SpellType type = clickedSpell->getType();
 
     bool differentCharacterType = (getCharacterType() != clickedSpell->getCharacter()->getCharacterType());
@@ -117,6 +135,10 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
             break;
         case SpellType::kill_if_below_threshold:
             break;
+    }
+
+    if (success) {
+        gameState->getAttackOrder()->addAttack(spellCopy, this);
     }
 
     return success;
@@ -233,7 +255,36 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
             face->setValue(0);
         }
     }
+
+    if (success) {
+        gameState->getAttackOrder()->addAttack(this, otherCharacter);
+    }
+
     return success;
+}
+
+void Character::setCopyParameters(Character* copy) const {
+    copy->setSize(size);
+    copy->setPosition(position);
+
+    copy->setMaxHP(maxHP, false);
+    copy->setHP(hp);
+
+    copy->setIncomingDamage(incomingDamage);
+    copy->setShield(shield);
+    copy->setPoison(poison);
+    copy->setRegen(regen);
+    copy->setBackRow(backRow);
+    copy->setDodging(isDodging);
+    copy->setUndying(isUndying);
+
+    copy->setSpell(spell->makeCopy());
+    copy->setDice(dice->makeCopy());
+    copy->getDice()->setCharacter(copy);
+}
+
+void Character::setShield(int shield_) {
+    shield = shield_;
 }
 
 void Character::roll() {
@@ -262,6 +313,8 @@ void Character::applyDamageStep() {
 }
 
 void Character::applySpellTypeDamage(Spell* spell_, GameStateManager* gameState) {
+    (void) gameState;
+
     int value = spell_->getValue();
     incomingDamage += value;
 }
@@ -411,10 +464,7 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
 
     drawHealthBar(spriteRenderer, textRenderer);
 
-    if (spell) {
-        spell->draw(spriteRenderer, textRenderer);
-    }
-
+    spell->draw(spriteRenderer, textRenderer);
     dice->draw(spriteRenderer, textRenderer);
 }
 
@@ -427,7 +477,7 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
         dice->drawHover(spriteRenderer, textRenderer);
     }
 
-    if (spell && spell->getHover()) {
+    if (spell->getHover()) {
         spell->drawSpellToolTip(spriteRenderer, textRenderer);
     }
 }

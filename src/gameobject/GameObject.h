@@ -29,6 +29,8 @@ public:
 
     GameObject(std::string name, glm::vec2 position, glm::vec2 size);
 
+    virtual ~GameObject() = default;
+
     /// getters
     [[nodiscard]] const glm::vec2 &getPosition() const;
 

@@ -61,14 +61,14 @@ public:
 
     [[nodiscard]] bool isUsed() const;
 
-    [[nodiscard]] Dice* copy() const;
+    [[nodiscard]] Dice* makeCopy() const;
 
     /// setters
     void setLocked(bool lock_);
 
     void setUsed(bool lock_);
 
-    void setCurrentFace(bool currentFace_);
+    void setCurrentFace(int currentFace_);
 
     void setCurrentFaceHover(bool hoverCurrentFace_);
 

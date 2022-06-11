@@ -62,6 +62,9 @@ GameController::GameController(Window* window) {
     gameState->setEnemies(enemies);
 
     gameState->reroll();
+
+    auto attackOrder = new AttackOrder(gameState);
+    gameState->setAttackOrder(attackOrder);
 }
 
 const std::vector<Hero*> &GameController::getHeroes() const {
@@ -270,7 +273,7 @@ void GameController::pressButton(Button* button) {
                 gameState->setNextGameState();
             }
         } else if (gameState->areHeroesAttacking()) {
-            //TODO: UNDO..
+            gameState->getAttackOrder()->undo();
         }
     }
 
