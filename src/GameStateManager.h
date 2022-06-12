@@ -75,6 +75,8 @@ public:
 
     void setEnemies(const std::vector<Enemy*> &enemies);
 
+    void setMana(int mana_);
+
     void setClickedCharacter(Character* clickedCharacter_);
 
     void setClickedSpell(Spell* clickedSpell_);
@@ -92,6 +94,7 @@ public:
 
     /// render
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 
 };
 

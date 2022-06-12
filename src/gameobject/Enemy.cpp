@@ -7,17 +7,16 @@
 
 namespace DGR {
 
-Enemy::Enemy(const std::string &name, glm::vec2 position, glm::vec2 size)
-      : Character(name, position, size) {
-}
-
 std::string Enemy::getCharacterType() const {
     return "enemy";
 }
 
-Enemy* Enemy::makeCopy() const {
+Enemy* Enemy::makeCopy(bool copyUniqueID) const {
     auto* copy = new Enemy(name);
     Character::setCopyParameters(copy);
+    if (copyUniqueID) {
+        copy->setUniqueID(getUniqueID());
+    }
     return copy;
 }
 

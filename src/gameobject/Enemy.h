@@ -17,11 +17,12 @@ class Enemy : public Character {
 public:
     explicit Enemy(std::string name) : Character(std::move(name)) {};
 
-    Enemy(const std::string &textureName, glm::vec2 position, glm::vec2 size);
+    Enemy(const std::string &name, glm::vec2 position, glm::vec2 size)
+          : Character(name, position, size) {};
 
     [[nodiscard]] std::string getCharacterType() const override;
 
-    [[nodiscard]] Enemy* makeCopy() const;
+    [[nodiscard]] Enemy* makeCopy(bool copyUniqueID = false) const;
 };
 
 }

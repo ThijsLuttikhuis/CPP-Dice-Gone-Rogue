@@ -84,6 +84,10 @@ void GameStateManager::setEnemies(const std::vector<Enemy*> &enemies_) {
     enemies = enemies_;
 }
 
+void GameStateManager::setMana(int mana_) {
+    mana = mana_;
+}
+
 void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     if (clickedCharacter) {
         clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
@@ -99,7 +103,6 @@ void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* text
     spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
     textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 }
-
 
 void GameStateManager::addMana(int mana_) {
     mana += mana_;
@@ -128,8 +131,7 @@ void GameStateManager::setNextGameState() {
                 hero->setDiceLock(false);
             }
             rerolls = rerollsMax;
-            attackOrder->setCharacters(heroes, enemies);
-            attackOrder->setCharacters(heroes, enemies);
+            attackOrder->setState(heroes, enemies, mana);
 
             state = attack_block_heroes;
             updateButtons();
@@ -148,6 +150,8 @@ void GameStateManager::setNextGameState() {
                 enemy->setDiceLock(false);
             }
             rerolls = rerollsMax;
+            attackOrder->setState(heroes, enemies, mana);
+
             state = attack_block_enemies;
             updateButtons();
             break;

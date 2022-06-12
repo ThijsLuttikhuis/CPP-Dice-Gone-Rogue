@@ -15,6 +15,10 @@
 namespace DGR {
 
 class GameObject {
+private:
+    static int uniqueIDCounter;
+    int uniqueID;
+
 protected:
     std::string name;
 
@@ -23,15 +27,28 @@ protected:
 
     bool hover = false;
 public:
-    GameObject() = default;
+    GameObject() {
+        uniqueID = uniqueIDCounter++;
+    }
 
-    explicit GameObject(std::string name) : name(std::move(name)) {};
+    explicit GameObject(std::string name) : name(std::move(name)) {
+        uniqueID = uniqueIDCounter++;
+    };
 
-    GameObject(std::string name, glm::vec2 position, glm::vec2 size);
+    GameObject(std::string name, glm::vec2 position, glm::vec2 size)
+          : name(std::move(name)), position(position), size(size) {
+        uniqueID = uniqueIDCounter++;
+    }
 
     virtual ~GameObject() = default;
 
+    bool operator ==(const GameObject &other) {
+        return uniqueID == other.uniqueID;
+    }
+
     /// getters
+    [[nodiscard]] int getUniqueID() const;
+
     [[nodiscard]] const glm::vec2 &getPosition() const;
 
     [[nodiscard]] const glm::vec2 &getSize() const;
@@ -43,6 +60,8 @@ public:
     [[nodiscard]] bool getHoverMouse() const;
 
     /// setters
+    void setUniqueID(int uniqueID_);
+
     void setPosition(glm::vec2 position_);
 
     void setPosition(int left, int up);
@@ -53,6 +72,7 @@ public:
 
     /// render
     virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 };
 
 }

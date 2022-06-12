@@ -12,10 +12,6 @@
 
 namespace DGR {
 
-Character::Character(const std::string &name, glm::vec2 position, glm::vec2 size)
-      : GameObject(name, position, size), dice(new Dice(name, this)) {
-}
-
 Dice* Character::getDice() const {
     return dice;
 }
@@ -105,9 +101,7 @@ void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
 }
 
-bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
-    Spell* spellCopy = clickedSpell->makeCopy();
-
+bool Character::interact(Spell* clickedSpell, GameStateManager* gameState, bool storeAction) {
     bool success = false;
 
     SpellType type = clickedSpell->getType();
@@ -137,14 +131,14 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
             break;
     }
 
-    if (success) {
-        gameState->getAttackOrder()->addAttack(spellCopy, this);
+    if (success && storeAction) {
+        gameState->getAttackOrder()->addAttack(clickedSpell, this);
     }
 
     return success;
 }
 
-bool Character::interact(Character* otherCharacter, GameStateManager* gameState) {
+bool Character::interact(Character* otherCharacter, GameStateManager* gameState, bool storeAction) {
     bool success = false;
     Face* face;
     FaceType type;
@@ -256,7 +250,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
         }
     }
 
-    if (success) {
+    if (success && storeAction) {
         gameState->getAttackOrder()->addAttack(this, otherCharacter);
     }
 

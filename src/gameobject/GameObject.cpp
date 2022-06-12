@@ -11,8 +11,10 @@
 
 namespace DGR {
 
-GameObject::GameObject(std::string name, glm::vec2 position, glm::vec2 size)
-      : name(std::move(name)), position(position), size(size) {
+int GameObject::uniqueIDCounter = 0;
+
+int GameObject::getUniqueID() const {
+    return uniqueID;
 }
 
 const glm::vec2 &GameObject::getPosition() const {
@@ -37,6 +39,10 @@ bool GameObject::getHoverMouse() const {
 
 void GameObject::hoverMouse(bool hover_) {
     hover = hover_;
+}
+
+void GameObject::setUniqueID(int uniqueID_) {
+    uniqueID = uniqueID_;
 }
 
 void GameObject::setPosition(glm::vec2 position_) {

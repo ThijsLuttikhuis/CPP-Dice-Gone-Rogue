@@ -18,11 +18,12 @@ class Hero : public Character {
 public:
     explicit Hero(std::string name) : Character(std::move(name)) {};
 
-    Hero(const std::string &textureName, glm::vec2 position, glm::vec2 size);
+    Hero(const std::string &name, glm::vec2 position, glm::vec2 size)
+          : Character(name, position, size) {};
 
     [[nodiscard]] std::string getCharacterType() const override;
 
-    [[nodiscard]] Hero* makeCopy() const;
+    [[nodiscard]] Hero* makeCopy(bool copyUniqueID = false) const;
 };
 
 }

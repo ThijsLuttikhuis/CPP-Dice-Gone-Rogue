@@ -32,12 +32,17 @@ private:
     };
 
     GameStateManager* gameState;
+
+    int mana{};
     std::vector<Hero*> heroes;
     std::vector<Enemy*> enemies;
 
     std::vector<attackType> attackOrder{};
-    std::vector<ChCh> characterAttacks{};
-    std::vector<SpCh> characterSpells{};
+    std::vector<std::pair<int, int>> attackOrderIDs{};
+
+    Character* getStoredCharacter(int id);
+
+    Spell* getStoredSpell(int id);
 
 public:
     explicit AttackOrder(GameStateManager* gameState) : gameState(gameState) {};
@@ -48,7 +53,8 @@ public:
 
     void undo();
 
-    void setCharacters(const std::vector<Hero*> &heroes_, const std::vector<Enemy*> &enemies_);
+    void setState(const std::vector<Hero*> &heroes_, const std::vector<Enemy*> &enemies_, int mana_);
+
 };
 
 }

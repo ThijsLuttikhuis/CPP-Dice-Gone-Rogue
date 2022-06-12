@@ -31,6 +31,8 @@ protected:
     bool isUndying = false;
     bool backRow = false;
 
+    void applySpellTypeDamage(Spell* spell, GameStateManager* gameState);
+
     void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
 
     void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
@@ -44,10 +46,12 @@ protected:
     void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void setCopyParameters(Character* copy) const;
+
 public:
     explicit Character(std::string name) : GameObject(std::move(name)) {};
 
-    Character(const std::string &textureName, glm::vec2 position, glm::vec2 size);
+    Character(const std::string &name, glm::vec2 position, glm::vec2 size)
+          : GameObject(name, position, size), dice(new Dice(name, this)) {};
 
     /// getters
     [[nodiscard]] Dice* getDice() const;
@@ -96,7 +100,9 @@ public:
 
     void toggleDiceLock();
 
-    bool interact(Character* otherCharacter, GameStateManager* gameState);
+    bool interact(Character* otherCharacter, GameStateManager* gameState, bool storeAction = true);
+
+    bool interact(Spell* clickedSpell, GameStateManager* gameState, bool storeAction = true);
 
     void applyDamageStep();
 
@@ -107,9 +113,6 @@ public:
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
-    bool interact(Spell* clickedSpell, GameStateManager* gameState);
-
-    void applySpellTypeDamage(Spell* spell, GameStateManager* gameState);
 
 };
 
