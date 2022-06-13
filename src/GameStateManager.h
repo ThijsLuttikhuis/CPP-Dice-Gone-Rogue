@@ -9,8 +9,6 @@
 #include <utilities/AttackOrder.h>
 
 #include "utilities/Window.h"
-#include "gameobject/Hero.h"
-#include "gameobject/Enemy.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
@@ -34,8 +32,8 @@ private:
     Character* clickedCharacter = nullptr;
     Spell* clickedSpell = nullptr;
 
-    std::vector<Hero*> heroes;
-    std::vector<Enemy*> enemies;
+    std::vector<Character*> heroes;
+    std::vector<Character*> enemies;
 
     AttackOrder* attackOrder = nullptr;
 
@@ -44,9 +42,9 @@ public:
     explicit GameStateManager(Window* window) : window(window) { };
 
     /// getters
-    [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
+    [[nodiscard]] const std::vector<Character*> &getHeroes() const;
 
-    [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
+    [[nodiscard]] const std::vector<Character*> &getEnemies() const;
 
     [[nodiscard]] gameState getGameState() const;
 
@@ -71,9 +69,9 @@ public:
     [[nodiscard]] AttackOrder* getAttackOrder() const;
 
     /// setters
-    void setHeroes(const std::vector<Hero*> &heroes_);
+    void setHeroes(const std::vector<Character*> &heroes_);
 
-    void setEnemies(const std::vector<Enemy*> &enemies);
+    void setEnemies(const std::vector<Character*> &enemies);
 
     void setMana(int mana_);
 
@@ -91,6 +89,8 @@ public:
     void addMana(int mana_);
 
     std::pair<Character*, Character*> getNeighbours(Character* character);
+
+    static std::pair<Character*, Character*> getNeighbours(Character* character, std::vector<Character*> otherCharacters);
 
     /// render
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);

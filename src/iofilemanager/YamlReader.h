@@ -15,8 +15,7 @@
 #include <fstream>
 #include <type_traits>
 
-#include "gameobject/Enemy.h"
-#include "gameobject/Hero.h"
+#include "gameobject/Character.h"
 #include "gameobject/dice/Dice.h"
 #include "gameobject/dice/Face.h"
 #include "gameobject/spell/Spell.h"
@@ -157,10 +156,10 @@ public:
         Character* character;
         switch (getType()) {
             case stringCode::hero:
-                character = new Hero(name);
+                character = new Character(name, "hero");
                 break;
             case stringCode::enemy:
-                character = new Enemy(name);
+                character = new Character(name, "enemy");
                 break;
             default:
                 std::cerr << "[YamlHandleCharacter] unknown character type: " <<

@@ -4,6 +4,7 @@
 
 #include "GameStateManager.h"
 #include "utilities/Button.h"
+
 namespace DGR {
 
 GameStateManager::gameState GameStateManager::getGameState() const {
@@ -55,8 +56,7 @@ int GameStateManager::reroll() {
             for (auto &enemy : enemies) {
                 enemy->roll();
             }
-        }
-        else {
+        } else {
             std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
         }
     }
@@ -68,40 +68,24 @@ int GameStateManager::reroll() {
     return rerolls;
 }
 
-const std::vector<Hero*> &GameStateManager::getHeroes() const {
+const std::vector<Character*> &GameStateManager::getHeroes() const {
     return heroes;
 }
 
-const std::vector<Enemy*> &GameStateManager::getEnemies() const {
+const std::vector<Character*> &GameStateManager::getEnemies() const {
     return enemies;
 }
 
-void GameStateManager::setHeroes(const std::vector<Hero*> &heroes_) {
+void GameStateManager::setHeroes(const std::vector<Character*> &heroes_) {
     heroes = heroes_;
 }
 
-void GameStateManager::setEnemies(const std::vector<Enemy*> &enemies_) {
+void GameStateManager::setEnemies(const std::vector<Character*> &enemies_) {
     enemies = enemies_;
 }
 
 void GameStateManager::setMana(int mana_) {
     mana = mana_;
-}
-
-void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    if (clickedCharacter) {
-        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
-
-    if (clickedSpell) {
-        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
-
-    glm::vec2 manaPosition = glm::vec2(288, 216);
-    glm::vec2 manaSize = glm::vec2(16, 16);
-    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
-    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
-    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 }
 
 void GameStateManager::addMana(int mana_) {
@@ -224,8 +208,6 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
             int j = i - 1;
             while (j >= 0) {
                 if (!heroes[j]->isDead()) {
-                    std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
-
                     neighbours.first = heroes[j];
                     break;
                 }
@@ -234,8 +216,6 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
             j = i + 1;
             while (j < nHeroes) {
                 if (!heroes[j]->isDead()) {
-                    std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
-
                     neighbours.second = heroes[j];
                     break;
                 }
@@ -267,6 +247,46 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
         }
     }
     return neighbours;
+}
+
+std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* character,
+                                                                  std::vector<Character*> otherCharacters) {
+
+    std::pair<Character*, Character*> neighbours(nullptr, nullptr);
+    bool characterFound = false;
+    for (auto &otherCharacter : otherCharacters) {
+        if (!otherCharacter->isDead()) {
+            if (character == otherCharacter) {
+                characterFound = true;
+            } else if (characterFound) {
+                neighbours.second = otherCharacter;
+                break;
+            } else {
+                neighbours.first = otherCharacter;
+            }
+        }
+    }
+    if (!characterFound) {
+        std::cerr << "GameStateManager::getNeighbours: error: no character found!" << std::endl;
+        exit(404);
+    }
+    return neighbours;
+}
+
+void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+    if (clickedCharacter) {
+        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
+    }
+
+    if (clickedSpell) {
+        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
+    }
+
+    glm::vec2 manaPosition = glm::vec2(288, 216);
+    glm::vec2 manaSize = glm::vec2(16, 16);
+    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
+    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
+    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 }
 
 }

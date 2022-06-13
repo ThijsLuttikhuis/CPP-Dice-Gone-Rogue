@@ -65,6 +65,8 @@ public:
 
     [[nodiscard]] Face* makeCopy() const;
 
+    [[nodiscard]] Dice* getDice() const;
+
     /// setters
     void setName(const std::string &name_);
 

@@ -54,6 +54,10 @@ FaceModifier Face::getModifiers() const {
     return modifiers;
 }
 
+Dice* Face::getDice() const {
+    return dice;
+}
+
 glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
     glm::vec2 dicePosition = dice->getPosition(dicePos);
     switch (dicePos) {

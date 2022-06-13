@@ -7,9 +7,9 @@
 
 #include "Dice.h"
 #include "Face.h"
-#include "gameobject/Hero.h"
 #include "utilities/Random.h"
 #include "utilities/Constants.h"
+#include "gameobject/Character.h"
 
 namespace DGR {
 
@@ -88,6 +88,10 @@ bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
 
 Face* Dice::getFace(int index) const {
     return faces[index];
+}
+
+Character* Dice::getCharacter() const {
+    return character;
 }
 
 bool Dice::isUsed() const {

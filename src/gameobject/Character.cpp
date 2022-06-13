@@ -39,7 +39,7 @@ bool Character::isDead() const {
 }
 
 std::string Character::getCharacterType() const {
-    return "character type not set";
+    return characterType;
 }
 
 Spell* Character::getSpell() const {
@@ -257,7 +257,9 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState,
     return success;
 }
 
-void Character::setCopyParameters(Character* copy) const {
+Character* Character::makeCopy(bool copyUniqueID) const {
+    auto* copy = new Character(name, getCharacterType());
+
     copy->setSize(size);
     copy->setPosition(position);
 
@@ -275,6 +277,11 @@ void Character::setCopyParameters(Character* copy) const {
     copy->setSpell(spell->makeCopy());
     copy->setDice(dice->makeCopy());
     copy->getDice()->setCharacter(copy);
+
+    if (copyUniqueID) {
+        copy->setUniqueID(getUniqueID());
+    }
+    return copy;
 }
 
 void Character::setShield(int shield_) {
@@ -370,6 +377,7 @@ void Character::applyFaceModifierCleanse(Face* face, GameStateManager* gameState
 
 void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState) {
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
+    //std::vector<Character*> characters = (face->getDice()->getCharacter()->getCharacterType() == "hero") ? gameState->getHeroes() : gameState->getEnemies();
     auto neighbours = gameState->getNeighbours(this);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
@@ -479,5 +487,6 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
 void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
+
 
 }

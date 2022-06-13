@@ -5,6 +5,8 @@
 #ifndef DICEGONEROGUE_CHARACTER_H
 #define DICEGONEROGUE_CHARACTER_H
 
+#include <utility>
+
 #include "dice/Dice.h"
 #include "GameObject.h"
 
@@ -17,7 +19,9 @@ class Spell;
 class GameStateManager;
 
 class Character : public GameObject {
-protected:
+private:
+    std::string characterType;
+
     Dice* dice = nullptr;
     Spell* spell = nullptr;
 
@@ -45,13 +49,14 @@ protected:
 
     void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
-    void setCopyParameters(Character* copy) const;
 
 public:
-    explicit Character(std::string name) : GameObject(std::move(name)) {};
+    explicit Character(std::string name, std::string characterType)
+          : GameObject(std::move(name)), characterType(std::move(characterType)) {};
 
-    Character(const std::string &name, glm::vec2 position, glm::vec2 size)
-          : GameObject(name, position, size), dice(new Dice(name, this)) {};
+    Character(const std::string &name, std::string characterType, glm::vec2 position, glm::vec2 size)
+          : GameObject(name, position, size), characterType(std::move(characterType)),
+            dice(new Dice(name, this)) {};
 
     /// getters
     [[nodiscard]] Dice* getDice() const;
@@ -64,9 +69,11 @@ public:
 
     [[nodiscard]] int getIncomingDamage() const;
 
-    [[nodiscard]] virtual std::string getCharacterType() const;
+    [[nodiscard]] std::string getCharacterType() const;
 
     [[nodiscard]] Spell* getSpell() const;
+
+    [[nodiscard]] Character* makeCopy(bool copyUniqueID = false) const;
 
     /// setters
     void setDice(Dice* dice);

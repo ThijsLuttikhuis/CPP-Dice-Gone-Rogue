@@ -8,8 +8,9 @@
 
 #include <vector>
 
-#include "gameobject/Hero.h"
-#include "gameobject/Enemy.h"
+#include "shaders/SpriteRenderer.h"
+#include "shaders/TextRenderer.h"
+
 
 namespace DGR {
 
@@ -18,6 +19,10 @@ class Button;
 class Window;
 
 class GameStateManager;
+
+class Character;
+
+class Spell;
 
 class GameController {
 private:
@@ -36,9 +41,9 @@ public:
     explicit GameController(Window* window);
 
     /// getters
-    [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
+    [[nodiscard]] const std::vector<Character*> &getHeroes() const;
 
-    [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
+    [[nodiscard]] const std::vector<Character*> &getEnemies() const;
 
     [[nodiscard]] SpriteRenderer* getSpriteRenderer() const;
 

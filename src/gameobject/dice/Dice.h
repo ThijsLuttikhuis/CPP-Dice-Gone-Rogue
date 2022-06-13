@@ -63,6 +63,8 @@ public:
 
     [[nodiscard]] Dice* makeCopy() const;
 
+    [[nodiscard]] Character* getCharacter() const;
+
     /// setters
     void setLocked(bool lock_);
 
@@ -87,6 +89,7 @@ public:
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+
 };
 
 }

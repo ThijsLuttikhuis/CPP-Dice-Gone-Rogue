@@ -5,7 +5,6 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "gameobject/Hero.h"
 #include "shaders/TextRenderer.h"
 #include "utilities/Random.h"
 #include "GameController.h"
@@ -14,6 +13,7 @@
 #include "GameStateManager.h"
 #include "utilities/Button.h"
 #include "gameobject/spell/Spell.h"
+#include "gameobject/Character.h"
 
 namespace DGR {
 
@@ -33,7 +33,7 @@ GameController::GameController(Window* window) {
 
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
-    auto heroes = *(std::vector<Hero*>*) yamlReaderHeroes.getData()->getFeature();
+    auto heroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
 
     int x = 0;
     for (auto &hero : heroes) {
@@ -48,7 +48,7 @@ GameController::GameController(Window* window) {
 
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
-    auto enemies = *(std::vector<Enemy*>*) yamlReaderEnemies.getData()->getFeature();
+    auto enemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
 
     x = 0;
     for (auto &enemy : enemies) {
@@ -67,11 +67,11 @@ GameController::GameController(Window* window) {
     gameState->setAttackOrder(attackOrder);
 }
 
-const std::vector<Hero*> &GameController::getHeroes() const {
+const std::vector<Character*> &GameController::getHeroes() const {
     return gameState->getHeroes();
 }
 
-const std::vector<Enemy*> &GameController::getEnemies() const {
+const std::vector<Character*> &GameController::getEnemies() const {
     return gameState->getEnemies();
 }
 

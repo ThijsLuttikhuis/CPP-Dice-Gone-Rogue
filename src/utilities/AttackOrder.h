@@ -5,8 +5,6 @@
 #ifndef DICEGONEROGUE_ATTACKORDER_H
 #define DICEGONEROGUE_ATTACKORDER_H
 
-#include <gameobject/Enemy.h>
-#include <gameobject/Hero.h>
 #include "gameobject/Character.h"
 #include "gameobject/spell/Spell.h"
 #include "gameobject/dice/Face.h"
@@ -34,8 +32,8 @@ private:
     GameStateManager* gameState;
 
     int mana{};
-    std::vector<Hero*> heroes;
-    std::vector<Enemy*> enemies;
+    std::vector<Character*> heroes;
+    std::vector<Character*> enemies;
 
     std::vector<attackType> attackOrder{};
     std::vector<std::pair<int, int>> attackOrderIDs{};
@@ -53,7 +51,7 @@ public:
 
     void undo();
 
-    void setState(const std::vector<Hero*> &heroes_, const std::vector<Enemy*> &enemies_, int mana_);
+    void setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_);
 
 };
 

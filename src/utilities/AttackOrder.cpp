@@ -20,6 +20,9 @@ Character* AttackOrder::getStoredCharacter(int id) {
             return enemy;
         }
     }
+
+    std::cerr << "AttackOrder::getStoredCharacter: error: no character found!" << std::endl;
+    exit(404);
 }
 
 Spell* AttackOrder::getStoredSpell(int id) {
@@ -33,6 +36,9 @@ Spell* AttackOrder::getStoredSpell(int id) {
             return enemy->getSpell();
         }
     }
+
+    std::cerr << "AttackOrder::getStoredSpell: error: no spell found!" << std::endl;
+    exit(404);
 }
 
 void AttackOrder::addAttack(Character* character, Character* otherCharacter) {
@@ -61,16 +67,19 @@ void AttackOrder::undo() {
     gameState->setMana(mana);
 
     // create new copies
-    std::vector<Hero*> heroes_ = {};
-    std::vector<Enemy*> enemies_ = {};
+    std::vector<Character*> heroes_ = {};
+    std::vector<Character*> enemies_ = {};
     for (auto &hero : heroes) {
-        Hero* copy = hero->makeCopy(true);
+        Character* copy = hero->makeCopy(true);
         heroes_.push_back(copy);
     }
     for (auto &enemy : enemies) {
-        Enemy* copy = enemy->makeCopy(true);
+        Character* copy = enemy->makeCopy(true);
         enemies_.push_back(copy);
     }
+
+    gameState->setHeroes(heroes);
+    gameState->setEnemies(enemies);
 
     // apply attacks until index-1
     int undoTillIndex = (int)attackOrder.size() - 1;
@@ -111,11 +120,9 @@ void AttackOrder::undo() {
     std::swap(heroes, heroes_);
     std::swap(enemies, enemies_);
 
-    gameState->setHeroes(heroes_);
-    gameState->setEnemies(enemies_);
 }
 
-void AttackOrder::setState(const std::vector<Hero*> &heroes_, const std::vector<Enemy*> &enemies_, int mana_) {
+void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_) {
 
     attackOrder = {};
     attackOrderIDs = {};
@@ -134,14 +141,13 @@ void AttackOrder::setState(const std::vector<Hero*> &heroes_, const std::vector<
 
     // set new copies
     for (auto &hero : heroes_) {
-        Hero* copy = hero->makeCopy(true);
+        Character* copy = hero->makeCopy(true);
         heroes.push_back(copy);
     }
     for (auto &enemy : enemies_) {
-        Enemy* copy = enemy->makeCopy(true);
+        Character* copy = enemy->makeCopy(true);
         enemies.push_back(copy);
     }
 }
-
 
 }
