@@ -1,5 +1,6 @@
 characters:
   knight:
+    size: 32;
     hp: 12;
     dice:
       face0:
@@ -24,6 +25,7 @@ characters:
   ;
 
   rogue:
+    size: 32;
     hp: 9;
     dice:
       face0:
@@ -55,6 +57,7 @@ characters:
   ;
 
   paladin:
+    size: 32;
     hp: 14;
     dice:
       face0:
@@ -83,9 +86,10 @@ characters:
   ;
 
   wizard:
+    size: 32;
     hp: 8;
     spell:
-      name: "Fireball";
+      name: "fireball";
       damage: 6;
       cost: 4;
     ;
@@ -113,6 +117,7 @@ characters:
   ;
 
   druid:
+    size: 32;
     hp: 10;
     dice:
       face0:

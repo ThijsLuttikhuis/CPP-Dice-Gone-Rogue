@@ -123,7 +123,6 @@ void AttackOrder::undo() {
 }
 
 void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_) {
-
     attackOrder = {};
     attackOrderIDs = {};
 

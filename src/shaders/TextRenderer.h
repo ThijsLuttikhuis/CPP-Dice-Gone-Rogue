@@ -25,14 +25,14 @@ private:
     Texture2D* texture;
 
     glm::vec2 displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart, const glm::vec2 &size,
-                          const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha, float zIndex);
+                          const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha, float zIndex) const;
 public:
     TextRenderer(Shader* shader, glm::mat4 projection);
 
     ~TextRenderer();
 
-    void drawText(const std::string &texture, float zIndex, glm::vec2 textStart, glm::vec2 size,
-                  glm::vec3 color = glm::vec3(0.0f), float alpha = 1.0f);
+    void drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
+                  glm::vec3 color = glm::vec3(0.0f), float alpha = 1.0f) const;
 
 
 };

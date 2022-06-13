@@ -22,6 +22,7 @@ YamlReader::YamlReader() {
     keyToFunc["wizard"] = new YamlHandleCharacter("wizard", stringCode::hero);
 
     keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
+    keyToFunc["slime"] = new YamlHandleCharacter("slime", stringCode::enemy);
 
     keyToFunc["spell"] = new YamlHandleSpell();
     keyToFunc["dice"] = new YamlHandleDice();
@@ -33,6 +34,7 @@ YamlReader::YamlReader() {
     keyToFunc["face5"] = new YamlHandleFace(5);
 
     keyToFunc["hp"] = new YamlHandleInt(stringCode::hp);
+    keyToFunc["size"] = new YamlHandleInt(stringCode::size);
     keyToFunc["name"] = new YamlHandleString(stringCode::name);
     keyToFunc["cost"] = new YamlHandleInt(stringCode::cost);
     keyToFunc["mod"] = new YamlHandleString(stringCode::mod);

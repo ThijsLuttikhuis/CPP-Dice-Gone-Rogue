@@ -71,7 +71,7 @@ public:
     void hoverMouse(bool hover);
 
     /// render
-    virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
 
 };
 

@@ -44,7 +44,7 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/Character.h
         src/gameobject/GameObject.cpp
         src/gameobject/GameObject.h
-        )
+        src/ui/UIElement.cpp src/ui/UIElement.h)
 
 set(INCLUDE_IOFILEMANAGER
         src/iofilemanager/YamlReader.cpp
@@ -63,18 +63,18 @@ set(INCLUDE_SHADERS
         )
 
 set(INCLUDE_UTILITIES
-        src/utilities/Button.cpp
-        src/utilities/Button.h
+        src/ui/Button.cpp
+        src/ui/Button.h
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
         src/utilities/AttackOrder.cpp
         src/utilities/AttackOrder.h
-        src/utilities/InputHandler.cpp
-        src/utilities/InputHandler.h
+        src/ui/InputHandler.cpp
+        src/ui/InputHandler.h
         src/utilities/Random.cpp
         src/utilities/Random.h
-        src/utilities/Window.cpp
-        src/utilities/Window.h
+        src/ui/Window.cpp
+        src/ui/Window.h
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h

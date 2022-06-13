@@ -5,12 +5,12 @@
 
 #include "GameController.h"
 #include "utilities/Random.h"
-#include "utilities/Window.h"
+#include "ui/Window.h"
 
 int main() {
 
-    int width = 28*16;
-    int height = 28*9;
+    int width = 32*16;
+    int height = 32*9;
 
     DGR::Random::initialize(0);
     auto* window = new DGR::Window(width, height);

@@ -3,11 +3,11 @@
 //
 
 #include "GameStateManager.h"
-#include "utilities/Button.h"
+#include "ui/Button.h"
 
 namespace DGR {
 
-GameStateManager::gameState GameStateManager::getGameState() const {
+GameStateManager::battleGameState GameStateManager::getGameState() const {
     return state;
 }
 
@@ -44,7 +44,6 @@ void GameStateManager::setClickedSpell(Spell* clickedSpell_) {
 }
 
 int GameStateManager::reroll() {
-
     if (rerolls > 0) {
         rerolls--;
 
@@ -245,30 +244,6 @@ std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* cha
             }
             return neighbours;
         }
-    }
-    return neighbours;
-}
-
-std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* character,
-                                                                  std::vector<Character*> otherCharacters) {
-
-    std::pair<Character*, Character*> neighbours(nullptr, nullptr);
-    bool characterFound = false;
-    for (auto &otherCharacter : otherCharacters) {
-        if (!otherCharacter->isDead()) {
-            if (character == otherCharacter) {
-                characterFound = true;
-            } else if (characterFound) {
-                neighbours.second = otherCharacter;
-                break;
-            } else {
-                neighbours.first = otherCharacter;
-            }
-        }
-    }
-    if (!characterFound) {
-        std::cerr << "GameStateManager::getNeighbours: error: no character found!" << std::endl;
-        exit(404);
     }
     return neighbours;
 }

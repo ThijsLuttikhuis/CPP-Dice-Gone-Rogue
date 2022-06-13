@@ -15,9 +15,10 @@ SpriteRenderer::SpriteRenderer(Shader* shader, glm::mat4 projection)
       : shader(shader) {
 
     specialSpritesToFunction.push_back(
-          std::make_pair<std::string, void (*)(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
-                                               glm::vec2 position, glm::vec2 size, float rotate,
-                                               glm::vec3 color, float alpha)>("box", drawBoxSprite));
+          std::make_pair<std::string,
+                void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
+                         float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
+                         const glm::vec3 &color, float alpha)>("box", drawBoxSprite));
 
     shader->use();
     shader->setInteger("sprite", 0);
@@ -52,9 +53,9 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-
-void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size,
-                                float rotate, glm::vec3 color, float alpha) {
+void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
+                                const glm::vec2 &position, const glm::vec2 &size,
+                                float rotate, const glm::vec3 &color, float alpha) const {
 
     for (auto &specialSprite : specialSpritesToFunction) {
         if (textureName == specialSprite.first) {
@@ -78,13 +79,13 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, gl
 
     glActiveTexture(GL_TEXTURE0);
 
-    if (textures[textureName]) {
-        textures[textureName]->bind();
+    if (textures.find(textureName) != textures.end()) {
+        textures.at(textureName)->bind();
     } else {
 #if PRINT_NO_TEXTURE
         std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
 #endif
-        textures["no_texture"]->bind();
+        textures.at("no_texture")->bind();
     }
 
     glBindVertexArray(this->quadVAO);
@@ -117,8 +118,9 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     }
 }
 
-void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
-                                   glm::vec2 position, glm::vec2 size, float drawEdges, glm::vec3 color, float alpha) {
+void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
+                                   const glm::vec2 &position, const glm::vec2 &size, float drawEdges,
+                                   const glm::vec3 &color, float alpha) {
 
     (void) texture;
     std::string tex = "pixel";

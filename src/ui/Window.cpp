@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "GameController.h"
 #include "gameobject/dice/Dice.h"
-#include "Constants.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 

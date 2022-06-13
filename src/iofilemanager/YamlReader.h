@@ -32,6 +32,7 @@ enum struct stringCode : int {
     face,
     mod,
     hp,
+    size,
     damage,
     mana,
     heal,
@@ -123,6 +124,7 @@ class YamlHandleCharacter : public YamlHandle {
     Spell* spell = nullptr;
     Dice* dice = nullptr;
     int maxHP{};
+    int size{};
     std::string name;
 public:
     explicit YamlHandleCharacter(std::string name, stringCode stringCode)
@@ -138,6 +140,9 @@ public:
         switch (yamlHandle->getType()) {
             case stringCode::hp:
                 maxHP = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::size:
+                size = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::spell:
                 spell = (Spell*) yamlHandle->getFeature();
@@ -168,6 +173,7 @@ public:
         }
 
         character->setMaxHP(maxHP);
+        character->setSize(glm::vec2(size));
         if (spell) {
             character->setSpell(spell);
             character->getSpell()->setCharacter(character);

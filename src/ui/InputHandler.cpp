@@ -4,8 +4,8 @@
 
 #include <iostream>
 
-#include "Constants.h"
-#include "Button.h"
+#include "utilities/Constants.h"
+#include "ui/Button.h"
 #include "gameobject/spell/Spell.h"
 #include "gameobject/Character.h"
 #include "InputHandler.h"
@@ -17,11 +17,11 @@ InputHandler::InputHandler(GameController* gameController) : gameController(game
     spriteRenderer = gameController->getSpriteRenderer();
     textRenderer = gameController->getTextRenderer();
 
-    auto* button1 = new Button("leftMainButton", {268, 195}, {80, 15});
+    auto* button1 = new Button("leftMainButton", {304, 195}, {80, 15});
     button1->setText("2 rerolls left");
     buttons.push_back(button1);
 
-    auto* button2 = new Button("rightMainButton", {352, 195}, {80, 15});
+    auto* button2 = new Button("rightMainButton", {400, 195}, {80, 15});
     button2->setText("done rolling");
     buttons.push_back(button2);
 }

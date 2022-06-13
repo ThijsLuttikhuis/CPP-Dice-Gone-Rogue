@@ -107,7 +107,7 @@ TextRenderer::~TextRenderer() {
 }
 
 void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
-                            glm::vec3 color, float alpha) {
+                            glm::vec3 color, float alpha) const {
 
     glm::vec3 white = glm::vec3(1.0f);
     glm::vec3 textColor = white;
@@ -143,7 +143,7 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 tex
 
 glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart, const glm::vec2 &size,
                                     const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha,
-                                    float zIndex) {
+                                    float zIndex) const {
 
     glm::vec2 currentTextPos = initialTextPos;
     glm::vec2 letterSize(5, 7);

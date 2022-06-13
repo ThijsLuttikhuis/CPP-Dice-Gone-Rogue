@@ -8,21 +8,24 @@
 #include <vector>
 #include <utilities/AttackOrder.h>
 
-#include "utilities/Window.h"
+#include "ui/Window.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
 class GameStateManager {
 public:
-    enum gameState {
+    enum mapGameState {
+
+    };
+    enum battleGameState {
         rolling_heroes,
         attack_block_heroes,
         rolling_enemies,
         attack_block_enemies
     };
 private:
-    gameState state = rolling_heroes;
+    battleGameState state = rolling_enemies;
     int rerollsMax = 3;
     int rerolls = rerollsMax;
     int mana = 0;
@@ -46,7 +49,7 @@ public:
 
     [[nodiscard]] const std::vector<Character*> &getEnemies() const;
 
-    [[nodiscard]] gameState getGameState() const;
+    [[nodiscard]] battleGameState getGameState() const;
 
     [[nodiscard]] Character* getClickedCharacter() const;
 
@@ -89,8 +92,6 @@ public:
     void addMana(int mana_);
 
     std::pair<Character*, Character*> getNeighbours(Character* character);
-
-    static std::pair<Character*, Character*> getNeighbours(Character* character, std::vector<Character*> otherCharacters);
 
     /// render
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);

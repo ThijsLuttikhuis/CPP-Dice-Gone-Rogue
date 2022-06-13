@@ -402,7 +402,7 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
-void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
     glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
     std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
@@ -461,7 +461,7 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
     }
 }
 
-void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 
     drawHealthBar(spriteRenderer, textRenderer);
@@ -470,7 +470,7 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
     dice->draw(spriteRenderer, textRenderer);
 }
 
-void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     if (hover) {
 #if DEBUG
         std::cout << "hover: " << getName() << " -- x: " << getPosition().x
@@ -484,9 +484,8 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
     }
 }
 
-void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) {
+void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
-
 
 }

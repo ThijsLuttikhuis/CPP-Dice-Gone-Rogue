@@ -8,10 +8,10 @@
 #include "shaders/TextRenderer.h"
 #include "utilities/Random.h"
 #include "GameController.h"
-#include "utilities/Window.h"
+#include "ui/Window.h"
 #include "iofilemanager/YamlReader.h"
 #include "GameStateManager.h"
-#include "utilities/Button.h"
+#include "ui/Button.h"
 #include "gameobject/spell/Spell.h"
 #include "gameobject/Character.h"
 
@@ -34,31 +34,11 @@ GameController::GameController(Window* window) {
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
     auto heroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
-
-    int x = 0;
-    for (auto &hero : heroes) {
-        glm::vec2 pos(2 * x++ * 24 + 16, 5 * 32);
-        glm::vec2 size(32, 32);
-
-        hero->setPosition(pos);
-        hero->setSize(size);
-    }
-
     gameState->setHeroes(heroes);
 
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
     auto enemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
-
-    x = 0;
-    for (auto &enemy : enemies) {
-        glm::vec2 pos(2 * x++ * 24 + 16, 2 * 32);
-        glm::vec2 size(16, 16);
-
-        enemy->setPosition(pos);
-        enemy->setSize(size);
-    }
-
     gameState->setEnemies(enemies);
 
     gameState->reroll();
@@ -129,62 +109,50 @@ void GameController::alignCharacterPositions(double dt) {
     const float moveSpeed = 100.0f;
     const float maxDPos = moveSpeed * (float) dt;
     const int dWidth = 16;
+    const int maxTotalWidth = 6 * (dWidth + 32);
 
+    int startLeft;
     int totalWidth;
     int left, up;
-
-    // heroes
-    totalWidth = 0;
-    for (auto &hero : gameState->getHeroes()) {
-        if (!hero->isDead()) {
-            totalWidth += dWidth + (int) hero->getSize().x;
-        }
-    }
-
-    left = (int) (center * 0.7) - totalWidth / 2;
-    up = 5 * 32;
-    for (auto &hero : gameState->getHeroes()) {
-        if (!hero->isDead()) {
-            glm::vec2 targetPos(left, up);
-            glm::vec2 pos = hero->getPosition();
-            glm::vec2 dPos(targetPos - pos);
-
-            if (glm::length(dPos) > maxDPos && glm::length(dPos) < moveSpeed) {
-                dPos = glm::normalize(dPos) * maxDPos;
-                hero->setPosition(pos + dPos);
-            } else {
-                hero->setPosition(targetPos);
+    bool isHeroes = false;
+    for (auto &characters : {gameState->getHeroes(), gameState->getEnemies()}) {
+        isHeroes = !isHeroes;
+        totalWidth = 0;
+        for (auto &character : characters) {
+            if (!character->isDead()) {
+                totalWidth += dWidth + (int) character->getSize().x;
             }
-            left += dWidth + (int) hero->getSize().x;
-        } else {
-            hero->setPosition(-left, -up);
         }
-    }
 
-    // enemies
-    totalWidth = 0;
-    for (auto &enemy : gameState->getEnemies()) {
-        if (!enemy->isDead()) {
-            totalWidth += dWidth + (int) enemy->getSize().x;
-        }
-    }
+        totalWidth = std::min(totalWidth, maxTotalWidth);
 
-    left = (int) (center / 0.7) - totalWidth / 2;
-    up = 2 * 32;
-    for (auto &enemy : gameState->getEnemies()) {
-        if (!enemy->isDead()) {
-            auto targetPos = glm::vec2(left, up);
-            auto pos = enemy->getPosition();
-            if (pos != targetPos) {
-                auto dPos = glm::vec2(targetPos - pos);
+        startLeft = isHeroes ? (int) (center * 0.6) - totalWidth / 2 : (int) (center * 1.4) - totalWidth / 2;
+        left = startLeft;
+        up = isHeroes ? 13 * 16 : 6 * 16;
+
+        for (auto &character : characters) {
+            if (!character->isDead()) {
+                glm::vec2 size = character->getSize();
+                if ((int)size.x + left - startLeft > maxTotalWidth) {
+                    std::cout << left << startLeft << maxTotalWidth << std::endl;
+                    std::cout << "too many characters" << std::endl;
+                    character->setPosition(-left, -up);
+                    continue;
+                }
+                glm::vec2 targetPos(left, (float)up - size.y);
+                glm::vec2 pos = character->getPosition();
+                glm::vec2 dPos(targetPos - pos);
+
                 if (glm::length(dPos) > maxDPos && glm::length(dPos) < moveSpeed) {
                     dPos = glm::normalize(dPos) * maxDPos;
+                    character->setPosition(pos + dPos);
+                } else {
+                    character->setPosition(targetPos);
                 }
-                enemy->setPosition(pos + dPos);
+                left += dWidth + (int) character->getSize().x;
+            } else {
+                character->setPosition(-left, -up);
             }
-            left += dWidth + (int) enemy->getSize().x;
-        } else {
-            enemy->setPosition(-left, -up);
         }
     }
 }

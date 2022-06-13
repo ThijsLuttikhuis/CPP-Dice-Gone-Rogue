@@ -47,11 +47,10 @@ private:
 
     void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
 
-    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
-
+    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
 
 public:
-    explicit Character(std::string name, std::string characterType)
+    Character(std::string name, std::string characterType)
           : GameObject(std::move(name)), characterType(std::move(characterType)) {};
 
     Character(const std::string &name, std::string characterType, glm::vec2 position, glm::vec2 size)
@@ -114,11 +113,11 @@ public:
     void applyDamageStep();
 
     /// render
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
+    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
 
-    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color);
+    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const;
 
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
 
 
 };
