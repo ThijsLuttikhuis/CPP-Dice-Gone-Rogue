@@ -24,8 +24,10 @@ private:
 
     Texture2D* texture;
 
-    glm::vec2 displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart, const glm::vec2 &size,
-                          const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha, float zIndex) const;
+    [[nodiscard]] glm::vec2 displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart,
+                                        const glm::vec2 &size, const std::vector<int> &wordVAO,
+                                        const glm::vec3 &color, float alpha, float zIndex) const;
+
 public:
     TextRenderer(Shader* shader, glm::mat4 projection);
 

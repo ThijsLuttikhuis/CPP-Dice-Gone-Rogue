@@ -130,6 +130,7 @@ characters:
       ;
       face2:
         damage: 3;
+        mod: "poison";
       ;
       face3:
         heal and mana: 2;
@@ -137,6 +138,7 @@ characters:
       ;
       face4:
         heal: 3;
+        mod: "regen";
       ;
       face5:
         empty: 0;

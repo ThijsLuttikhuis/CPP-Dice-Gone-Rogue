@@ -16,6 +16,7 @@ BiDirectionalMap<std::string, FaceModifier::modifier> FaceModifier::stringsAndMo
             {"sweeping edge", modifier::sweeping_edge},
             {"single use",    modifier::single_use},
             {"poison",        modifier::poison},
+            {"regen",        modifier::regen},
             {"cleanse",       modifier::cleanse},
             {"first blood",   modifier::first_blood},
             {"growth",        modifier::growth},
@@ -59,6 +60,9 @@ glm::vec3 FaceModifier::toColor() const {
     }
     if (modifiers & static_cast<unsigned int>(modifier::poison)) {
         return glm::vec3(0.2f, 0.7f, 0.1f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::regen)) {
+        return glm::vec3(0.7f, 0.2f, 0.1f);
     }
     if (modifiers & static_cast<unsigned int>(modifier::cleanse)) {
         return glm::vec3(0.8f, 1.0f, 0.7f);

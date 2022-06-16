@@ -351,6 +351,10 @@ void Character::applyFaceTypeHeal(Face* face, GameStateManager* gameState) {
         applyFaceModifierCleanse(face, gameState);
     }
 
+    if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
+        regen += value;
+    }
+
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
         applyFaceModifierSweepingEdge(FaceType::heal, face, gameState);
     }
@@ -413,51 +417,49 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
 
     float textDRight = 2;
     float textDUp = 4;
-
+    float dPosRight, dPosUp;
+    glm::vec2 position_, textPosition_, size_;
     if (shield > 0) {
-        float shieldPosRight = -size.x * 6.0f / 16.0f;
-        float shieldPosUp = -6;
-        glm::vec2 shieldPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight, shieldPosUp);
-        glm::vec2 shieldTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight + textDRight, shieldPosUp + textDUp);
+        dPosRight = hpBarSize.x * 12.0f / 16.0f - 2.0f;
+        dPosUp = -6;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
 
-        glm::vec2 shieldSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_shield", 0.7, shieldPosition, shieldSize,
+        spriteRenderer->drawSprite("hero_shield", 0.7, position_, size_,
                                    0.0f, glm::vec3(0.1f), 0.5f);
-
-        textRenderer->drawText(std::to_string(shield), 0.5, shieldTextPosition, shieldSize);
+        textRenderer->drawText(std::to_string(shield), 0.5, textPosition_, size_);
     }
-    if (incomingDamage > 0) {
-        float incDamagePosRight = -size.x * 6.0f / 16.0f;
-        float incDamagePosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight, incDamagePosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight + textDRight, incDamagePosUp + textDUp);
 
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_damage", 0.7, incomingDamagePosition, incomingDamageSize,
+    if (incomingDamage > 0) {
+        dPosRight = hpBarSize.x * 12.0f / 16.0f - 2.0f;
+        dPosUp = 8;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
+        spriteRenderer->drawSprite("hero_damage", 0.7, position_, size_,
                                    90.0f, glm::vec3(0.1f), 0.5f);
 
         textRenderer->drawText("^" + std::to_string(incomingDamage) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+                               textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 
-    if (poison > 0) {
-        float poisonPosRight = -size.x * 22.0f / 16.0f;
-        float poisonPosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight, poisonPosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight + textDRight, poisonPosUp + textDUp);
+    if (poison != regen) {
+        bool morePoisonThanRegen = poison > regen;
+        glm::vec3 color = (morePoisonThanRegen ? FaceModifier(FaceModifier::modifier::poison).toColor()
+                                               : FaceModifier(FaceModifier::modifier::regen).toColor()) * 1.5f;
 
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_mana", 0.7, incomingDamagePosition, incomingDamageSize,
-                                   90.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f);
+        dPosRight = hpBarSize.x * 8.0f / 16.0f - 10.0f;
+        dPosUp = 8;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
 
-        textRenderer->drawText("^" + std::to_string(poison) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+        spriteRenderer->drawSprite("hero_mana", 0.7, position_, size_,
+                                   morePoisonThanRegen ? 90.0f : 0.0f, color, 0.5f);
+
+        textRenderer->drawText("^" + std::to_string(std::abs(poison - regen)) + "^", 0.5,
+                               textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 }
 

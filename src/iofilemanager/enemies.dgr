@@ -87,9 +87,11 @@ characters:
     dice:
       face0:
         damage: 4;
+        mod: "poison";
       ;
       face1:
         damage: 2;
+        mod: "poison";
       ;
       face2:
         damage: 3;
