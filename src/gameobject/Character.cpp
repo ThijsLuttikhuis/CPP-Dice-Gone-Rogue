@@ -9,6 +9,7 @@
 #include "dice/Face.h"
 #include "spell/Spell.h"
 #include "GameStateManager.h"
+#include "ui/scene/BattleScene.h"
 
 namespace DGR {
 
@@ -101,7 +102,7 @@ void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
 }
 
-bool Character::interact(Spell* clickedSpell, GameStateManager* gameState, bool storeAction) {
+bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool storeAction) {
     bool success = false;
 
     SpellType type = clickedSpell->getType();
@@ -114,7 +115,7 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState, bool 
         case SpellType::damage:
             if (differentCharacterType) {
                 if (!backRow) {
-                    applySpellTypeDamage(clickedSpell, gameState);
+                    applySpellTypeDamage(clickedSpell, battleScene);
                     success = true;
                 }
             }
@@ -132,13 +133,13 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState, bool 
     }
 
     if (success && storeAction) {
-        gameState->getAttackOrder()->addAttack(clickedSpell, this);
+        battleScene->getAttackOrder()->addAttack(clickedSpell, this);
     }
 
     return success;
 }
 
-bool Character::interact(Character* otherCharacter, GameStateManager* gameState, bool storeAction) {
+bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction) {
     bool success = false;
     Face* face;
     FaceType type;
@@ -153,7 +154,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState,
                 success = true;
                 break;
             case FaceType::mana:
-                gameState->addMana(face->getValue());
+                battleScene->addMana(face->getValue());
                 success = true;
                 break;
             case FaceType::dodge:
@@ -174,20 +175,20 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState,
             case FaceType::damage:
                 if (differentCharacterType) {
                     if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        applyFaceTypeDamage(face, gameState);
+                        applyFaceTypeDamage(face, battleScene);
                         success = true;
                     }
                 }
                 break;
             case FaceType::heal:
                 if (!differentCharacterType) {
-                    applyFaceTypeHeal(face, gameState);
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::shield:
                 if (!differentCharacterType) {
-                    applyFaceTypeShield(face, gameState);
+                    applyFaceTypeShield(face, battleScene);
                     success = true;
                 }
                 break;
@@ -196,38 +197,38 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState,
                 return false;
             case FaceType::heal_and_shield:
                 if (!differentCharacterType) {
-                    applyFaceTypeShield(face, gameState);
-                    applyFaceTypeHeal(face, gameState);
+                    applyFaceTypeShield(face, battleScene);
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::heal_and_mana:
                 if (!differentCharacterType) {
-                    gameState->addMana(face->getValue());
-                    applyFaceTypeHeal(face, gameState);
+                    battleScene->addMana(face->getValue());
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::shield_and_mana:
                 if (!differentCharacterType) {
-                    gameState->addMana(face->getValue());
-                    applyFaceTypeShield(face, gameState);
+                    battleScene->addMana(face->getValue());
+                    applyFaceTypeShield(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::damage_and_mana:
                 if (differentCharacterType) {
                     if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        gameState->addMana(face->getValue());
-                        applyFaceTypeDamage(face, gameState);
+                        battleScene->addMana(face->getValue());
+                        applyFaceTypeDamage(face, battleScene);
                         success = true;
                     }
                 }
                 break;
             case FaceType::damage_and_self_shield:
                 if (differentCharacterType) {
-                    otherCharacter->applyFaceTypeShield(face, gameState);
-                    applyFaceTypeDamage(face, gameState);
+                    otherCharacter->applyFaceTypeShield(face, battleScene);
+                    applyFaceTypeDamage(face, battleScene);
                     success = true;
                 }
                 break;
@@ -251,7 +252,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState,
     }
 
     if (success && storeAction) {
-        gameState->getAttackOrder()->addAttack(this, otherCharacter);
+        battleScene->getAttackOrder()->addAttack(this, otherCharacter);
     }
 
     return success;
@@ -313,14 +314,14 @@ void Character::applyDamageStep() {
     isUndying = false;
 }
 
-void Character::applySpellTypeDamage(Spell* spell_, GameStateManager* gameState) {
-    (void) gameState;
+void Character::applySpellTypeDamage(Spell* spell_, BattleScene* battleScene) {
+    (void) battleScene;
 
     int value = spell_->getValue();
     incomingDamage += value;
 }
 
-void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
+void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -336,19 +337,19 @@ void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::damage, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
     }
 
 }
 
-void Character::applyFaceTypeHeal(Face* face, GameStateManager* gameState) {
+void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
     hp += value;
     hp = std::min(hp, maxHP);
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, gameState);
+        applyFaceModifierCleanse(face, battleScene);
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
@@ -356,44 +357,44 @@ void Character::applyFaceTypeHeal(Face* face, GameStateManager* gameState) {
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::heal, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::heal, face, battleScene);
     }
 }
 
-void Character::applyFaceTypeShield(Face* face, GameStateManager* gameState) {
+void Character::applyFaceTypeShield(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
     shield += value;
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, gameState);
+        applyFaceModifierCleanse(face, battleScene);
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::shield, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::shield, face, battleScene);
     }
 }
 
-void Character::applyFaceModifierCleanse(Face* face, GameStateManager* gameState) {
-    (void) face, (void) gameState;
+void Character::applyFaceModifierCleanse(Face* face, BattleScene* battleScene) {
+    (void) face, (void) battleScene;
     poison = 0;
 }
 
-void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState) {
+void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene) {
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
     //std::vector<Character*> characters = (face->getDice()->getCharacter()->getCharacterType() == "hero") ? gameState->getHeroes() : gameState->getEnemies();
-    auto neighbours = gameState->getNeighbours(this);
+    auto neighbours = battleScene->getNeighbours(this);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
             switch (type) {
                 case FaceType::damage:
-                    neighbour->applyFaceTypeDamage(face, gameState);
+                    neighbour->applyFaceTypeDamage(face, battleScene);
                     break;
                 case FaceType::heal:
-                    neighbour->applyFaceTypeHeal(face, gameState);
+                    neighbour->applyFaceTypeHeal(face, battleScene);
                     break;
                 case FaceType::shield:
-                    neighbour->applyFaceTypeShield(face, gameState);
+                    neighbour->applyFaceTypeShield(face, battleScene);
                     break;
                 case FaceType::undying:
                     //TODO:

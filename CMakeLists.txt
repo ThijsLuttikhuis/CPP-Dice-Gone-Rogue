@@ -62,19 +62,27 @@ set(INCLUDE_SHADERS
         src/shaders/TextRenderer.h
         )
 
-set(INCLUDE_UTILITIES
+set(INCLUDE_UI
+        src/ui/scene/Scene.cpp
+        src/ui/scene/Scene.h
+        src/ui/scene/BattleScene.cpp
+        src/ui/scene/BattleScene.h
+
+        src/ui/InputHandler.cpp
+        src/ui/InputHandler.h
         src/ui/Button.cpp
         src/ui/Button.h
+        src/ui/Window.cpp
+        src/ui/Window.h
+        )
+
+set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
         src/utilities/AttackOrder.cpp
         src/utilities/AttackOrder.h
-        src/ui/InputHandler.cpp
-        src/ui/InputHandler.h
         src/utilities/Random.cpp
         src/utilities/Random.h
-        src/ui/Window.cpp
-        src/ui/Window.h
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
@@ -88,10 +96,9 @@ add_executable(DiceGoneRogue main.cpp
         ${INCLUDE_GAMEOBJECT}
         ${INCLUDE_IOFILEMANAGER}
         ${INCLUDE_SHADERS}
+        ${INCLUDE_UI}
         ${INCLUDE_UTILITIES}
 
-        src/GameController.cpp
-        src/GameController.h
         src/GameStateManager.cpp
         src/GameStateManager.h
         )

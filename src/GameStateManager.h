@@ -13,88 +13,40 @@
 
 namespace DGR {
 
+class Scene;
+
 class GameStateManager {
 public:
-    enum mapGameState {
-
-    };
-    enum battleGameState {
-        rolling_heroes,
-        attack_block_heroes,
-        rolling_enemies,
-        attack_block_enemies
+    enum gameState {
+        battle,
     };
 private:
-    battleGameState state = rolling_enemies;
-    int rerollsMax = 3;
-    int rerolls = rerollsMax;
-    int mana = 0;
+    double dt{};
+    double t{};
+    double tPrev = 0.0;
 
+    TextRenderer* textRenderer;
+    SpriteRenderer* spriteRenderer;
+
+    gameState state = battle;
     Window* window;
+    std::vector<Scene*> scenes;
 
-    Character* clickedCharacter = nullptr;
-    Spell* clickedSpell = nullptr;
-
-    std::vector<Character*> heroes;
-    std::vector<Character*> enemies;
-
-    AttackOrder* attackOrder = nullptr;
-
-    void updateButtons();
 public:
-    explicit GameStateManager(Window* window) : window(window) { };
+    explicit GameStateManager(Window* window);
 
     /// getters
-    [[nodiscard]] const std::vector<Character*> &getHeroes() const;
-
-    [[nodiscard]] const std::vector<Character*> &getEnemies() const;
-
-    [[nodiscard]] battleGameState getGameState() const;
-
-    [[nodiscard]] Character* getClickedCharacter() const;
-
-    [[nodiscard]] Spell* getClickedSpell() const;
-
-    [[nodiscard]] bool areHeroesRolling() const;
-
-    [[nodiscard]] bool areEnemiesRolling() const;
-
-    [[nodiscard]] bool areHeroesAttacking() const;
-
-    [[nodiscard]] bool areEnemiesAttacking() const;
-
-    [[nodiscard]] int getRerolls() const;
-
-    [[nodiscard]] int getMana() const;
-
     [[nodiscard]] Window* getWindow() const;
 
-    [[nodiscard]] AttackOrder* getAttackOrder() const;
-
-    /// setters
-    void setHeroes(const std::vector<Character*> &heroes_);
-
-    void setEnemies(const std::vector<Character*> &enemies);
-
-    void setMana(int mana_);
-
-    void setClickedCharacter(Character* clickedCharacter_);
-
-    void setClickedSpell(Spell* clickedSpell_);
-
-    void setNextGameState();
-
-    void setAttackOrder(AttackOrder* attackOrder_);
-
     /// functions
-    int reroll();
+    void handleMouseButton(double xPos, double yPos);
 
-    void addMana(int mana_);
+    void handleMousePosition(double xPos, double yPos);
 
-    std::pair<Character*, Character*> getNeighbours(Character* character);
+    void update();
 
     /// render
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void render();
 
 
 };

@@ -3,9 +3,9 @@
 //
 
 #include <iostream>
+#include <ui/scene/BattleScene.h>
 
 #include "Window.h"
-#include "GameController.h"
 #include "gameobject/dice/Dice.h"
 #include "utilities/Constants.h"
 
@@ -133,27 +133,23 @@ int Window::getHeight() const {
     return height;
 }
 
-std::vector<Button*> Window::getButtons() const {
-    return inputHandler->getButtons();
-}
 
 void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    inputHandler->handleMouseButton(xPos, yPos);
+    gameState->handleMouseButton(xPos, yPos);
 }
 
 void Window::handleMousePosition(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    inputHandler->handleMousePosition(xPos, yPos);
+    gameState->handleMousePosition(xPos, yPos);
 }
 
-void Window::setGameController(GameController* gameController_) {
-    gameController = gameController_;
-    inputHandler = new InputHandler(gameController_);
+void Window::setGameStateManager(GameStateManager* gameState_) {
+    gameState = gameState_;
 }
 
 void Window::setWindowSize(int displayWidth_, int displayHeight_) {
@@ -165,8 +161,7 @@ void Window::render() {
     glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    inputHandler->render();
-    gameController->render();
+    gameState->render();
 
     swapBuffers();
 

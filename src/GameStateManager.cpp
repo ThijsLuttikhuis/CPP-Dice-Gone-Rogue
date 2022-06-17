@@ -2,266 +2,78 @@
 // Created by thijs on 07-06-22.
 //
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <iofilemanager/YamlReader.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
+#include "ui/scene/BattleScene.h"
 
 namespace DGR {
-
-GameStateManager::battleGameState GameStateManager::getGameState() const {
-    return state;
-}
-
-Character* GameStateManager::getClickedCharacter() const {
-    return clickedCharacter;
-}
-
-Spell* GameStateManager::getClickedSpell() const {
-    return clickedSpell;
-}
-
-int GameStateManager::getRerolls() const {
-    return rerolls;
-}
-
-int GameStateManager::getMana() const {
-    return mana;
-}
-
-AttackOrder* GameStateManager::getAttackOrder() const {
-    return attackOrder;
-}
-
-void GameStateManager::setAttackOrder(AttackOrder* attackOrder_) {
-    attackOrder = attackOrder_;
-}
-
-void GameStateManager::setClickedCharacter(Character* clickedCharacter_) {
-    clickedCharacter = clickedCharacter_;
-}
-
-void GameStateManager::setClickedSpell(Spell* clickedSpell_) {
-    clickedSpell = clickedSpell_;
-}
-
-int GameStateManager::reroll() {
-    if (rerolls > 0) {
-        rerolls--;
-
-        if (areHeroesRolling()) {
-            for (auto &hero : heroes) {
-                hero->roll();
-            }
-        } else if (areEnemiesRolling()) {
-            for (auto &enemy : enemies) {
-                enemy->roll();
-            }
-        } else {
-            std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
-        }
-    }
-#ifdef DEBUG
-    else {
-    std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
-    }
-#endif
-    return rerolls;
-}
-
-const std::vector<Character*> &GameStateManager::getHeroes() const {
-    return heroes;
-}
-
-const std::vector<Character*> &GameStateManager::getEnemies() const {
-    return enemies;
-}
-
-void GameStateManager::setHeroes(const std::vector<Character*> &heroes_) {
-    heroes = heroes_;
-}
-
-void GameStateManager::setEnemies(const std::vector<Character*> &enemies_) {
-    enemies = enemies_;
-}
-
-void GameStateManager::setMana(int mana_) {
-    mana = mana_;
-}
-
-void GameStateManager::addMana(int mana_) {
-    mana += mana_;
-}
-
-bool GameStateManager::areHeroesRolling() const {
-    return state == rolling_heroes;
-}
-
-bool GameStateManager::areEnemiesRolling() const {
-    return state == rolling_enemies;
-}
-
-bool GameStateManager::areHeroesAttacking() const {
-    return state == attack_block_heroes;
-}
-
-bool GameStateManager::areEnemiesAttacking() const {
-    return state == attack_block_enemies;
-}
-
-void GameStateManager::setNextGameState() {
-    switch (state) {
-        case rolling_heroes:
-            for (auto &hero : heroes) {
-                hero->setDiceLock(false);
-            }
-            rerolls = rerollsMax;
-            attackOrder->setState(heroes, enemies, mana);
-
-            state = attack_block_heroes;
-            updateButtons();
-            break;
-        case attack_block_heroes:
-            for (auto &hero : heroes) {
-                hero->setUsedDice(false);
-                hero->applyDamageStep();
-            }
-            state = rolling_enemies;
-            reroll();
-            updateButtons();
-            break;
-        case rolling_enemies:
-            for (auto &enemy : enemies) {
-                enemy->setDiceLock(false);
-            }
-            rerolls = rerollsMax;
-            attackOrder->setState(heroes, enemies, mana);
-
-            state = attack_block_enemies;
-            updateButtons();
-            break;
-        case attack_block_enemies:
-            for (auto &enemy : enemies) {
-                enemy->setUsedDice(false);
-                enemy->applyDamageStep();
-            }
-            state = rolling_heroes;
-            reroll();
-            updateButtons();
-            break;
-    }
-}
-
-void GameStateManager::updateButtons() {
-    auto buttons = window->getButtons();
-    switch (state) {
-        case rolling_heroes:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText(std::to_string(getRerolls()) + " rerolls left");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("done rolling");
-                }
-            }
-            break;
-
-        case attack_block_heroes:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("undo");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("done attacking");
-                }
-            }
-            break;
-
-        case rolling_enemies:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("enemy turn...");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("enemy turn...");
-                }
-            }
-            break;
-
-        case attack_block_enemies:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("enemy turn...");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("enemy turn...");
-                }
-            }
-            break;
-    }
-}
 
 Window* GameStateManager::getWindow() const {
     return window;
 }
 
-std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* character) {
-    std::pair<Character*, Character*> neighbours(nullptr, nullptr);
-    int nHeroes = heroes.size();
-    for (int i = 0; i < nHeroes; i++) {
-        if (character == heroes[i]) {
-            int j = i - 1;
-            while (j >= 0) {
-                if (!heroes[j]->isDead()) {
-                    neighbours.first = heroes[j];
-                    break;
-                }
-                j--;
-            }
-            j = i + 1;
-            while (j < nHeroes) {
-                if (!heroes[j]->isDead()) {
-                    neighbours.second = heroes[j];
-                    break;
-                }
-                j++;
-            }
-            return neighbours;
-        }
+void GameStateManager::update() {
+    glfwPollEvents();
+
+    t = glfwGetTime();
+    dt = t - tPrev;
+    tPrev = t;
+
+    for (auto &scene : scenes) {
+        scene->update(dt);
     }
-    int nEnemies = enemies.size();
-    for (int i = 0; i < nEnemies; i++) {
-        if (character == enemies[i]) {
-            int j = i - 1;
-            while (j >= 0) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.first = enemies[j];
-                    break;
-                }
-                j--;
-            }
-            j = i + 1;
-            while (j < nHeroes) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.second = enemies[j];
-                    break;
-                }
-                j++;
-            }
-            return neighbours;
-        }
-    }
-    return neighbours;
 }
 
-void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    if (clickedCharacter) {
-        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
+GameStateManager::GameStateManager(Window* window) : window(window) {
+    auto* shader = new Shader();
+    shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
-    if (clickedSpell) {
-        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
+    glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(),
+                                      (float) window->getHeight(), 0.0f,
+                                      -1.0f, 1.0f);
 
-    glm::vec2 manaPosition = glm::vec2(288, 216);
-    glm::vec2 manaSize = glm::vec2(16, 16);
-    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
-    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
-    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
+    textRenderer = new TextRenderer(shader, projection);
+    spriteRenderer = new SpriteRenderer(shader, projection);
+    spriteRenderer->addAllTexturesInDir("textures");
+
+    auto* battleScene = new BattleScene(this);
+
+    YamlReader yamlReaderHeroes;
+    yamlReaderHeroes.readFile("heroes");
+    auto heroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
+    battleScene->setHeroes(heroes);
+
+    YamlReader yamlReaderEnemies;
+    yamlReaderEnemies.readFile("enemies");
+    auto enemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
+    battleScene->setEnemies(enemies);
+
+    battleScene->reroll();
+
+    auto attackOrder = new AttackOrder(battleScene);
+    battleScene->setAttackOrder(attackOrder);
+
+    scenes.push_back(battleScene);
+}
+
+void GameStateManager::render() {
+    for (auto &scene : scenes) {
+        scene->render(spriteRenderer, textRenderer);
+    }
+}
+
+void GameStateManager::handleMouseButton(double xPos, double yPos) {
+    for (auto &scene : scenes) {
+        scene->handleMouseButton(xPos, yPos);
+    }
+}
+
+void GameStateManager::handleMousePosition(double xPos, double yPos) {
+    for (auto &scene : scenes) {
+        scene->handleMousePosition(xPos, yPos);
+    }
 }
 
 }

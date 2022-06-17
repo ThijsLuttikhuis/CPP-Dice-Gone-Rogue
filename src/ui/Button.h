@@ -18,11 +18,16 @@ class Button : public UIElement {
 private:
     std::string text;
 
+    bool enabled = true;
 public:
     Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size, const glm::vec3 &color = glm::vec3(0.0f))
           : UIElement(std::move(name), pos, size, color) {}
 
     [[nodiscard]] bool isPressed(double xPos, double yPos) const;
+
+    [[nodiscard]] bool isEnabled() const;
+
+    void setEnabled(bool enabled_);
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
 

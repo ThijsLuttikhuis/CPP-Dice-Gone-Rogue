@@ -11,6 +11,8 @@
 
 namespace DGR {
 
+class BattleScene;
+
 class AttackOrder {
 public:
     enum attackType : int {
@@ -19,17 +21,7 @@ public:
     };
 
 private:
-
-    struct ChCh {
-        Character* character;
-        Character* otherCharacter;
-    };
-    struct SpCh {
-        Spell* spell;
-        Character* character;
-    };
-
-    GameStateManager* gameState;
+    BattleScene* battleScene;
 
     int mana{};
     std::vector<Character*> heroes;
@@ -43,7 +35,7 @@ private:
     Spell* getStoredSpell(int id);
 
 public:
-    explicit AttackOrder(GameStateManager* gameState) : gameState(gameState) {};
+    explicit AttackOrder(BattleScene* battleScene) : battleScene(battleScene) {};
 
     void addAttack(Character* character, Character* otherCharacter = nullptr);
 
@@ -52,7 +44,6 @@ public:
     void undo();
 
     void setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_);
-
 };
 
 }

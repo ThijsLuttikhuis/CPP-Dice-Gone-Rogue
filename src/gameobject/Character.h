@@ -18,6 +18,8 @@ class Spell;
 
 class GameStateManager;
 
+class BattleScene;
+
 class Character : public GameObject {
 private:
     std::string characterType;
@@ -35,17 +37,17 @@ private:
     bool isUndying = false;
     bool backRow = false;
 
-    void applySpellTypeDamage(Spell* spell, GameStateManager* gameState);
+    void applySpellTypeDamage(Spell* spell, BattleScene* battleScene);
 
-    void applyFaceTypeDamage(Face* face, GameStateManager* gameState);
+    void applyFaceTypeDamage(Face* face, BattleScene* battleScene);
 
-    void applyFaceTypeHeal(Face* face, GameStateManager* gameState);
+    void applyFaceTypeHeal(Face* face, BattleScene* battleScene);
 
-    void applyFaceTypeShield(Face* face, GameStateManager* gameState);
+    void applyFaceTypeShield(Face* face, BattleScene* battleScene);
 
-    void applyFaceModifierCleanse(Face* face, GameStateManager* gameState);
+    void applyFaceModifierCleanse(Face* face, BattleScene* battleScene);
 
-    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState);
+    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene);
 
     void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
 
@@ -106,9 +108,9 @@ public:
 
     void toggleDiceLock();
 
-    bool interact(Character* otherCharacter, GameStateManager* gameState, bool storeAction = true);
+    bool interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction = true);
 
-    bool interact(Spell* clickedSpell, GameStateManager* gameState, bool storeAction = true);
+    bool interact(Spell* clickedSpell, BattleScene* battleScene, bool storeAction = true);
 
     void applyDamageStep();
 

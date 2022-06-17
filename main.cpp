@@ -3,7 +3,7 @@
 //
 
 
-#include "GameController.h"
+#include "GameStateManager.h"
 #include "utilities/Random.h"
 #include "ui/Window.h"
 
@@ -14,8 +14,8 @@ int main() {
 
     DGR::Random::initialize(0);
     auto* window = new DGR::Window(width, height);
-    auto* dgrGame = new DGR::GameController(window);
-    window->setGameController(dgrGame);
+    auto* dgrGame = new DGR::GameStateManager(window);
+    window->setGameStateManager(dgrGame);
 
     while (!window->shouldClose()) {
         dgrGame->update();

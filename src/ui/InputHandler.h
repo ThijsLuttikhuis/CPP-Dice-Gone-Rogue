@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_INPUTHANDLER_H
 #define DICEGONEROGUE_INPUTHANDLER_H
 
+
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -15,33 +16,26 @@
 
 namespace DGR {
 
-class GameController;
-
 class Button;
 
 class Character;
 
 class InputHandler {
-private:
-    GameController* gameController;
-    SpriteRenderer* spriteRenderer;
-    TextRenderer* textRenderer;
+protected:
+    GameStateManager* gameState;
 
     std::vector<Button*> buttons;
 public:
-    explicit InputHandler(GameController* gameController);
+    explicit InputHandler(GameStateManager* gameState);
 
-    void handleMouseButton(double xPos, double yPos);
+    virtual void handleMouseButton(double xPos, double yPos) = 0;
 
-    void handleMousePosition(double xPos, double yPos);
+    virtual void handleMousePosition(double xPos, double yPos) = 0;
 
-    void handleMousePosition(Character* character, double xPos, double yPos);
-
-    void render();
-
-    std::vector<Button*> getButtons();
+    virtual void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };
 
 }
+
 
 #endif //DICEGONEROGUE_INPUTHANDLER_H

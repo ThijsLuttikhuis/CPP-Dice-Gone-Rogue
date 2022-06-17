@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "ui/scene/BattleScene.h"
 #include "AttackOrder.h"
 #include "GameStateManager.h"
 
@@ -64,7 +65,7 @@ void AttackOrder::undo() {
         return;
     }
 
-    gameState->setMana(mana);
+    battleScene->setMana(mana);
 
     // create new copies
     std::vector<Character*> heroes_ = {};
@@ -78,8 +79,8 @@ void AttackOrder::undo() {
         enemies_.push_back(copy);
     }
 
-    gameState->setHeroes(heroes);
-    gameState->setEnemies(enemies);
+    battleScene->setHeroes(heroes);
+    battleScene->setEnemies(enemies);
 
     // apply attacks until index-1
     int undoTillIndex = (int)attackOrder.size() - 1;
@@ -88,7 +89,7 @@ void AttackOrder::undo() {
             auto ids = attackOrderIDs[i];
             auto character = getStoredCharacter(ids.first);
             auto otherCharacter = ids.second >= 0 ? getStoredCharacter(ids.second) : nullptr;
-            auto success = character->interact(otherCharacter, gameState, false);
+            auto success = character->interact(otherCharacter, battleScene, false);
             if (!success) {
                 std::cerr << "AttackOrder::undo(): character->interact(character) unsuccessful!" << std::endl;
                 exit(-10);
@@ -104,12 +105,12 @@ void AttackOrder::undo() {
             auto ids = attackOrderIDs[i];
             auto character = getStoredCharacter(ids.first);
             auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
-            auto success = character->interact(spell, gameState, false);
+            auto success = character->interact(spell, battleScene, false);
             if (!success) {
                 std::cerr << "AttackOrder::undo(): character->interact(spell) unsuccessful!" << std::endl;
                 exit(-10);
             }
-            gameState->addMana(- spell->getCost());
+            battleScene->addMana(- spell->getCost());
 
         }
     }

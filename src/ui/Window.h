@@ -25,8 +25,7 @@ private:
 
     GLFWwindow* glfwWindow = nullptr;
 
-    GameController* gameController = nullptr;
-    InputHandler* inputHandler = nullptr;
+    GameStateManager* gameState = nullptr;
 public:
     Window(int width, int height);
 
@@ -38,9 +37,7 @@ public:
 
     [[nodiscard]] bool shouldClose() const;
 
-    [[nodiscard]] std::vector<Button*> getButtons() const;
-
-    void setGameController(GameController* gameController);
+    void setGameStateManager(GameStateManager* gameState_);
 
     void handleMouseButton(double xPos, double yPos);
 
@@ -51,6 +48,7 @@ public:
     void swapBuffers();
 
     void render();
+
 };
 
 }
