@@ -6,6 +6,7 @@
 
 #include <utility>
 #include <utilities/Constants.h>
+#include <utilities/Utilities.h>
 #include "ui/Button.h"
 #include "GameStateManager.h"
 
@@ -25,6 +26,10 @@ bool Scene::isEnabled() const {
 
 void Scene::setIsEnabled(bool enabled_) {
     enabled = enabled_;
+}
+
+bool Scene::isMouseHovering(double xPos, double yPos) const {
+    return Utilities::isPositionInBox(xPos, yPos, glm::vec2(0,0), size);
 }
 
 }

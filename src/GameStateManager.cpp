@@ -101,12 +101,11 @@ void GameStateManager::handleMousePosition(double xPos, double yPos) {
 
 void GameStateManager::render() {
     for (auto &scene : sceneStack) {
-        glClear(GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_DEPTH_BUFFER_BIT);
 
         spriteRenderer->setBaseUI(scene);
         textRenderer->setBaseUI(scene);
         scene->render(spriteRenderer, textRenderer);
-
     }
 }
 

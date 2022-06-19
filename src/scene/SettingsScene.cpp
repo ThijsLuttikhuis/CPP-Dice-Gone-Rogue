@@ -36,6 +36,7 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
     if (!isMouseHovering(xPos, yPos)) {
         gameState->popSceneFromStack();
     }
+
     for (auto &button : buttons) {
         if (button->isPressed(xPos, yPos)) {
             pressButton(button);

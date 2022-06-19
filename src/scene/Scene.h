@@ -25,6 +25,8 @@ public:
 
     [[nodiscard]] bool isEnabled() const;
 
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const override;
+
     void setIsEnabled(bool enabled_);
 
     virtual void update(double dt) = 0;
