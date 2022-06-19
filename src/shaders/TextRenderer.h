@@ -12,12 +12,14 @@
 
 namespace DGR {
 
+class UIElement;
+
 class TextRenderer {
 private:
     static const std::vector<int> letterWidths;
-
-
     static constexpr int nLetters = 96;
+
+    UIElement* baseUI;
 
     Shader* shader;
     unsigned int quadVAO[nLetters]{};
@@ -33,9 +35,10 @@ public:
 
     ~TextRenderer();
 
+    void setBaseUI(DGR::UIElement* baseUI_);
+
     void drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
                   glm::vec3 color = glm::vec3(0.0f), float alpha = 1.0f) const;
-
 
 };
 

@@ -8,6 +8,7 @@
 
 #include "SpriteRenderer.h"
 #include "utilities/Constants.h"
+#include "ui/UIElement.h"
 
 namespace DGR {
 
@@ -64,8 +65,17 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
         }
     }
 
+    glm::vec2 basePos = baseUI->getPosition();
+    glm::vec2 baseSize = baseUI->getSize();
+    glm::vec2 screenPos = position + basePos;
+    if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
+          position.x + size.x > baseSize.x + 1 || position.y + size.y > baseSize.y + 1) {
+
+        return;
+    }
+
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));
+    model = glm::translate(model, glm::vec3(screenPos, 0.0f));
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
@@ -82,7 +92,7 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
     if (textures.find(textureName) != textures.end()) {
         textures.at(textureName)->bind();
     } else {
-#if PRINT_NO_TEXTURE
+#if DGR_PRINT_NO_TEXTURE
         std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
 #endif
         textures.at("no_texture")->bind();
@@ -108,7 +118,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     std::string dir = "../src/" + dirName + "/";
     auto dirIt = std::filesystem::directory_iterator(dir);
     for (const auto &entry : dirIt) {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << entry.path() << std::endl;
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
@@ -121,8 +131,8 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
 void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
                                    const glm::vec2 &position, const glm::vec2 &size, float drawEdges,
                                    const glm::vec3 &color, float alpha) {
-
     (void) texture;
+
     std::string tex = "pixel";
     float left = position.x;
     float right = position.x + size.x;
@@ -142,6 +152,10 @@ void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const s
 
 bool SpriteRenderer::hasTexture(const std::string &textureName) {
     return textures[textureName];
+}
+
+void SpriteRenderer::setBaseUI(DGR::UIElement* baseUI_) {
+    baseUI = baseUI_;
 }
 
 }

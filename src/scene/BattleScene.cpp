@@ -5,10 +5,11 @@
 #include <utilities/Random.h>
 #include "BattleScene.h"
 #include "ui/Button.h"
+#include "GameStateManager.h"
 
 namespace DGR {
 
-BattleScene::BattleScene(GameStateManager* gameState) : Scene(gameState) {
+BattleScene::BattleScene(GameStateManager* gameState) : Scene("BattleScene", gameState) {
     auto* button1 = new Button("leftMainButton", {304, 195}, {80, 15});
     button1->setText("2 rerolls left");
     buttons.push_back(button1);
@@ -17,7 +18,7 @@ BattleScene::BattleScene(GameStateManager* gameState) : Scene(gameState) {
     button2->setText("done rolling");
     buttons.push_back(button2);
 
-    auto* button3 = new Button("mainMenu_", {124, 8}, {12, 12});
+    auto* button3 = new Button("settings", {124, 8}, {12, 12});
     button3->setText("settings");
     buttons.push_back(button3);
 
@@ -78,9 +79,9 @@ int BattleScene::reroll() {
             std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
         }
     }
-#ifdef DEBUG
+#ifdef DGR_DEBUG
     else {
-    std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
+        std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
     }
 #endif
     return rerolls;
@@ -108,6 +109,10 @@ void BattleScene::pressButton(Button* button) {
         } else if (areHeroesAttacking()) {
             setNextGameState();
         }
+    }
+
+    if (button->getName() == "settings") {
+        gameState->addSceneToStack("SettingsScene", true);
     }
 }
 
@@ -190,41 +195,38 @@ void BattleScene::updateButtons() {
     for (auto &button : buttons) {
         switch (state) {
             case rolling_heroes:
+                button->setEnabled(true);
+
                 if (button->getName() == "leftMainButton") {
-                    button->setEnabled(true);
                     button->setText(std::to_string(getRerolls()) + " rerolls left");
                 } else if (button->getName() == "rightMainButton") {
-                    button->setEnabled(true);
                     button->setText("done rolling");
-                } else {
-                    button->setEnabled(false);
                 }
                 break;
 
             case attack_block_heroes:
+                button->setEnabled(true);
+
                 if (button->getName() == "leftMainButton") {
-                    button->setEnabled(true);
                     button->setText("undo");
                 } else if (button->getName() == "rightMainButton") {
-                    button->setEnabled(true);
                     button->setText("done attacking");
-                } else {
-                    button->setEnabled(false);
                 }
                 break;
 
             case rolling_enemies:
             case attack_block_enemies:
+                button->setEnabled(true);
+
                 if (button->getName() == "leftMainButton") {
+                    button->setEnabled(false);
                     button->setText("enemy turn...");
                 } else if (button->getName() == "rightMainButton") {
+                    button->setEnabled(false);
                     button->setText("enemy turn...");
                 }
-                button->setEnabled(false);
                 break;
-
             default:
-                button->setEnabled(false);
                 break;
         }
     }
@@ -381,13 +383,13 @@ void BattleScene::alignCharacterPositions(double dt) {
         for (auto &character : characters) {
             if (!character->isDead()) {
                 glm::vec2 size = character->getSize();
-                if ((int)size.x + left - startLeft > maxTotalWidth) {
+                if ((int) size.x + left - startLeft > maxTotalWidth) {
                     std::cout << left << startLeft << maxTotalWidth << std::endl;
                     std::cout << "too many characters" << std::endl;
                     character->setPosition(-left, -up);
                     continue;
                 }
-                glm::vec2 targetPos(left, (float)up - size.y);
+                glm::vec2 targetPos(left, (float) up - size.y);
                 glm::vec2 pos = character->getPosition();
                 glm::vec2 dPos(targetPos - pos);
 

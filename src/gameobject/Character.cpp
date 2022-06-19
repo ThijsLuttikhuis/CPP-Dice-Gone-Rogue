@@ -9,7 +9,7 @@
 #include "dice/Face.h"
 #include "spell/Spell.h"
 #include "GameStateManager.h"
-#include "ui/scene/BattleScene.h"
+#include "scene/BattleScene.h"
 
 namespace DGR {
 
@@ -475,7 +475,7 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
 
 void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     if (hover) {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << "hover: " << getName() << " -- x: " << getPosition().x
                   << " -- y: " << getPosition().y << std::endl;
 #endif

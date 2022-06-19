@@ -38,6 +38,9 @@ private:
 
     AttackOrder* attackOrder = nullptr;
 
+    void pressButton(Button* button);
+
+    void handleMousePosition(Character* character, double xPos, double yPos);
 public:
     explicit BattleScene(GameStateManager* gameState);
 
@@ -84,11 +87,7 @@ public:
 
     void handleMousePosition(double xPos, double yPos) override;
 
-    void handleMousePosition(Character* character, double xPos, double yPos);
-
     void updateButtons();
-
-    void pressButton(Button* button);
 
     int reroll();
 

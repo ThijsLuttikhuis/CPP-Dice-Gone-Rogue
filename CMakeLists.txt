@@ -44,11 +44,20 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/Character.h
         src/gameobject/GameObject.cpp
         src/gameobject/GameObject.h
-        src/ui/UIElement.cpp src/ui/UIElement.h)
+        )
 
 set(INCLUDE_IOFILEMANAGER
         src/iofilemanager/YamlReader.cpp
         src/iofilemanager/YamlReader.h
+        )
+
+set(INCLUDE_SCENE
+        src/scene/Scene.cpp
+        src/scene/Scene.h
+        src/scene/BattleScene.cpp
+        src/scene/BattleScene.h
+        src/scene/MainMenuScene.cpp
+        src/scene/MainMenuScene.h
         )
 
 set(INCLUDE_SHADERS
@@ -63,17 +72,14 @@ set(INCLUDE_SHADERS
         )
 
 set(INCLUDE_UI
-        src/ui/scene/Scene.cpp
-        src/ui/scene/Scene.h
-        src/ui/scene/BattleScene.cpp
-        src/ui/scene/BattleScene.h
-
         src/ui/InputHandler.cpp
         src/ui/InputHandler.h
         src/ui/Button.cpp
         src/ui/Button.h
         src/ui/Window.cpp
         src/ui/Window.h
+        src/ui/UIElement.cpp
+        src/ui/UIElement.h
         )
 
 set(INCLUDE_UTILITIES
@@ -86,7 +92,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        )
+        src/scene/SettingsScene.cpp src/scene/SettingsScene.h)
 
 
 add_executable(DiceGoneRogue main.cpp
@@ -95,6 +101,7 @@ add_executable(DiceGoneRogue main.cpp
 
         ${INCLUDE_GAMEOBJECT}
         ${INCLUDE_IOFILEMANAGER}
+        ${INCLUDE_SCENE}
         ${INCLUDE_SHADERS}
         ${INCLUDE_UI}
         ${INCLUDE_UTILITIES}

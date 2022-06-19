@@ -3,11 +3,12 @@
 //
 
 #include <iostream>
-#include <ui/scene/BattleScene.h>
+#include <scene/BattleScene.h>
 
 #include "Window.h"
 #include "gameobject/dice/Dice.h"
 #include "utilities/Constants.h"
+#include "GameStateManager.h"
 
 namespace DGR {
 
@@ -34,7 +35,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
     (void)scancode, (void)mode;
 
-#if DEBUG
+#if DGR_DEBUG
     std::cout << "key callback" << std::endl;
 #endif
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
@@ -52,7 +53,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     (void)window;
-#if DEBUG
+#if DGR_DEBUG
     std::cout << "framebuffer size callback" << std::endl;
 #endif
 

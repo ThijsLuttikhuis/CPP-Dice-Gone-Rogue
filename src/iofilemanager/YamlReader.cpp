@@ -102,7 +102,7 @@ void YamlReader::readFile(const std::string &name) {
         if (posSemi < posColon) {
             word = trim(worldStr.substr(i, posSemi - i));
 
-#if DEBUG
+#if DGR_DEBUG
             std::cout << "\t" << posSemi << " ; " << word << std::endl;
 #endif
             i = posSemi + 1;
@@ -123,7 +123,7 @@ void YamlReader::readFile(const std::string &name) {
             colonCounter--;
         } else {
             word = trim(worldStr.substr(i, posColon - i));
-#if DEBUG
+#if DGR_DEBUG
             std::cout << "\t" << posColon << " : " << word << std::endl;
 #endif
             i = posColon + 1;

@@ -3,14 +3,15 @@
 //
 
 
+#include <utilities/Constants.h>
 #include "GameStateManager.h"
 #include "utilities/Random.h"
 #include "ui/Window.h"
 
 int main() {
 
-    int width = 32*16;
-    int height = 32*9;
+    int width = DGR_WIDTH;
+    int height = DGR_HEIGHT;
 
     DGR::Random::initialize(0);
     auto* window = new DGR::Window(width, height);

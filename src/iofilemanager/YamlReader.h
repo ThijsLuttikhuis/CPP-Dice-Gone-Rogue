@@ -94,7 +94,7 @@ public:
     YamlHandleCharacters() : YamlHandle(stringCode::characters) {}
 
     void handle(YamlHandle* yamlHandle) override {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << "yh.characters: adding object" << std::endl;
 #endif
         switch (yamlHandle->getType()) {

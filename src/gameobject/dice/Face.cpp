@@ -248,7 +248,7 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
     glm::vec3 color = modifiers.toColor();
     textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize, color);
 
-#if DEBUG
+#if DGR_DEBUG
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
               << type.toString() << " -- modifiers: " << modifiers.toString() << std::endl;
 #endif

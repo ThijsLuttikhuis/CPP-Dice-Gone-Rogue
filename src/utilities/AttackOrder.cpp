@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "ui/scene/BattleScene.h"
+#include "scene/BattleScene.h"
 #include "AttackOrder.h"
 #include "GameStateManager.h"
 

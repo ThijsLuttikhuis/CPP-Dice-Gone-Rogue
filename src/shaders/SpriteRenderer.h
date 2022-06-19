@@ -14,10 +14,14 @@
 
 namespace DGR {
 
+class UIElement;
+
 class SpriteRenderer {
 private:
     Shader* shader;
     unsigned int quadVAO{};
+
+    UIElement* baseUI;
 
     std::map<std::string, Texture2D*> textures;
 
@@ -46,6 +50,7 @@ public:
 
     bool hasTexture(const std::string &textureName);
 
+    void setBaseUI(DGR::UIElement* baseUI_);
 };
 
 }

@@ -30,7 +30,9 @@ private:
 
     gameState state = battle;
     Window* window;
-    std::vector<Scene*> scenes;
+    std::vector<Scene*> allScenes;
+
+    std::vector<Scene*> sceneStack;
 
 public:
     explicit GameStateManager(Window* window);
@@ -39,6 +41,10 @@ public:
     [[nodiscard]] Window* getWindow() const;
 
     /// functions
+    [[nodiscard]] const std::vector<Scene*> &getAllScenes() const;
+
+    [[nodiscard]] const std::vector<Scene*> &getSceneStack() const;
+
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
@@ -49,6 +55,9 @@ public:
     void render();
 
 
+    void addSceneToStack(const std::string& sceneName, bool disableOtherScenes = true);
+
+    void popSceneFromStack(bool enableLastSceneInStack = true);
 };
 
 }
