@@ -54,7 +54,7 @@ public:
 
     [[nodiscard]] const std::string &getName() const;
 
-    virtual [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const;
+    [[nodiscard]] virtual bool isMouseHovering(double xPos, double yPos) const;
 
     [[nodiscard]] bool getHoverMouse() const;
 

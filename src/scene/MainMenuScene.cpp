@@ -32,7 +32,6 @@ MainMenuScene::MainMenuScene(GameStateManager* gameState) : Scene("MainMenuScene
                                {buttonWidth, buttonHeight});
     button3->setText("Settings");
     buttons.push_back(button3);
-
 }
 
 void MainMenuScene::handleMouseButton(double xPos, double yPos) {
@@ -59,7 +58,7 @@ void MainMenuScene::pressButton(Button* button) {
         gameState->addSceneToStack("BattleScene");
     }
     else if (button->getName() == "LoadGame") {
-        gameState->addSceneToStack("LoadGameScene");
+        gameState->addSceneToStack("LoadGameScene", false);
     }
     else if (button->getName() == "Settings") {
         gameState->addSceneToStack("SettingsScene");

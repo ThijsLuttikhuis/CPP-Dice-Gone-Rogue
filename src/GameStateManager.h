@@ -16,10 +16,6 @@ namespace DGR {
 class Scene;
 
 class GameStateManager {
-public:
-    enum gameState {
-        battle,
-    };
 private:
     double dt{};
     double t{};
@@ -28,7 +24,6 @@ private:
     TextRenderer* textRenderer;
     SpriteRenderer* spriteRenderer;
 
-    gameState state = battle;
     Window* window;
     std::vector<Scene*> allScenes;
 
@@ -40,10 +35,17 @@ public:
     /// getters
     [[nodiscard]] Window* getWindow() const;
 
-    /// functions
     [[nodiscard]] const std::vector<Scene*> &getAllScenes() const;
 
     [[nodiscard]] const std::vector<Scene*> &getSceneStack() const;
+
+    /// setters
+
+
+    /// functions
+    bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
+
+    bool popSceneFromStack(bool enableLastSceneInStack = true);
 
     void handleMouseButton(double xPos, double yPos);
 
@@ -54,10 +56,6 @@ public:
     /// render
     void render();
 
-
-    void addSceneToStack(const std::string& sceneName, bool disableOtherScenes = true);
-
-    void popSceneFromStack(bool enableLastSceneInStack = true);
 };
 
 }

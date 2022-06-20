@@ -6,6 +6,8 @@
 #include <iofilemanager/YamlReader.h>
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
+#include <scene/BattleVictoryScene.h>
+#include <scene/BattleDefeatScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
@@ -37,8 +39,6 @@ GameStateManager::GameStateManager(Window* window) : window(window) {
     auto enemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
     battleScene->setEnemies(enemies);
 
-    battleScene->reroll();
-
     auto attackOrder = new AttackOrder(battleScene);
     battleScene->setAttackOrder(attackOrder);
     allScenes.push_back(battleScene);
@@ -48,6 +48,12 @@ GameStateManager::GameStateManager(Window* window) : window(window) {
 
     auto* settingsScene = new SettingsScene(this);
     allScenes.push_back(settingsScene);
+
+    auto* battleVictoryScene = new BattleVictoryScene(this);
+    allScenes.push_back(battleVictoryScene);
+
+    auto* battleDefeatScene = new BattleDefeatScene(this);
+    allScenes.push_back(battleDefeatScene);
 }
 
 Window* GameStateManager::getWindow() const {
@@ -58,6 +64,7 @@ void GameStateManager::update() {
     if (sceneStack.empty()) {
         for (auto & scene : allScenes) {
             if (scene->getName() == "MainMenuScene") {
+                scene->setIsEnabled(true);
                 sceneStack.push_back(scene);
                 break;
             }
@@ -101,7 +108,7 @@ void GameStateManager::handleMousePosition(double xPos, double yPos) {
 
 void GameStateManager::render() {
     for (auto &scene : sceneStack) {
-        //glClear(GL_DEPTH_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
         spriteRenderer->setBaseUI(scene);
         textRenderer->setBaseUI(scene);
@@ -117,22 +124,30 @@ const std::vector<Scene*> &GameStateManager::getSceneStack() const {
     return sceneStack;
 }
 
-void GameStateManager::addSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
+bool GameStateManager::addSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
+    bool sceneFound = false;
     for (auto &scene : allScenes) {
         if (scene->getName() == sceneName) {
+            sceneFound = true;
             sceneStack.push_back(scene);
             scene->setIsEnabled(true);
         } else if (disableOtherScenes) {
             scene->setIsEnabled(false);
         }
     }
+    return sceneFound;
 }
 
-void GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
+bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
+    if (sceneStack.empty()) {
+        return false;
+    }
     sceneStack.pop_back();
     if (!sceneStack.empty() && enableLastSceneInStack) {
         sceneStack.back()->setIsEnabled(true);
     }
+
+    return true;
 }
 
 }

@@ -26,7 +26,8 @@ public:
 private:
     int rerollsMax = 3;
     int rerolls = rerollsMax;
-    int mana = 0;    battleGameState state = rolling_enemies;
+    int mana = 0;
+    battleGameState state = rolling_enemies;
 
     int animationCounter = 0;
 
@@ -38,9 +39,24 @@ private:
 
     AttackOrder* attackOrder = nullptr;
 
+    void alignCharacterPositions(double dt);
+
+    void checkVictory();
+
     void pressButton(Button* button);
 
     void handleMousePosition(Character* character, double xPos, double yPos);
+
+    void updateButtons();
+
+    void clickCharacter(Character* character);
+
+    void clickSpell(Spell* spell);
+
+    void enemyAttack(int index);
+
+    int reroll();
+
 public:
     explicit BattleScene(GameStateManager* gameState);
 
@@ -83,30 +99,17 @@ public:
     void setClickedSpell(Spell* clickedSpell_);
 
     /// functions
+    std::pair<Character*, Character*> getNeighbours(Character* character);
+
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;
 
-    void updateButtons();
-
-    int reroll();
-
-    void clickCharacter(Character* character);
-
-    void clickSpell(Spell* spell);
-
     void update(double dt) override;
-
-    void alignCharacterPositions(double dt);
-
-    void enemiesAttack();
-
-    void enemyAttack(int index);
-
-    std::pair<Character*, Character*> getNeighbours(Character* character);
 
     /// render
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
+
 };
 
 }

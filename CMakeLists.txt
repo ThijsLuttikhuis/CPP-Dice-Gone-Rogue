@@ -58,6 +58,12 @@ set(INCLUDE_SCENE
         src/scene/BattleScene.h
         src/scene/MainMenuScene.cpp
         src/scene/MainMenuScene.h
+        src/scene/SettingsScene.cpp
+        src/scene/SettingsScene.h
+        src/scene/BattleDefeatScene.cpp
+        src/scene/BattleDefeatScene.h
+        src/scene/BattleVictoryScene.cpp
+        src/scene/BattleVictoryScene.h
         )
 
 set(INCLUDE_SHADERS
@@ -92,7 +98,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/scene/SettingsScene.cpp src/scene/SettingsScene.h)
+        )
 
 
 add_executable(DiceGoneRogue main.cpp

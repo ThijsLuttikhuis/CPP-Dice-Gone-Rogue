@@ -19,11 +19,11 @@ BattleScene::BattleScene(GameStateManager* gameState) : Scene("BattleScene", gam
     buttons.push_back(button2);
 
     auto* button3 = new Button("settings", {124, 8}, {12, 12});
-    button3->setText("settings");
+    button3->setText("S");
     buttons.push_back(button3);
 
-    auto* button4 = new Button("4", {100, 8}, {12, 12});
-    button4->setText("help");
+    auto* button4 = new Button("help", {100, 8}, {12, 12});
+    button4->setText("?");
     buttons.push_back(button4);
 }
 
@@ -113,6 +113,10 @@ void BattleScene::pressButton(Button* button) {
 
     if (button->getName() == "settings") {
         gameState->addSceneToStack("SettingsScene", true);
+    }
+
+    if (button->getName() == "help") {
+        gameState->addSceneToStack("HelpScene", false);
     }
 }
 
@@ -267,8 +271,34 @@ void BattleScene::update(double dt) {
 
     alignCharacterPositions(dt);
 
+    checkVictory();
+
+    bool allEnemiesDead = true;
+    for (auto &enemy : enemies) {
+        if (!enemy->isDead()) {
+            allEnemiesDead = false;
+            break;
+        }
+    }
+    if (allEnemiesDead) {
+        gameState->addSceneToStack("BattleVictoryScene", true);
+        return;
+    }
+
+    bool allHeroesDead = true;
+    for (auto &hero : heroes) {
+        if (!hero->isDead()) {
+            allHeroesDead = false;
+            break;
+        }
+    }
+    if (allHeroesDead) {
+        gameState->addSceneToStack("BattleDefeatScene", true);
+        return;
+    }
+
     //TODO: add animations etc
-    int slowDown = 30;
+    int slowDown = 30 / DGR_ANIMATION_SPEED;
     if (areEnemiesRolling()) {
         animationCounter++;
         if (animationCounter % slowDown == 0) {
@@ -294,13 +324,6 @@ void BattleScene::update(double dt) {
             animationCounter = 0;
             setNextGameState();
         }
-    }
-}
-
-
-void BattleScene::enemiesAttack() {
-    for (int i = 0; i < (int) enemies.size(); i++) {
-        enemyAttack(i);
     }
 }
 
@@ -585,6 +608,10 @@ void BattleScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRende
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }
+}
+
+void BattleScene::checkVictory() {
+
 }
 
 }
