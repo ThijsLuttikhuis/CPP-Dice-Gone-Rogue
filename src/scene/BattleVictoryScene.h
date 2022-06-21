@@ -18,8 +18,6 @@ public:
 
     void handleMouseButton(double xPos, double yPos) override;
 
-    void handleMousePosition(double xPos, double yPos) override;
-
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
 };
 

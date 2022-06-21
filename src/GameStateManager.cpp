@@ -30,6 +30,13 @@ GameStateManager::GameStateManager(Window* window) : window(window) {
     yamlReaderHeroes.readFile("heroes");
     allHeroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
 
+    for (int i = 0; i < 5; i++) {
+        allHeroes.push_back(allHeroes[i]->makeCopy(false));
+    }
+    for (int i = 0; i < 5; i++) {
+        allHeroes.push_back(allHeroes[i]->makeCopy(false));
+    }
+
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
     allEnemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
@@ -166,7 +173,7 @@ const std::vector<Character*> &GameStateManager::getAllHeroes() const {
     return allHeroes;
 }
 
-const std::vector<Character*> &GameStateManager::getAllEnemies() {
+const std::vector<Character*> &GameStateManager::getAllEnemies() const {
     return allEnemies;
 }
 

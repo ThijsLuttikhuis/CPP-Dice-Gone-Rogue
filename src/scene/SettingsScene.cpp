@@ -44,10 +44,6 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void SettingsScene::handleMousePosition(double xPos, double yPos) {
-    (void) xPos, (void) yPos;
-}
-
 void SettingsScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 

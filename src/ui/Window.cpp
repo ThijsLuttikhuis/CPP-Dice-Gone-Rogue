@@ -15,13 +15,13 @@ namespace DGR {
 Window* callback_window_ptr;
 
 void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
-    (void)window;
+    (void) window;
 
     callback_window_ptr->handleMousePosition(xPos, yPos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    (void)mods;
+    (void) mods;
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
@@ -33,7 +33,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    (void)scancode, (void)mode;
+    (void) scancode, (void) mode;
 
 #if DGR_DEBUG
     std::cout << "key callback" << std::endl;
@@ -52,7 +52,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    (void)window;
+    (void) window;
 #if DGR_DEBUG
     std::cout << "framebuffer size callback" << std::endl;
 #endif
@@ -134,7 +134,6 @@ int Window::getHeight() const {
     return height;
 }
 
-
 void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
@@ -167,6 +166,5 @@ void Window::render() {
     swapBuffers();
 
 }
-
 
 }

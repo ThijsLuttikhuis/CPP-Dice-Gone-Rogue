@@ -28,9 +28,13 @@ protected:
 public:
     explicit InputHandler(GameStateManager* gameState);
 
-    virtual void handleMouseButton(double xPos, double yPos) = 0;
+    virtual void handleMouseButton(double xPos, double yPos) {
+        (void)xPos, (void)yPos;
+    };
 
-    virtual void handleMousePosition(double xPos, double yPos) = 0;
+    virtual void handleMousePosition(double xPos, double yPos) {
+        (void)xPos, (void)yPos;
+    };
 
     virtual void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
 };

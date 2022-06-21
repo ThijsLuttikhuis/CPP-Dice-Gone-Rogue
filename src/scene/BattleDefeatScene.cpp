@@ -40,11 +40,6 @@ void BattleDefeatScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void BattleDefeatScene::handleMousePosition(double xPos, double yPos) {
-    (void) xPos, (void) yPos;
-}
-
-
 void BattleDefeatScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 }

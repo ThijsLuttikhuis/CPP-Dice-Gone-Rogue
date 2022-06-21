@@ -31,6 +31,13 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     button2->setText("Ready");
     buttons.push_back(button2);
 
+    auto* button3 = new Button("ScrollLeft", {52, 48}, {24, 164});
+    button3->setText(" <<");
+    buttons.push_back(button3);
+
+    auto* button4 = new Button("ScrollRight", {412, 48}, {24, 164});
+    button4->setText(" >>");
+    buttons.push_back(button4);
 }
 
 void CharacterSelectScene::handleMousePosition(Character* character, double xPos, double yPos) {
@@ -55,7 +62,7 @@ void CharacterSelectScene::handleMouseButton(double xPos, double yPos) {
         }
     }
 
-    for (auto &hero : allHeroes) {
+    for (auto &hero : gameState->getAllHeroes()) {
         if (hero->isMouseHovering(xPos, yPos, true)) {
 
             bool removedCharacter = false;
@@ -80,7 +87,7 @@ void CharacterSelectScene::handleMouseButton(double xPos, double yPos) {
 }
 
 void CharacterSelectScene::handleMousePosition(double xPos, double yPos) {
-    for (auto &hero : allHeroes) {
+    for (auto &hero : gameState->getAllHeroes()) {
         handleMousePosition(hero, xPos, yPos);
 
         auto spell = hero->getSpell();
@@ -94,16 +101,17 @@ void CharacterSelectScene::alignCharacterPositions(double dt) {
     const int width = gameState->getWindow()->getWidth();
     const int center = width / 2;
     const int dWidth = 48;
-    const int maxTotalWidth = 6 * (dWidth + 32);
+    const int maxTotalWidth = maxCharactersOnRow * (dWidth + 32);
 
     int startLeft;
     int totalWidth;
     int left, up;
     totalWidth = 0;
-    for (auto &character : allHeroes) {
-        if (!character->isDead()) {
-            totalWidth += dWidth + (int) character->getSize().x;
-        }
+
+    auto allHeroes = gameState->getAllHeroes();
+    int allHeroesSize = allHeroes.size();
+    for (int i = currentLeftCharacterIndex; i < allHeroesSize; i++) {
+        totalWidth += dWidth + (int) allHeroes[i]->getSize().x;
     }
 
     totalWidth = std::min(totalWidth, maxTotalWidth);
@@ -112,18 +120,22 @@ void CharacterSelectScene::alignCharacterPositions(double dt) {
     left = startLeft;
     up = 9 * 16;
 
-    for (auto &character : allHeroes) {
-        glm::vec2 size = character->getSize();
+    for (int i = 0; i < allHeroesSize; i++) {
+        auto hero = allHeroes[i];
+        glm::vec2 size = hero->getSize();
+
+        if (i < currentLeftCharacterIndex) {
+            hero->setPosition(-left, -up);
+            continue;
+        }
         if ((int) size.x + left - startLeft > maxTotalWidth) {
-            std::cout << left << startLeft << maxTotalWidth << std::endl;
-            std::cout << "too many characters" << std::endl;
-            character->setPosition(-left, -up);
+            hero->setPosition(-left, -up);
             continue;
         }
         glm::vec2 targetPos(left, (float) up - size.y);
-        character->setPosition(targetPos);
+        hero->setPosition(targetPos);
 
-        left += dWidth + (int) character->getSize().x;
+        left += dWidth + (int) hero->getSize().x;
     }
 }
 
@@ -132,6 +144,7 @@ void CharacterSelectScene::reset() {
 }
 
 void CharacterSelectScene::update(double dt) {
+    auto allHeroes = gameState->getAllHeroes();
     if (allHeroes.empty()) {
         auto allHeroes_ = gameState->getAllHeroes();
         for (auto &hero : allHeroes_) {
@@ -152,11 +165,11 @@ void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* 
         button->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &hero : allHeroes) {
+    for (auto &hero : gameState->getAllHeroes()) {
         hero->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &hero : allHeroes) {
+    for (auto &hero : gameState->getAllHeroes()) {
         hero->setHoverMouse(true);
         hero->drawHover(spriteRenderer, textRenderer);
     }
@@ -169,7 +182,13 @@ void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* 
 void CharacterSelectScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
-    if (button->getName() == "Ready") {
+    if (button->getName() == "ScrollRight") {
+        currentLeftCharacterIndex++;
+        currentLeftCharacterIndex = std::min(currentLeftCharacterIndex, (int)gameState->getAllHeroes().size() - maxCharactersOnRow);
+    } else if (button->getName() == "ScrollLeft") {
+        currentLeftCharacterIndex--;
+        currentLeftCharacterIndex = std::max(currentLeftCharacterIndex, 0);
+    } else if (button->getName() == "Ready") {
         if ((int) selectedHeroes.size() == maxSelect) {
             BattleScene* battleScene = dynamic_cast<BattleScene*>(gameState->getScene("BattleScene"));
             if (!battleScene) {
@@ -182,12 +201,12 @@ void CharacterSelectScene::pressButton(Button* button) {
 
             for (auto &hero : selectedHeroes) {
                 auto copy = hero->makeCopy(true);
+                copy->setPosition(0, 0);
                 battleHeroes.push_back(copy);
             }
 
-
             auto allEnemies = gameState->getAllEnemies();
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 3; i++) {
                 int n = allEnemies.size();
                 int rng = Random::randInt(0, n - 1);
                 auto enemy = allEnemies[rng]->makeCopy(true);

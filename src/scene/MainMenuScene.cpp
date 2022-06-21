@@ -41,10 +41,6 @@ void MainMenuScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void MainMenuScene::handleMousePosition(double xPos, double yPos) {
-    (void) xPos, (void) yPos;
-}
-
 void MainMenuScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 

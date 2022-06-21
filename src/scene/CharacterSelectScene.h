@@ -14,8 +14,10 @@ namespace DGR {
 class CharacterSelectScene : public Scene {
 private:
     int maxSelect = 3;
-    std::vector<Character*> allHeroes;
     std::vector<Character*> selectedHeroes;
+
+    int maxCharactersOnRow = 4;
+    int currentLeftCharacterIndex = 0;
 
     void alignCharacterPositions(double dt);
 public:

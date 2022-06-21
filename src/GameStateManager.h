@@ -47,6 +47,8 @@ public:
 
     [[nodiscard]] const std::vector<Character*> &getAllHeroes() const;
 
+    [[nodiscard]] const std::vector<Character*> &getAllEnemies() const;
+
     /// setters
     bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
@@ -61,8 +63,6 @@ public:
 
     /// render
     void render();
-
-    const std::vector<Character*> &getAllEnemies();
 };
 
 }

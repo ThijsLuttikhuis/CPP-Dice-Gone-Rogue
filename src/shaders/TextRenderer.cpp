@@ -166,7 +166,7 @@ glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::
     }
 
     /// check if the word should be put on a new line
-    if (currentTextPos.x + wordWidth > textStart.x + size.x) {
+    if (currentTextPos.x != textStart.x + 1 && currentTextPos.x + wordWidth > textStart.x + size.x) {
         currentTextPos = glm::vec2(textStart.x + 1, currentTextPos.y + letterSize.y + 1);
     }
 

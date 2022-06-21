@@ -53,6 +53,7 @@ public:
     /// render
     void render();
 
+    void handleScrollWheel(double xOffset, double yOffset);
 };
 
 }
