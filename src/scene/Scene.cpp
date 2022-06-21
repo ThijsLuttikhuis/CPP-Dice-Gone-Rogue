@@ -29,7 +29,14 @@ void Scene::setIsEnabled(bool enabled_) {
 }
 
 bool Scene::isMouseHovering(double xPos, double yPos) const {
-    return Utilities::isPositionInBox(xPos, yPos, glm::vec2(0,0), size);
+    return Utilities::isPositionInBox(xPos, yPos, glm::vec2(0, 0), size);
+}
+
+void Scene::update(double dt) {
+    (void) dt;
+}
+
+void Scene::reset() {
 }
 
 }

@@ -64,6 +64,8 @@ set(INCLUDE_SCENE
         src/scene/BattleDefeatScene.h
         src/scene/BattleVictoryScene.cpp
         src/scene/BattleVictoryScene.h
+        src/scene/CharacterSelectScene.cpp
+        src/scene/CharacterSelectScene.h
         )
 
 set(INCLUDE_SHADERS

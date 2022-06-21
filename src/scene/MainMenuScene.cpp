@@ -8,7 +8,6 @@
 
 namespace DGR {
 
-
 MainMenuScene::MainMenuScene(GameStateManager* gameState) : Scene("MainMenuScene", gameState) {
     double width = DGR_WIDTH;
     double height = DGR_HEIGHT;
@@ -46,16 +45,12 @@ void MainMenuScene::handleMousePosition(double xPos, double yPos) {
     (void) xPos, (void) yPos;
 }
 
-void MainMenuScene::update(double dt) {
-    (void) dt;
-}
-
 void MainMenuScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
     if (button->getName() == "StartNewGame") {
         gameState->popSceneFromStack();
-        gameState->addSceneToStack("BattleScene");
+        gameState->addSceneToStack("CharacterSelectScene");
     }
     else if (button->getName() == "LoadGame") {
         gameState->addSceneToStack("LoadGameScene", false);

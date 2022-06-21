@@ -44,6 +44,8 @@ public:
     void undo();
 
     void setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_);
+
+    void reset();
 };
 
 }

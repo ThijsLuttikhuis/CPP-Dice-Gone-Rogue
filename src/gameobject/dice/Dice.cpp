@@ -4,6 +4,7 @@
 
 #include <utility>
 #include <iostream>
+#include <utilities/Utilities.h>
 
 #include "Dice.h"
 #include "Face.h"
@@ -38,6 +39,7 @@ Dice* Dice::makeCopy() const {
     copy->setCurrentFace(currentFace);
     copy->setCurrentFaceHover(hoverCurrentFace);
 
+    copy->setCharacter(character);
     return copy;
 }
 
@@ -82,8 +84,7 @@ glm::vec2 Dice::getSize(dicePos dicePos) const {
 bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
     auto position = getPosition(dicePos);
     auto size = getSize(dicePos);
-    return (xPos > position.x && xPos < position.x + size.x)
-           && (yPos > position.y && yPos < position.y + size.y);
+    return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
 Face* Dice::getFace(int index) const {

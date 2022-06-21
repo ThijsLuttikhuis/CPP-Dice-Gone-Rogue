@@ -21,7 +21,7 @@ BattleVictoryScene::BattleVictoryScene(GameStateManager* gameState)
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto* button1 = new Button("Victory!", {width / 2 - buttonWidth / 2, i++ * buttonDistance},
+    auto* button1 = new Button("Victory!", {width / 2 - buttonWidth / 2, i * buttonDistance},
                                {buttonWidth, buttonHeight});
     button1->setText("Victory!");
     buttons.push_back(button1);
@@ -41,10 +41,6 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
 
 void BattleVictoryScene::handleMousePosition(double xPos, double yPos) {
     (void) xPos, (void) yPos;
-}
-
-void BattleVictoryScene::update(double dt) {
-    (void) dt;
 }
 
 void BattleVictoryScene::pressButton(Button* button) {

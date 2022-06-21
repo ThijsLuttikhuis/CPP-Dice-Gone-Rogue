@@ -24,7 +24,7 @@ public:
         attack_block_enemies
     };
 private:
-    int rerollsMax = 3;
+    const int rerollsMax = 3;
     int rerolls = rerollsMax;
     int mana = 0;
     battleGameState state = rolling_enemies;
@@ -104,6 +104,8 @@ public:
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;
+
+    void reset() override;
 
     void update(double dt) override;
 

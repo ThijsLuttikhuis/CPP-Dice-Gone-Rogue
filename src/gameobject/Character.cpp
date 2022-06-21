@@ -276,6 +276,8 @@ Character* Character::makeCopy(bool copyUniqueID) const {
     copy->setUndying(isUndying);
 
     copy->setSpell(spell->makeCopy());
+    copy->getSpell()->setCharacter(copy);
+
     copy->setDice(dice->makeCopy());
     copy->getDice()->setCharacter(copy);
 

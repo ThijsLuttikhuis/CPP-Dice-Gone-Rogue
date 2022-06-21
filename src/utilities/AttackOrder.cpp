@@ -83,7 +83,7 @@ void AttackOrder::undo() {
     battleScene->setEnemies(enemies);
 
     // apply attacks until index-1
-    int undoTillIndex = (int)attackOrder.size() - 1;
+    int undoTillIndex = (int) attackOrder.size() - 1;
     for (int i = 0; i < undoTillIndex; i++) {
         if (attackOrder[i] == attackType::character) {
             auto ids = attackOrderIDs[i];
@@ -96,12 +96,10 @@ void AttackOrder::undo() {
             }
             if (otherCharacter) {
                 otherCharacter->setUsedDice(true);
-            }
-            else {
+            } else {
                 character->setUsedDice(true);
             }
-        }
-        else if (attackOrder[i] == attackType::spell) {
+        } else if (attackOrder[i] == attackType::spell) {
             auto ids = attackOrderIDs[i];
             auto character = getStoredCharacter(ids.first);
             auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
@@ -110,7 +108,7 @@ void AttackOrder::undo() {
                 std::cerr << "AttackOrder::undo(): character->interact(spell) unsuccessful!" << std::endl;
                 exit(-10);
             }
-            battleScene->addMana(- spell->getCost());
+            battleScene->addMana(-spell->getCost());
 
         }
     }
@@ -126,7 +124,6 @@ void AttackOrder::undo() {
 void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_) {
     attackOrder = {};
     attackOrderIDs = {};
-
     mana = mana_;
 
     // delete previous copies
@@ -148,6 +145,13 @@ void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::ve
         Character* copy = enemy->makeCopy(true);
         enemies.push_back(copy);
     }
+}
+
+void AttackOrder::reset() {
+    setState({}, {}, 0);
+
+    attackOrder = {};
+    attackOrderIDs = {};
 }
 
 }

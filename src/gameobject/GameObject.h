@@ -67,7 +67,7 @@ public:
 
     void setSize(glm::vec2 size);
 
-    void hoverMouse(bool hover);
+    void setHoverMouse(bool hover);
 
     /// render
     virtual void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;

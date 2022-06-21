@@ -15,12 +15,9 @@ private:
 public:
     explicit MainMenuScene(GameStateManager* gameState);
 
-
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;
-
-    void update(double dt) override;
 
     void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
 };

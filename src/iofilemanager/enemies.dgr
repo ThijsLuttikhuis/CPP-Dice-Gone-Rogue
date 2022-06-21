@@ -24,24 +24,31 @@ characters:
     ;
   ;
 
-  rat:
-    size: 16;
-    hp: 6;
+  slime:
+    size: 48;
+    hp: 20;
     dice:
       face0:
         damage: 4;
+        mod: "sweeping edge";
       ;
       face1:
-        damage: 2;
+        damage: 1;
+        mod: "poison";
+        mod1: "sweeping edge";
       ;
       face2:
-        damage: 3;
+        damage: 4;
+        mod: "sweeping edge";
       ;
       face3:
-        damage: 2;
+        damage: 1;
+        mod: "poison";
+        mod1: "sweeping edge";
       ;
       face4:
-        damage: 2;
+        heal: 2;
+        mod: "sweeping edge";
       ;
       face5:
         empty: 0;

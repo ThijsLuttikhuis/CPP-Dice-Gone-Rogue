@@ -22,7 +22,7 @@ BattleDefeatScene::BattleDefeatScene(GameStateManager* gameState)
     int i = 2;
 
 
-    auto* button1 = new Button("Defeat :(", {width / 2 - buttonWidth / 2, i++ * buttonDistance},
+    auto* button1 = new Button("Defeat :(", {width / 2 - buttonWidth / 2, i * buttonDistance},
                                {buttonWidth, buttonHeight});
     button1->setText("Defeat :(");
     buttons.push_back(button1);
@@ -44,9 +44,6 @@ void BattleDefeatScene::handleMousePosition(double xPos, double yPos) {
     (void) xPos, (void) yPos;
 }
 
-void BattleDefeatScene::update(double dt) {
-    (void) dt;
-}
 
 void BattleDefeatScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;

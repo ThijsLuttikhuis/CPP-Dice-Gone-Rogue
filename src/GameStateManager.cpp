@@ -8,52 +8,49 @@
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
 #include <scene/BattleDefeatScene.h>
+#include <scene/CharacterSelectScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
 
 namespace DGR {
 
-
 GameStateManager::GameStateManager(Window* window) : window(window) {
     auto* shader = new Shader();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
-    glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(),
-                                      (float) window->getHeight(), 0.0f,
-                                      -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(), (float) window->getHeight(),
+                                      0.0f, -1.0f, 1.0f);
 
     textRenderer = new TextRenderer(shader, projection);
     spriteRenderer = new SpriteRenderer(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
 
-    auto* battleScene = new BattleScene(this);
-
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
-    auto heroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
-    battleScene->setHeroes(heroes);
+    allHeroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
 
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
-    auto enemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
-    battleScene->setEnemies(enemies);
+    allEnemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
 
-    auto attackOrder = new AttackOrder(battleScene);
-    battleScene->setAttackOrder(attackOrder);
+    auto battleScene = new BattleScene(this);
     allScenes.push_back(battleScene);
 
-    auto* mainMenuScene = new MainMenuScene(this);
+    auto mainMenuScene = new MainMenuScene(this);
     allScenes.push_back(mainMenuScene);
 
-    auto* settingsScene = new SettingsScene(this);
+    auto settingsScene = new SettingsScene(this);
     allScenes.push_back(settingsScene);
 
-    auto* battleVictoryScene = new BattleVictoryScene(this);
+    auto battleVictoryScene = new BattleVictoryScene(this);
     allScenes.push_back(battleVictoryScene);
 
-    auto* battleDefeatScene = new BattleDefeatScene(this);
+    auto battleDefeatScene = new BattleDefeatScene(this);
     allScenes.push_back(battleDefeatScene);
+
+    auto characterSelectScene = new CharacterSelectScene(this);
+    allScenes.push_back(characterSelectScene);
 }
 
 Window* GameStateManager::getWindow() const {
@@ -62,7 +59,7 @@ Window* GameStateManager::getWindow() const {
 
 void GameStateManager::update() {
     if (sceneStack.empty()) {
-        for (auto & scene : allScenes) {
+        for (auto &scene : allScenes) {
             if (scene->getName() == "MainMenuScene") {
                 scene->setIsEnabled(true);
                 sceneStack.push_back(scene);
@@ -131,10 +128,15 @@ bool GameStateManager::addSceneToStack(const std::string &sceneName, bool disabl
             sceneFound = true;
             sceneStack.push_back(scene);
             scene->setIsEnabled(true);
-        } else if (disableOtherScenes) {
-            scene->setIsEnabled(false);
+            break;
         }
     }
+    if (disableOtherScenes && sceneFound) {
+        for (auto &scene : sceneStack) {
+            scene->setIsEnabled(scene->getName() == sceneName);
+        }
+    }
+
     return sceneFound;
 }
 
@@ -148,6 +150,24 @@ bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
     }
 
     return true;
+}
+
+Scene* GameStateManager::getScene(const std::string &sceneName, bool onlySceneStack) const {
+    auto scenes = onlySceneStack ? sceneStack : allScenes;
+    for (auto &scene : scenes) {
+        if (scene->getName() == sceneName) {
+            return scene;
+        }
+    }
+    return nullptr;
+}
+
+const std::vector<Character*> &GameStateManager::getAllHeroes() const {
+    return allHeroes;
+}
+
+const std::vector<Character*> &GameStateManager::getAllEnemies() {
+    return allEnemies;
 }
 
 }

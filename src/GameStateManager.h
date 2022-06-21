@@ -18,15 +18,19 @@ class Scene;
 class GameStateManager {
 private:
     double dt{};
-    double t{};
+    double t = 0.0;
     double tPrev = 0.0;
 
     TextRenderer* textRenderer;
     SpriteRenderer* spriteRenderer;
 
     Window* window;
+
+    std::vector<Character*> allHeroes;
+    std::vector<Character*> allEnemies;
     std::vector<Scene*> allScenes;
 
+    std::vector<Character*> ownedHeroes;
     std::vector<Scene*> sceneStack;
 
 public:
@@ -37,16 +41,18 @@ public:
 
     [[nodiscard]] const std::vector<Scene*> &getAllScenes() const;
 
+    [[nodiscard]] Scene* getScene(const std::string &sceneName, bool onlySceneStack = false) const;
+
     [[nodiscard]] const std::vector<Scene*> &getSceneStack() const;
 
+    [[nodiscard]] const std::vector<Character*> &getAllHeroes() const;
+
     /// setters
-
-
-    /// functions
     bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
     bool popSceneFromStack(bool enableLastSceneInStack = true);
 
+    /// functions
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
@@ -56,6 +62,7 @@ public:
     /// render
     void render();
 
+    const std::vector<Character*> &getAllEnemies();
 };
 
 }

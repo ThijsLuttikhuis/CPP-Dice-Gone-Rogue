@@ -23,13 +23,18 @@ public:
     Scene(std::string name, GameStateManager* gameState, glm::vec2 position,
           glm::vec2 size = glm::vec2(DGR_WIDTH, DGR_HEIGHT), glm::vec3 color = glm::vec3(1.0f));
 
+    /// getters
     [[nodiscard]] bool isEnabled() const;
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const override;
 
+    /// setters
     void setIsEnabled(bool enabled_);
 
-    virtual void update(double dt) = 0;
+    /// functions
+    virtual void reset();
+
+    virtual void update(double dt);
 };
 
 }

@@ -37,7 +37,7 @@ bool GameObject::getHoverMouse() const {
     return hover;
 }
 
-void GameObject::hoverMouse(bool hover_) {
+void GameObject::setHoverMouse(bool hover_) {
     hover = hover_;
 }
 

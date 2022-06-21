@@ -25,6 +25,8 @@ BattleScene::BattleScene(GameStateManager* gameState) : Scene("BattleScene", gam
     auto* button4 = new Button("help", {100, 8}, {12, 12});
     button4->setText("?");
     buttons.push_back(button4);
+
+    attackOrder = new AttackOrder(this);
 }
 
 BattleScene::battleGameState BattleScene::getGameState() const {
@@ -241,12 +243,12 @@ void BattleScene::handleMousePosition(Character* character, double xPos, double 
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
 
     if (character->isMouseHovering(xPos, yPos)) {
-        character->hoverMouse(true);
+        character->setHoverMouse(true);
     } else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {
             dice->updateHoverMouse(xPos, yPos);
         } else {
-            character->hoverMouse(false);
+            character->setHoverMouse(false);
         }
     }
 }
@@ -267,35 +269,30 @@ void BattleScene::handleMousePosition(double xPos, double yPos) {
     }
 }
 
-void BattleScene::update(double dt) {
+void BattleScene::reset() {
+    rerolls = rerollsMax;
+    mana = 0;
+    state = rolling_enemies;
+    animationCounter = 0;
 
-    alignCharacterPositions(dt);
+    clickedCharacter = nullptr;
+    clickedSpell = nullptr;
 
-    checkVictory();
+    attackOrder->reset();
 
-    bool allEnemiesDead = true;
-    for (auto &enemy : enemies) {
-        if (!enemy->isDead()) {
-            allEnemiesDead = false;
-            break;
-        }
-    }
-    if (allEnemiesDead) {
-        gameState->addSceneToStack("BattleVictoryScene", true);
-        return;
-    }
-
-    bool allHeroesDead = true;
     for (auto &hero : heroes) {
-        if (!hero->isDead()) {
-            allHeroesDead = false;
-            break;
-        }
+        delete hero;
     }
-    if (allHeroesDead) {
-        gameState->addSceneToStack("BattleDefeatScene", true);
-        return;
+    for (auto &enemy : enemies) {
+        delete enemy;
     }
+    heroes = {};
+    enemies = {};
+}
+
+void BattleScene::update(double dt) {
+    alignCharacterPositions(dt);
+    checkVictory();
 
     //TODO: add animations etc
     int slowDown = 30 / DGR_ANIMATION_SPEED;
@@ -611,7 +608,29 @@ void BattleScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRende
 }
 
 void BattleScene::checkVictory() {
+    bool allEnemiesDead = true;
+    for (auto &enemy : enemies) {
+        if (!enemy->isDead()) {
+            allEnemiesDead = false;
+            break;
+        }
+    }
+    if (allEnemiesDead) {
+        gameState->addSceneToStack("BattleVictoryScene", true);
+        return;
+    }
 
+    bool allHeroesDead = true;
+    for (auto &hero : heroes) {
+        if (!hero->isDead()) {
+            allHeroesDead = false;
+            break;
+        }
+    }
+    if (allHeroesDead) {
+        gameState->addSceneToStack("BattleDefeatScene", true);
+        return;
+    }
 }
 
 }
