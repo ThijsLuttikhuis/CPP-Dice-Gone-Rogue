@@ -37,6 +37,8 @@ public:
     void handleMousePosition(Character* character, double xPos, double yPos);
 
     void pressButton(Button* button);
+
+    bool handleHeroesMouseButton(double xPos, double yPos);
 };
 
 }

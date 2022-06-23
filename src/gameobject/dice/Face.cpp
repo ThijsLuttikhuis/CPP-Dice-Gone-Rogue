@@ -235,7 +235,7 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
                                position + tooltipDPos, backgroundSize, 0.0f, glm::vec3(0.1f), 0.9f);
 
     std::ostringstream tooltipOSS;
-    if (value != 0) {
+    if (value >= 0 && type != FaceType::empty) {
         tooltipOSS << value << " ";
     }
     tooltipOSS << type.toString();

@@ -2,6 +2,7 @@
 // Created by thijs on 30-05-22.
 //
 
+#include <iostream>
 #include <filesystem>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
@@ -70,7 +71,6 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
     glm::vec2 screenPos = position + basePos;
     if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
           position.x + size.x > baseSize.x + 1 || position.y + size.y > baseSize.y + 1) {
-
         return;
     }
 

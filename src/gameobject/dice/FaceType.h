@@ -18,6 +18,7 @@ public:
         damage,
         mana,
         heal,
+        bonus_health,
         shield,
         dodge,
         undying,
@@ -49,6 +50,9 @@ public:
 
     bool operator ==(const faceType &t) {
         return t == type;
+    }
+    bool operator !=(const faceType &t) {
+        return (t != type);
     }
 };
 

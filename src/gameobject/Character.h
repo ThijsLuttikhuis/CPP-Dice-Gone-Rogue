@@ -31,6 +31,8 @@ private:
     int maxHP = 0;
     int shield = 0;
     int incomingDamage = 0;
+    int incomingPoison = 0;
+    int incomingRegen = 0;
     int poison = 0;
     int regen = 0;
     bool isDodging = false;
@@ -44,6 +46,8 @@ private:
     void applyFaceTypeHeal(Face* face, BattleScene* battleScene);
 
     void applyFaceTypeShield(Face* face, BattleScene* battleScene);
+
+    void applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene);
 
     void applyFaceModifierCleanse(Face* face, BattleScene* battleScene);
 
@@ -120,8 +124,6 @@ public:
     void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const;
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
-
-
 };
 
 }

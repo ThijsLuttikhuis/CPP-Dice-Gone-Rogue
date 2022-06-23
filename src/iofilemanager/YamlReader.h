@@ -49,6 +49,8 @@ enum struct stringCode : int {
     heal_or_shield,
     damage_if_full_health,
     kill_if_below_threshold,
+    bonus_health,
+
     empty,
 
 };
@@ -256,6 +258,10 @@ public:
                 break;
             case stringCode::heal:
                 type = FaceType::heal;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::bonus_health:
+                type = FaceType::bonus_health;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::mana:

@@ -2,6 +2,7 @@
 // Created by thijs on 06-06-22.
 //
 
+#include <iostream>
 #include <string>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>

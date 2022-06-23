@@ -24,6 +24,32 @@ characters:
     ;
   ;
 
+  skeleton:
+    size: 32;
+    hp: 8;
+    dice:
+      face0:
+        damage: 5;
+      ;
+      face1:
+        damage: 3;
+      ;
+      face2:
+        damage: 5;
+        mod: "decay";
+      ;
+      face3:
+        damage: 3;
+      ;
+      face4:
+        empty: 0;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
   slime:
     size: 48;
     hp: 20;

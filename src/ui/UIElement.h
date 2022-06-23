@@ -15,9 +15,11 @@ class GameStateManager;
 class UIElement : public GameObject {
 protected:
     glm::vec3 color;
+    float alpha;
 public:
-    UIElement(std::string name, const glm::vec2 &pos, const glm::vec2 &size, const glm::vec3 &color = glm::vec3(0.0f))
-          : GameObject(std::move(name), pos, size), color(color) {}
+    UIElement(std::string name, const glm::vec2 &pos, const glm::vec2 &size,
+              const glm::vec3 &color = glm::vec3(0.0f), float alpha = 1.0f)
+          : GameObject(std::move(name), pos, size), color(color), alpha(alpha) {}
 
     void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
 

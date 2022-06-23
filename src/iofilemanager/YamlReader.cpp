@@ -20,7 +20,10 @@ YamlReader::YamlReader() {
     keyToFunc["paladin"] = new YamlHandleCharacter("paladin", stringCode::hero);
     keyToFunc["druid"] = new YamlHandleCharacter("druid", stringCode::hero);
     keyToFunc["wizard"] = new YamlHandleCharacter("wizard", stringCode::hero);
+    keyToFunc["priest"] = new YamlHandleCharacter("priest", stringCode::hero);
+    keyToFunc["hunter"] = new YamlHandleCharacter("hunter", stringCode::hero);
 
+    keyToFunc["skeleton"] = new YamlHandleCharacter("skeleton", stringCode::enemy);
     keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
     keyToFunc["slime"] = new YamlHandleCharacter("slime", stringCode::enemy);
 
@@ -42,6 +45,7 @@ YamlReader::YamlReader() {
     keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
     keyToFunc["shield"] = new YamlHandleInt(stringCode::shield);
     keyToFunc["heal"] = new YamlHandleInt(stringCode::heal);
+    keyToFunc["bonus health"] = new YamlHandleInt(stringCode::bonus_health);
     keyToFunc["damage and self shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["self shield and damage"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);

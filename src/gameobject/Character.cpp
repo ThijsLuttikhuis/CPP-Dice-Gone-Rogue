@@ -192,6 +192,12 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
                     success = true;
                 }
                 break;
+            case FaceType::bonus_health:
+                if (!differentCharacterType) {
+                    applyFaceTypeBonusHealth(face, battleScene);
+                    success = true;
+                }
+                break;
             case FaceType::undying:
                 //TODO:
                 return false;
@@ -298,13 +304,23 @@ void Character::roll() {
 }
 
 void Character::applyDamageStep() {
+    if (isDead()) {
+        return;
+    }
 
     if (!isDodging) {
         incomingDamage -= shield;
         if (incomingDamage > 0) {
             hp -= incomingDamage;
         }
+        if (incomingPoison > 0) {
+            poison += incomingPoison;
+        }
     }
+    if (incomingRegen > 0) {
+        regen += incomingRegen;
+    }
+
     hp -= poison;
     hp += regen;
     hp = std::min(hp, maxHP);
@@ -312,6 +328,8 @@ void Character::applyDamageStep() {
 
     shield = 0;
     incomingDamage = 0;
+    incomingPoison = 0;
+    incomingRegen = 0;
     isDodging = false;
     isUndying = false;
 }
@@ -335,13 +353,12 @@ void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
 
     incomingDamage += value;
     if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
-        poison += value;
+        incomingPoison += value;
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
         applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
     }
-
 }
 
 void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
@@ -355,7 +372,7 @@ void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
-        regen += value;
+        incomingRegen += value;
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
@@ -377,14 +394,29 @@ void Character::applyFaceTypeShield(Face* face, BattleScene* battleScene) {
     }
 }
 
+void Character::applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene) {
+    int value = face->getValue();
+    FaceModifier modifiers = face->getModifiers();
+
+    maxHP += value;
+    hp += value;
+    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
+        applyFaceModifierCleanse(face, battleScene);
+    }
+
+    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+        applyFaceModifierSweepingEdge(FaceType::bonus_health, face, battleScene);
+    }
+}
+
 void Character::applyFaceModifierCleanse(Face* face, BattleScene* battleScene) {
     (void) face, (void) battleScene;
     poison = 0;
+    incomingPoison = 0;
 }
 
 void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene) {
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
-    //std::vector<Character*> characters = (face->getDice()->getCharacter()->getCharacterType() == "hero") ? gameState->getHeroes() : gameState->getEnemies();
     auto neighbours = battleScene->getNeighbours(this);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
@@ -397,6 +429,9 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
                     break;
                 case FaceType::shield:
                     neighbour->applyFaceTypeShield(face, battleScene);
+                    break;
+                case FaceType::bonus_health:
+                    neighbour->applyFaceTypeBonusHealth(face, battleScene);
                     break;
                 case FaceType::undying:
                     //TODO:
@@ -447,8 +482,10 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
                                textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 
-    if (poison != regen) {
-        bool morePoisonThanRegen = poison > regen;
+    int totalPoison = poison + incomingPoison;
+    int totalRegen = regen + incomingRegen;
+    if (totalPoison != totalRegen) {
+        bool morePoisonThanRegen = totalPoison > totalRegen;
         glm::vec3 color = (morePoisonThanRegen ? FaceModifier(FaceModifier::modifier::poison).toColor()
                                                : FaceModifier(FaceModifier::modifier::regen).toColor()) * 1.5f;
 
@@ -461,7 +498,7 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
         spriteRenderer->drawSprite("hero_mana", 0.7, position_, size_,
                                    morePoisonThanRegen ? 90.0f : 0.0f, color, 0.5f);
 
-        textRenderer->drawText("^" + std::to_string(std::abs(poison - regen)) + "^", 0.5,
+        textRenderer->drawText("^" + std::to_string(std::abs(totalPoison - totalRegen)) + "^", 0.5,
                                textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 }
@@ -492,5 +529,7 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
 void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
+
+
 
 }

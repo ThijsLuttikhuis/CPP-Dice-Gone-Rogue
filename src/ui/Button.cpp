@@ -11,10 +11,12 @@ bool Button::isPressed(double xPos, double yPos) const {
 }
 
 void Button::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
-    spriteRenderer->drawSprite("box", 1.0f, position, size,
-                               1.0f, glm::vec3(0.4), 0.0f);
+    if (drawButton) {
+        spriteRenderer->drawSprite("box", 1.0f, position, size,
+                                   1.0f, color, textHasAlpha ? 0.0f : alpha);
+    }
 
-    textRenderer->drawText(text, 0.0f, position, size, color, 1.0f);
+    textRenderer->drawText(text, 0.0f, position, size, color, textHasAlpha ? alpha : 1.0f);
 }
 
 void Button::setText(std::string text_) {
