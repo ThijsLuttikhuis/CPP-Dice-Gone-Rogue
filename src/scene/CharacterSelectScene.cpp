@@ -7,6 +7,7 @@
 #include "ui/Button.h"
 #include "GameStateManager.h"
 #include "BattleScene.h"
+#include <set>
 
 namespace DGR {
 
@@ -31,7 +32,15 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     button2->setText("Ready");
     buttons.push_back(button2);
 
-    float grayValue = 0.4f;
+    auto* button9 = new Button("Randomize", {width / 2 - buttonWidth / 2 + buttonWidth * 1.1, i * buttonDistance},
+                               {buttonWidth, buttonHeight});
+    button9->setText("Randomize");
+    buttons.push_back(button9);
+
+    auto* button10 = new Button("Return", {width / 2 - buttonWidth / 2 - buttonWidth * 1.1, i * buttonDistance},
+                                {buttonWidth, buttonHeight});
+    button10->setText("Return to main menu");
+    buttons.push_back(button10);
 
     float leftRightButtonWidth = 24;
     float leftRightButtonHeight = 164;
@@ -75,6 +84,8 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
                                {midButtonWidth, leftRightButtonHeight}, false);
     button8->setText("");
     buttons.push_back(button8);
+
+
 }
 
 void CharacterSelectScene::handleMousePosition(Character* character, double xPos, double yPos) {
@@ -115,7 +126,7 @@ void CharacterSelectScene::handleMousePosition(double xPos, double yPos) {
     }
 }
 
-void CharacterSelectScene::alignCharacterPositions(double dt) {
+void CharacterSelectScene::alignCharacterPositions() {
     const int width = gameState->getWindow()->getWidth();
     const int center = width / 2;
     const int dWidth = 48;
@@ -171,7 +182,7 @@ void CharacterSelectScene::update(double dt) {
         }
     }
 
-    alignCharacterPositions(dt);
+    alignCharacterPositions();
 
 }
 
@@ -206,26 +217,49 @@ void CharacterSelectScene::pressButton(Button* button) {
     float heroXPos = 112;
     float heroDXPos = 80;
 
-    if (button->getName() == "ScrollRight") {
+    auto &buttonName = button->getName();
+
+    if (buttonName == "ScrollRight") {
         currentLeftCharacterIndex++;
         currentLeftCharacterIndex = std::min(currentLeftCharacterIndex,
                                              (int) gameState->getAllHeroes().size() - maxCharactersOnRow);
-    } else if (button->getName() == "ScrollLeft") {
+    } else if (buttonName == "ScrollLeft") {
         currentLeftCharacterIndex--;
         currentLeftCharacterIndex = std::max(currentLeftCharacterIndex, 0);
-    } else if (button->getName() == "SelectHero0") {
+    } else if (buttonName == "Randomize") {
+        auto allHeroes = gameState->getAllHeroes();
+        std::set<int> rngs;
+        while ((int) rngs.size() < maxSelect) {
+            int rng = Random::randInt(0, (int) allHeroes.size() - 1);
+            rngs.insert(rng);
+        }
+        selectedHeroes = {};
+        std::string message = "selected ";
+
+        for (auto rng : rngs) {
+            auto hero = allHeroes[rng];
+            message += hero->getName() + ", ";
+            selectedHeroes.push_back(hero);
+        }
+
+        gameState->addOnScreenMessage(message);
+
+    } else if (buttonName == "Return") {
+        gameState->popSceneFromStack();
+
+    } else if (buttonName == "SelectHero0") {
         handleHeroesMouseButton(heroXPos, heroYPos);
 
-    } else if (button->getName() == "SelectHero1") {
+    } else if (buttonName == "SelectHero1") {
         handleHeroesMouseButton(heroXPos + heroDXPos, heroYPos);
 
-    } else if (button->getName() == "SelectHero2") {
+    } else if (buttonName == "SelectHero2") {
         handleHeroesMouseButton(heroXPos + heroDXPos * 2, heroYPos);
 
-    } else if (button->getName() == "SelectHero3") {
+    } else if (buttonName == "SelectHero3") {
         handleHeroesMouseButton(heroXPos + heroDXPos * 3, heroYPos);
 
-    } else if (button->getName() == "Ready") {
+    } else if (buttonName == "Ready") {
         if ((int) selectedHeroes.size() == maxSelect) {
             BattleScene* battleScene = dynamic_cast<BattleScene*>(gameState->getScene("BattleScene"));
             if (!battleScene) {
@@ -256,6 +290,8 @@ void CharacterSelectScene::pressButton(Button* button) {
 
             gameState->popSceneFromStack();
             gameState->addSceneToStack("BattleScene");
+        } else {
+            gameState->addOnScreenMessage("Please select three characters!");
         }
     }
 }

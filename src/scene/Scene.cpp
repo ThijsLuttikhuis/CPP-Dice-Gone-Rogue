@@ -39,4 +39,8 @@ void Scene::update(double dt) {
 void Scene::reset() {
 }
 
+GameStateManager* Scene::getGameStateManager() const {
+    return gameState;
+}
+
 }

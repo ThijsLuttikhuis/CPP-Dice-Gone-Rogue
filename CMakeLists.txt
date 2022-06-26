@@ -88,7 +88,7 @@ set(INCLUDE_UI
         src/ui/Window.h
         src/ui/UIElement.cpp
         src/ui/UIElement.h
-        )
+        src/ui/OnScreenMessage.cpp src/ui/OnScreenMessage.h)
 
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp

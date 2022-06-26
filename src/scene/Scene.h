@@ -28,6 +28,8 @@ public:
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const override;
 
+    [[nodiscard]] GameStateManager* getGameStateManager() const;
+
     /// setters
     void setIsEnabled(bool enabled_);
 

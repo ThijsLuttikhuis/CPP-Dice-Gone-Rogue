@@ -29,7 +29,7 @@ BattleScene::BattleScene(GameStateManager* gameState) : Scene("BattleScene", gam
     attackOrder = new AttackOrder(this);
 }
 
-BattleScene::battleGameState BattleScene::getGameState() const {
+BattleScene::battleGameState BattleScene::getState() const {
     return state;
 }
 

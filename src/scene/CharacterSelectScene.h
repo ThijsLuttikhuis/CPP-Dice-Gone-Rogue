@@ -19,7 +19,7 @@ private:
     int maxCharactersOnRow = 4;
     int currentLeftCharacterIndex = 0;
 
-    void alignCharacterPositions(double dt);
+    void alignCharacterPositions();
 public:
     explicit CharacterSelectScene(GameStateManager* gameState);
 

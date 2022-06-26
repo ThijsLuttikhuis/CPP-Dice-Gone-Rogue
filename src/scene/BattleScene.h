@@ -69,7 +69,7 @@ public:
 
     [[nodiscard]] bool areEnemiesAttacking() const;
 
-    [[nodiscard]] battleGameState getGameState() const;
+    [[nodiscard]] battleGameState getState() const;
 
     [[nodiscard]] Character* getClickedCharacter() const;
 

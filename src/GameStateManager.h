@@ -9,6 +9,7 @@
 #include <utilities/AttackOrder.h>
 
 #include "ui/Window.h"
+#include "ui/OnScreenMessage.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
@@ -25,6 +26,8 @@ private:
     SpriteRenderer* spriteRenderer;
 
     Window* window;
+
+    std::vector<OnScreenMessage*> onScreenMessages;
 
     std::vector<Character*> allHeroes;
     std::vector<Character*> allEnemies;
@@ -52,6 +55,8 @@ public:
     /// setters
     bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
+    void addOnScreenMessage(OnScreenMessage* message);
+
     bool popSceneFromStack(bool enableLastSceneInStack = true);
 
     /// functions
@@ -63,6 +68,8 @@ public:
 
     /// render
     void render();
+
+    void addOnScreenMessage(const std::string &message);
 };
 
 }

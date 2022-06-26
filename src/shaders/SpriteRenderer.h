@@ -46,7 +46,8 @@ public:
     void addTexture(const std::string &fileDir, const std::string &name);
 
     void drawSprite(const std::string &textureName, float zIndex, const glm::vec2 &position, const glm::vec2 &size,
-                    float rotate = 0.0f, const glm::vec3 &color = glm::vec3(1.0f), float alpha = 1.0f) const;
+                    float rotate = 0.0f, const glm::vec3 &color = glm::vec3(1.0f),
+                    float alpha = 1.0f) const;
 
     bool hasTexture(const std::string &textureName);
 

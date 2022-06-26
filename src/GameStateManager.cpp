@@ -30,7 +30,7 @@ GameStateManager::GameStateManager(Window* window) : window(window) {
     yamlReaderHeroes.readFile("heroes");
     allHeroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
 
-    int size = (int)allHeroes.size();
+    int size = (int) allHeroes.size();
     for (int i = 0; i < size; i++) {
         allHeroes.push_back(allHeroes[i]->makeCopy(false));
     }
@@ -87,6 +87,16 @@ void GameStateManager::update() {
             scene->update(dt);
         }
     }
+
+    for (auto &onScreenMessage : onScreenMessages) {
+        onScreenMessage->update(dt);
+    }
+
+    onScreenMessages.erase(std::remove_if(onScreenMessages.begin(), onScreenMessages.end(),
+                                          [](OnScreenMessage*&message) {
+                                              return message->getDuration() < 0.0;
+                                          }), onScreenMessages.end());
+
 }
 
 void GameStateManager::handleMouseButton(double xPos, double yPos) {
@@ -108,16 +118,6 @@ void GameStateManager::handleMousePosition(double xPos, double yPos) {
             double sceneYPos = yPos - scenePos.y;
             scene->handleMousePosition(sceneXPos, sceneYPos);
         }
-    }
-}
-
-void GameStateManager::render() {
-    for (auto &scene : sceneStack) {
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        spriteRenderer->setBaseUI(scene);
-        textRenderer->setBaseUI(scene);
-        scene->render(spriteRenderer, textRenderer);
     }
 }
 
@@ -176,6 +176,33 @@ const std::vector<Character*> &GameStateManager::getAllHeroes() const {
 
 const std::vector<Character*> &GameStateManager::getAllEnemies() const {
     return allEnemies;
+}
+
+void GameStateManager::addOnScreenMessage(OnScreenMessage* message) {
+    onScreenMessages.push_back(message);
+}
+
+void GameStateManager::addOnScreenMessage(const std::string& message) {
+    auto onScreenMessage = new OnScreenMessage(message);
+    onScreenMessages.push_back(onScreenMessage);
+}
+
+void GameStateManager::render() {
+    for (auto &scene : sceneStack) {
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        spriteRenderer->setBaseUI(scene);
+        textRenderer->setBaseUI(scene);
+        scene->render(spriteRenderer, textRenderer);
+    }
+
+    spriteRenderer->setBaseUI(nullptr);
+    textRenderer->setBaseUI(nullptr);
+
+    for (auto &message : onScreenMessages) {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        message->draw(spriteRenderer, textRenderer);
+    }
 }
 
 }

@@ -66,8 +66,8 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
         }
     }
 
-    glm::vec2 basePos = baseUI->getPosition();
-    glm::vec2 baseSize = baseUI->getSize();
+    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0,0);
+    glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
     glm::vec2 screenPos = position + basePos;
     if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
           position.x + size.x > baseSize.x + 1 || position.y + size.y > baseSize.y + 1) {
@@ -129,7 +129,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
 }
 
 void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
-                                   const glm::vec2 &position, const glm::vec2 &size, float drawEdges,
+                                   const glm::vec2 &position, const glm::vec2 &size, float edgeAlpha,
                                    const glm::vec3 &color, float alpha) {
     (void) texture;
 
@@ -141,12 +141,12 @@ void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const s
 
     // draw center
     spriteRenderer->drawSprite(tex, zIndex, position, size, 0.0f, color, alpha);
-    if (drawEdges > 0.001f) {
+    if (edgeAlpha > 0.001f) {
         // draw edges
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, edgeAlpha);
     }
 }
 

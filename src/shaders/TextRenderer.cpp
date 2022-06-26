@@ -110,8 +110,8 @@ TextRenderer::~TextRenderer() {
 void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
                             glm::vec3 color, float alpha) const {
 
-    glm::vec2 basePos = baseUI->getPosition();
-    glm::vec2 baseSize = baseUI->getSize();
+    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0,0);
+    glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
     glm::vec2 screenPos = textStart + basePos;
 
     if (screenPos.x < basePos.x || screenPos.y < basePos.y ||

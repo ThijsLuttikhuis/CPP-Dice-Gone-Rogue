@@ -47,7 +47,6 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
 void SettingsScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
-
 }
 
 void SettingsScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {

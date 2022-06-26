@@ -136,6 +136,11 @@ bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool sto
         battleScene->getAttackOrder()->addAttack(clickedSpell, this);
     }
 
+    if (!success) {
+        std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
+        battleScene->getGameStateManager()->addOnScreenMessage(message);
+    }
+
     return success;
 }
 
@@ -143,6 +148,7 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
     bool success = false;
     Face* face;
     FaceType type;
+    bool differentCharacterType = false;
 
     // single character interactions
     if (!otherCharacter) {
@@ -166,7 +172,7 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
         }
     } else {
         // interaction with another character of the same type or not
-        bool differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
+        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
 
         face = otherCharacter->getDice()->getCurrentFace();
         type = face->getFaceType();
@@ -261,6 +267,14 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
         battleScene->getAttackOrder()->addAttack(this, otherCharacter);
     }
 
+    if (!success && otherCharacter) {
+        if ((differentCharacterType && getCharacterType() == "enemy") ||
+            (!differentCharacterType && getCharacterType() == "hero")) {
+
+            std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
+            battleScene->getGameStateManager()->addOnScreenMessage(message);
+        }
+    }
     return success;
 }
 
@@ -529,7 +543,6 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
 void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
-
 
 
 }
