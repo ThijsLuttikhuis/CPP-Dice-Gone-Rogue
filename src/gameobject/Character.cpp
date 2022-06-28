@@ -78,6 +78,14 @@ void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
     }
 }
 
+void Character::setIncomingPoison(int incomingPoison_) {
+    incomingPoison = incomingPoison_;
+}
+
+void Character::setIncomingRegen(int incomingRegen_) {
+    incomingRegen = incomingRegen_;
+}
+
 void Character::setUndying(bool isUndying_) {
     isUndying = isUndying_;
 }
@@ -120,6 +128,12 @@ bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool sto
                 }
             }
             break;
+        case SpellType::cleanse:
+            if (!differentCharacterType) {
+                applySpellTypeCleanse(clickedSpell, battleScene);
+                success = true;
+            }
+            break;
         case SpellType::heal:
             break;
         case SpellType::damage_or_shield:
@@ -143,6 +157,7 @@ bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool sto
 
     return success;
 }
+
 
 bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction) {
     bool success = false;
@@ -288,6 +303,9 @@ Character* Character::makeCopy(bool copyUniqueID) const {
     copy->setHP(hp);
 
     copy->setIncomingDamage(incomingDamage);
+    copy->setIncomingPoison(incomingPoison);
+    copy->setIncomingRegen(incomingRegen);
+
     copy->setShield(shield);
     copy->setPoison(poison);
     copy->setRegen(regen);
@@ -354,6 +372,16 @@ void Character::applySpellTypeDamage(Spell* spell_, BattleScene* battleScene) {
     int value = spell_->getValue();
     incomingDamage += value;
 }
+
+
+void Character::applySpellTypeCleanse(Spell* spell_, BattleScene* battleScene) {
+    (void) spell_, (void) battleScene;
+
+    poison = 0;
+    incomingPoison = 0;
+}
+
+
 
 void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
@@ -543,6 +571,5 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
 void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
-
 
 }

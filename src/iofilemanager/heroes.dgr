@@ -4,13 +4,13 @@ characters:
     hp: 12;
     dice:
       face0:
-        damage: 4;
+        damage: 5;
       ;
       face1:
         damage: 2;
       ;
       face2:
-        damage: 4;
+        damage: 5;
       ;
       face3:
         damage: 2;
@@ -33,14 +33,14 @@ characters:
         mod: "poison";
       ;
       face1:
-        damage: 2;
+        damage: 3;
         mod: "ranged";
       ;
       face2:
         dodge: 0;
       ;
       face3:
-        damage: 2;
+        damage: 3;
         mod: "ranged";
       ;
       face4:
@@ -61,7 +61,7 @@ characters:
     hp: 10;
     dice:
       face0:
-        damage: 4;
+        damage: 5;
         mod: "ranged";
       ;
       face1:
@@ -157,15 +157,15 @@ characters:
         mod: "growth";
       ;
       face1:
-        heal: 2;
+        heal: 1;
         mod: "regen";
       ;
       face2:
-        damage: 3;
+        damage: 4;
         mod: "decay";
       ;
       face3:
-        heal: 2;
+        heal: 1;
         mod: "regen";
       ;
       face4:
@@ -173,7 +173,7 @@ characters:
         mod: "growth";
       ;
       face5:
-        heal: 3;
+        heal: 4;
         mod: "decay";
       ;
     ;
@@ -182,19 +182,24 @@ characters:
   priest:
     size: 32;
     hp: 9;
+    spell:
+      name: "cleanse";
+      cleanse: 0;
+      cost: 2;
+    ;
     dice:
       face0:
         bonus health: 3;
       ;
       face1:
-        heal: 5;
+        heal and mana: 2;
         mod: "single use";
       ;
       face2:
         bonus health: 3;
       ;
       face3:
-        heal: 5;
+        heal and mana: 2;
         mod: "single use";
       ;
       face4:

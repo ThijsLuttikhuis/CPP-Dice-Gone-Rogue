@@ -277,11 +277,9 @@ void CharacterSelectScene::pressButton(Button* button) {
             }
 
             auto allEnemies = gameState->getAllEnemies();
-            for (int i = 0; i < 3; i++) {
-                int n = allEnemies.size();
-                int rng = Random::randInt(0, n - 1);
-                auto enemy = allEnemies[rng]->makeCopy(true);
-                battleEnemies.push_back(enemy);
+            for (auto & enemy : allEnemies) {
+                auto copy = enemy->makeCopy(true);
+                battleEnemies.push_back(copy);
             }
 
             battleScene->reset();

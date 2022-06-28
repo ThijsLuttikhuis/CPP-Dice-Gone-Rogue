@@ -57,6 +57,9 @@ private:
 
     int reroll();
 
+    void setClickedCharacter(Character* clickedCharacter_);
+
+    void setClickedSpell(Spell* clickedSpell_);
 public:
     explicit BattleScene(GameStateManager* gameState);
 
@@ -92,11 +95,7 @@ public:
 
     void setHeroes(const std::vector<Character*> &heroes_);
 
-    void setClickedCharacter(Character* clickedCharacter_);
-
     void setAttackOrder(AttackOrder* attackOrder_);
-
-    void setClickedSpell(Spell* clickedSpell_);
 
     /// functions
     std::pair<Character*, Character*> getNeighbours(Character* character);

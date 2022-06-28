@@ -50,6 +50,7 @@ enum struct stringCode : int {
     damage_if_full_health,
     kill_if_below_threshold,
     bonus_health,
+    cleanse,
 
     empty,
 
@@ -353,6 +354,10 @@ public:
                 break;
             case stringCode::kill_if_below_threshold:
                 type = SpellType::kill_if_below_threshold;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::cleanse:
+                type = SpellType::cleanse;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             default:

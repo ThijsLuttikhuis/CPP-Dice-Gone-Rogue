@@ -25,14 +25,16 @@ characters:
   ;
 
   skeleton:
-    size: 32;
+    size: 24;
     hp: 8;
     dice:
       face0:
         damage: 5;
+        mod: "decay";
       ;
       face1:
         damage: 3;
+        mod: "decay";
       ;
       face2:
         damage: 5;
@@ -40,6 +42,7 @@ characters:
       ;
       face3:
         damage: 3;
+        mod: "decay";
       ;
       face4:
         empty: 0;
@@ -81,4 +84,5 @@ characters:
       ;
     ;
   ;
+
   ;

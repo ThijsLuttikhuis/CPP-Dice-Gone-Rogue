@@ -89,7 +89,6 @@ int BattleScene::reroll() {
     return rerolls;
 }
 
-
 void BattleScene::pressButton(Button* button) {
     std::cout << "pressed a button!" << std::endl;
 
@@ -499,18 +498,21 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     for (auto &button : buttons) {
         if (button->isPressed(xPos, yPos)) {
             pressButton(button);
+            return;
         }
     }
 
     for (auto &hero : heroes) {
         if (hero->isMouseHovering(xPos, yPos, true)) {
             clickCharacter(hero);
+            return;
         }
 
         auto spell = hero->getSpell();
         if (spell) {
             if (spell->isMouseHovering(xPos, yPos)) {
                 clickSpell(spell);
+                return;
             }
         }
     }
@@ -518,8 +520,13 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     for (auto &enemy : enemies) {
         if (enemy->isMouseHovering(xPos, yPos, true)) {
             clickCharacter(enemy);
+            return;
         }
     }
+
+    // clicked nowhere..
+    setClickedSpell(nullptr);
+    setClickedCharacter(nullptr);
 }
 
 std::pair<Character*, Character*> BattleScene::getNeighbours(Character* character) {
@@ -597,9 +604,10 @@ void BattleScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRende
     }
 
     glm::vec2 manaPosition = glm::vec2(288, 216);
-    glm::vec2 manaSize = glm::vec2(16, 16);
-    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
-    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
+    glm::vec2 manaSize = glm::vec2(22, 24);
+    glm::vec2 manaTextPosition = manaPosition + glm::vec2(8, 6);
+    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize,
+                               0.0f, glm::vec3(1.0f), 0.8f);
     textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 
     for (auto &button : buttons) {

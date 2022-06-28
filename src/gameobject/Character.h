@@ -91,6 +91,8 @@ public:
 
     void setIncomingDamage(int incomingDamage_);
 
+    void setIncomingRegen(int incomingRegen_);
+
     void setPoison(int poison_);
 
     void setBackRow(bool backRow_);
@@ -106,6 +108,8 @@ public:
     void setUndying(bool isUndying_);
 
     void setShield(int shield_);
+
+    void setIncomingPoison(int incomingPoison_);
 
     /// functions
     void roll();
@@ -124,6 +128,8 @@ public:
     void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const;
 
     void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
+
+    void applySpellTypeCleanse(Spell* spell, BattleScene* battleScene);
 };
 
 }

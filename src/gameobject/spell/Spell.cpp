@@ -110,12 +110,23 @@ void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
                                0.0f, glm::vec3(0.8f), 0.2f);
     textRenderer->drawText(name, 0.00f, textPosition, textSize);
 
-    auto texturePosition = glm::vec2(getPosition().x, getPosition().y + 8);
-    auto textureSize = glm::vec2(getSize().x, 12);
+    float manaCostWidth = 11.0f;
+    float spriteHeight = 12.0f;
+
+    auto texturePosition = glm::vec2(getPosition().x - 1, getPosition().y + 8);
+    auto textureSize = glm::vec2(getSize().x + 1 - manaCostWidth, spriteHeight);
     spriteRenderer->drawSprite(name, 0.00f, texturePosition, textureSize);
 
-    auto manaCostPosition = glm::vec2(getPosition().x + getSize().x - 10, getPosition().y + 10);
-    textRenderer->drawText(std::to_string(cost), 0.0f, manaCostPosition, textSize);
+    auto manaCostPosition = glm::vec2(getPosition().x + getSize().x - manaCostWidth, getPosition().y + 8);
+    auto manaCostTextPosition =
+          glm::vec2(getPosition().x + getSize().x - manaCostWidth - 1, getPosition().y + 12);
+
+    auto manaCostSize = glm::vec2(manaCostWidth, spriteHeight);
+    spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize, 0.0f,
+          glm::vec3{1.0f}, 0.6f);
+
+    textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, textSize,
+          Utilities::color2Vec3("0xd4a5fa"));
 
 }
 
