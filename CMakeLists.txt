@@ -8,11 +8,9 @@ project(DiceGoneRogue)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wnone")
-set(CMAKE_CXX_FLAGS "-lstdc++fs" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs" )
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-
-
 
 include_directories(src)
 
