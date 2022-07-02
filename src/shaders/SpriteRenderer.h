@@ -18,24 +18,24 @@ class UIElement;
 
 class SpriteRenderer {
 private:
-    Shader* shader;
+     std::shared_ptr<Shader> shader;
     unsigned int quadVAO{};
 
-    UIElement* baseUI;
+     std::shared_ptr<UIElement> baseUI;
 
-    std::map<std::string, Texture2D*> textures;
+    std::map<std::string,  std::shared_ptr<Texture2D>> textures;
 
     std::vector<std::pair<std::string,
-          void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
+          void (*)(const  std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture,
                    float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
                    const glm::vec3 &color, float alpha)>> specialSpritesToFunction;
 
-    static void drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
+    static void drawBoxSprite(std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture, float zIndex,
                               const glm::vec2 &position, const glm::vec2 &size, float rotate = 0.0f,
                               const glm::vec3 &color = glm::vec3(1.0f), float alpha = 1.0f);
 
 public:
-    SpriteRenderer(Shader* shader, glm::mat4 projection);
+    SpriteRenderer( std::shared_ptr<Shader> shader, glm::mat4 projection);
 
     ~SpriteRenderer();
 
@@ -51,7 +51,7 @@ public:
 
     bool hasTexture(const std::string &textureName);
 
-    void setBaseUI(DGR::UIElement* baseUI_);
+    void setBaseUI( std::shared_ptr<DGR::UIElement> baseUI_);
 };
 
 }

@@ -57,7 +57,7 @@ void GameObject::setPosition(int left, int up) {
     setPosition(glm::vec2(left, up));
 }
 
-void GameObject::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
+void GameObject::draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) const {
     (void)textRenderer;
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }

@@ -13,57 +13,57 @@ namespace DGR {
 
 YamlReader::YamlReader() {
 
-    keyToFunc["characters"] = new YamlHandleCharacters();
+    keyToFunc["characters"] = std::make_shared<YamlHandleCharacters>();
 
-    keyToFunc["knight"] = new YamlHandleCharacter("knight", stringCode::hero);
-    keyToFunc["rogue"] = new YamlHandleCharacter("rogue", stringCode::hero);
-    keyToFunc["paladin"] = new YamlHandleCharacter("paladin", stringCode::hero);
-    keyToFunc["druid"] = new YamlHandleCharacter("druid", stringCode::hero);
-    keyToFunc["wizard"] = new YamlHandleCharacter("wizard", stringCode::hero);
-    keyToFunc["priest"] = new YamlHandleCharacter("priest", stringCode::hero);
-    keyToFunc["hunter"] = new YamlHandleCharacter("hunter", stringCode::hero);
+    keyToFunc["knight"] = std::make_shared<YamlHandleCharacter>("knight", stringCode::hero);
+    keyToFunc["rogue"] = std::make_shared<YamlHandleCharacter>("rogue", stringCode::hero);
+    keyToFunc["paladin"] = std::make_shared<YamlHandleCharacter>("paladin", stringCode::hero);
+    keyToFunc["druid"] = std::make_shared<YamlHandleCharacter>("druid", stringCode::hero);
+    keyToFunc["wizard"] = std::make_shared<YamlHandleCharacter>("wizard", stringCode::hero);
+    keyToFunc["priest"] = std::make_shared<YamlHandleCharacter>("priest", stringCode::hero);
+    keyToFunc["hunter"] = std::make_shared<YamlHandleCharacter>("hunter", stringCode::hero);
 
-    keyToFunc["skeleton"] = new YamlHandleCharacter("skeleton", stringCode::enemy);
-    keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
-    keyToFunc["slime"] = new YamlHandleCharacter("slime", stringCode::enemy);
-    keyToFunc["dragon"] = new YamlHandleCharacter("dragon", stringCode::enemy);
+    keyToFunc["skeleton"] = std::make_shared<YamlHandleCharacter>("skeleton", stringCode::enemy);
+    keyToFunc["rat"] = std::make_shared<YamlHandleCharacter>("rat", stringCode::enemy);
+    keyToFunc["slime"] = std::make_shared<YamlHandleCharacter>("slime", stringCode::enemy);
+    keyToFunc["dragon"] = std::make_shared<YamlHandleCharacter>("dragon", stringCode::enemy);
 
-    keyToFunc["spell"] = new YamlHandleSpell();
-    keyToFunc["dice"] = new YamlHandleDice();
-    keyToFunc["face0"] = new YamlHandleFace(0);
-    keyToFunc["face1"] = new YamlHandleFace(1);
-    keyToFunc["face2"] = new YamlHandleFace(2);
-    keyToFunc["face3"] = new YamlHandleFace(3);
-    keyToFunc["face4"] = new YamlHandleFace(4);
-    keyToFunc["face5"] = new YamlHandleFace(5);
+    keyToFunc["spell"] = std::make_shared<YamlHandleSpell>();
+    keyToFunc["dice"] = std::make_shared<YamlHandleDice>();
+    keyToFunc["face0"] = std::make_shared<YamlHandleFace>(0);
+    keyToFunc["face1"] = std::make_shared<YamlHandleFace>(1);
+    keyToFunc["face2"] = std::make_shared<YamlHandleFace>(2);
+    keyToFunc["face3"] = std::make_shared<YamlHandleFace>(3);
+    keyToFunc["face4"] = std::make_shared<YamlHandleFace>(4);
+    keyToFunc["face5"] = std::make_shared<YamlHandleFace>(5);
 
-    keyToFunc["hp"] = new YamlHandleInt(stringCode::hp);
-    keyToFunc["size"] = new YamlHandleInt(stringCode::size);
-    keyToFunc["name"] = new YamlHandleString(stringCode::name);
-    keyToFunc["cost"] = new YamlHandleInt(stringCode::cost);
-    keyToFunc["mod"] = new YamlHandleString(stringCode::mod);
-    keyToFunc["mod1"] = new YamlHandleString(stringCode::mod);
-    keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
-    keyToFunc["shield"] = new YamlHandleInt(stringCode::shield);
-    keyToFunc["heal"] = new YamlHandleInt(stringCode::heal);
-    keyToFunc["bonus health"] = new YamlHandleInt(stringCode::bonus_health);
-    keyToFunc["damage and self shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
-    keyToFunc["self shield and damage"] = new YamlHandleInt(stringCode::damage_and_self_shield);
-    keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);
-    keyToFunc["dodge"] = new YamlHandleInt(stringCode::dodge);
-    keyToFunc["shield and mana"] = new YamlHandleInt(stringCode::shield_and_mana);
-    keyToFunc["mana and shield"] = new YamlHandleInt(stringCode::shield_and_mana);
-    keyToFunc["heal and shield"] = new YamlHandleInt(stringCode::heal_and_shield);
-    keyToFunc["shield and heal"] = new YamlHandleInt(stringCode::heal_and_shield);
-    keyToFunc["heal and mana"] = new YamlHandleInt(stringCode::heal_and_mana);
-    keyToFunc["mana and heal"] = new YamlHandleInt(stringCode::heal_and_mana);
-    keyToFunc["empty"] = new YamlHandleInt(stringCode::empty);
-    keyToFunc["cleanse"] = new YamlHandleInt(stringCode::cleanse);
+    keyToFunc["hp"] = std::make_shared<YamlHandleInt>(stringCode::hp);
+    keyToFunc["size"] = std::make_shared<YamlHandleInt>(stringCode::size);
+    keyToFunc["name"] = std::make_shared<YamlHandleString>(stringCode::name);
+    keyToFunc["cost"] = std::make_shared<YamlHandleInt>(stringCode::cost);
+    keyToFunc["mod"] = std::make_shared<YamlHandleString>(stringCode::mod);
+    keyToFunc["mod1"] = std::make_shared<YamlHandleString>(stringCode::mod);
+    keyToFunc["damage"] = std::make_shared<YamlHandleInt>(stringCode::damage);
+    keyToFunc["shield"] = std::make_shared<YamlHandleInt>(stringCode::shield);
+    keyToFunc["heal"] = std::make_shared<YamlHandleInt>(stringCode::heal);
+    keyToFunc["bonus health"] = std::make_shared<YamlHandleInt>(stringCode::bonus_health);
+    keyToFunc["damage and self shield"] = std::make_shared<YamlHandleInt>(stringCode::damage_and_self_shield);
+    keyToFunc["self shield and damage"] = std::make_shared<YamlHandleInt>(stringCode::damage_and_self_shield);
+    keyToFunc["mana"] = std::make_shared<YamlHandleInt>(stringCode::mana);
+    keyToFunc["dodge"] = std::make_shared<YamlHandleInt>(stringCode::dodge);
+    keyToFunc["shield and mana"] = std::make_shared<YamlHandleInt>(stringCode::shield_and_mana);
+    keyToFunc["mana and shield"] = std::make_shared<YamlHandleInt>(stringCode::shield_and_mana);
+    keyToFunc["heal and shield"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_shield);
+    keyToFunc["shield and heal"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_shield);
+    keyToFunc["heal and mana"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_mana);
+    keyToFunc["mana and heal"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_mana);
+    keyToFunc["empty"] = std::make_shared<YamlHandleInt>(stringCode::empty);
+    keyToFunc["cleanse"] = std::make_shared<YamlHandleInt>(stringCode::cleanse);
 
-    keyToFunc["damage or shield"] = new YamlHandleInt(stringCode::damage_or_shield);
-    keyToFunc["heal or shield"] = new YamlHandleInt(stringCode::heal_or_shield);
-    keyToFunc["damage if full health"] = new YamlHandleInt(stringCode::damage_if_full_health);
-    keyToFunc["kill if below threshold"] = new YamlHandleInt(stringCode::kill_if_below_threshold);
+    keyToFunc["damage or shield"] = std::make_shared<YamlHandleInt>(stringCode::damage_or_shield);
+    keyToFunc["heal or shield"] = std::make_shared<YamlHandleInt>(stringCode::heal_or_shield);
+    keyToFunc["damage if full health"] = std::make_shared<YamlHandleInt>(stringCode::damage_if_full_health);
+    keyToFunc["kill if below threshold"] = std::make_shared<YamlHandleInt>(stringCode::kill_if_below_threshold);
 
 }
 
@@ -100,7 +100,7 @@ void YamlReader::readFile(const std::string &name) {
     int colonCounterMax = 8;
     auto worldStrLength = worldStr.size();
 
-    std::vector<YamlHandle*> objectHandle(colonCounterMax, nullptr);
+    std::vector<std::shared_ptr<YamlHandle>> objectHandle(colonCounterMax, nullptr);
     while (i < worldStrLength) {
         size_t posColon = worldStr.find(':', i);
         size_t posSemi = worldStr.find(';', i);

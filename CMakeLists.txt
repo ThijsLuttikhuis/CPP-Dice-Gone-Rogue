@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(DiceGoneRogue)
 
 
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wnone")
 set(CMAKE_CXX_FLAGS "-lstdc++fs")
 

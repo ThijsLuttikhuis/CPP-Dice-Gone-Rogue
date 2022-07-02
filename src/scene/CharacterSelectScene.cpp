@@ -11,7 +11,7 @@
 
 namespace DGR {
 
-CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
+CharacterSelectScene::CharacterSelectScene(std::shared_ptr<GameStateManager> gameState)
       : Scene("CharacterSelectScene", gameState) {
 
     double width = DGR_WIDTH;
@@ -22,23 +22,28 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     double buttonDistance = height * 0.1;
     float i = 8;
 
-    auto* button1 = new Button("Text", {width / 2 - buttonWidth, buttonDistance / 2},
-                               {buttonWidth * 2, buttonHeight / 2});
+    auto button1 = std::make_shared<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
+                                            glm::vec2(buttonWidth * 2, buttonHeight / 2));
     button1->setText("Select three characters");
     buttons.push_back(button1);
 
-    auto* button2 = new Button("Ready", {width / 2 - buttonWidth / 2, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button2 = std::make_shared<Button>("Ready",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Ready");
     buttons.push_back(button2);
 
-    auto* button9 = new Button("Randomize", {width / 2 - buttonWidth / 2 + buttonWidth * 1.1, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button9 = std::make_shared<Button>("Randomize",
+                                            glm::vec2(width / 2 - buttonWidth / 2 + buttonWidth * 1.1,
+                                                      i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button9->setText("Randomize");
     buttons.push_back(button9);
 
-    auto* button10 = new Button("Return", {width / 2 - buttonWidth / 2 - buttonWidth * 1.1, i * buttonDistance},
-                                {buttonWidth, buttonHeight});
+    auto button10 = std::make_shared<Button>("Return",
+                                             glm::vec2(width / 2 - buttonWidth / 2 - buttonWidth * 1.1,
+                                                       i * buttonDistance),
+                                             glm::vec2(buttonWidth, buttonHeight));
     button10->setText("Return to main menu");
     buttons.push_back(button10);
 
@@ -55,40 +60,46 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     float midButtonWidth = (midButtonEnd - midButtonStart) / nMidButton;
     i = 0;
 
-    auto* button3 = new Button("ScrollLeft", {leftButtonX, leftRightButtonY},
-                               {leftRightButtonWidth, leftRightButtonHeight});
+    auto button3 = std::make_shared<Button>("ScrollLeft",
+                                            glm::vec2(leftButtonX, leftRightButtonY),
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight));
     button3->setText(" <<");
     buttons.push_back(button3);
 
-    auto* button4 = new Button("ScrollRight", {rightButtonX, leftRightButtonY},
-                               {leftRightButtonWidth, leftRightButtonHeight});
+    auto button4 = std::make_shared<Button>("ScrollRight",
+                                            glm::vec2(rightButtonX, leftRightButtonY),
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight));
     button4->setText(" >>");
     buttons.push_back(button4);
 
-    auto* button5 = new Button("SelectHero0", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button5 = std::make_shared<Button>("SelectHero0",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button5->setText("");
     buttons.push_back(button5);
 
-    auto* button6 = new Button("SelectHero1", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button6 = std::make_shared<Button>("SelectHero1",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button6->setText("");
     buttons.push_back(button6);
 
-    auto* button7 = new Button("SelectHero2", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button7 = std::make_shared<Button>("SelectHero2",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button7->setText("");
     buttons.push_back(button7);
 
-    auto* button8 = new Button("SelectHero3", {midButtonStart + i * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button8 = std::make_shared<Button>("SelectHero3",
+                                            glm::vec2(midButtonStart + i * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button8->setText("");
     buttons.push_back(button8);
 
 
 }
 
-void CharacterSelectScene::handleMousePosition(Character* character, double xPos, double yPos) {
+void CharacterSelectScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
 
@@ -186,7 +197,8 @@ void CharacterSelectScene::update(double dt) {
 
 }
 
-void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void CharacterSelectScene::render(std::shared_ptr<SpriteRenderer> spriteRenderer,
+                                  std::shared_ptr<TextRenderer> textRenderer) {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 
@@ -210,7 +222,7 @@ void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* 
 
 }
 
-void CharacterSelectScene::pressButton(Button* button) {
+void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
     std::cout << "pressed a button!" << std::endl;
 
     float heroYPos = 128;
@@ -261,14 +273,14 @@ void CharacterSelectScene::pressButton(Button* button) {
 
     } else if (buttonName == "Ready") {
         if ((int) selectedHeroes.size() == maxSelect) {
-            BattleScene* battleScene = dynamic_cast<BattleScene*>(gameState->getScene("BattleScene"));
+            std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(gameState->getScene("BattleScene"));
             if (!battleScene) {
                 std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
                 exit(404);
             }
 
-            std::vector<Character*> battleHeroes;
-            std::vector<Character*> battleEnemies;
+            std::vector<std::shared_ptr<Character>> battleHeroes;
+            std::vector<std::shared_ptr<Character>> battleEnemies;
 
             for (auto &hero : selectedHeroes) {
                 auto copy = hero->makeCopy(true);
@@ -277,7 +289,7 @@ void CharacterSelectScene::pressButton(Button* button) {
             }
 
             auto allEnemies = gameState->getAllEnemies();
-            for (auto & enemy : allEnemies) {
+            for (auto &enemy : allEnemies) {
                 auto copy = enemy->makeCopy(true);
                 battleEnemies.push_back(copy);
             }

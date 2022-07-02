@@ -31,37 +31,38 @@ private:
 
     int animationCounter = 0;
 
-    Character* clickedCharacter = nullptr;
-    Spell* clickedSpell = nullptr;
+    std::shared_ptr<Character> clickedCharacter = nullptr;
+    std::shared_ptr<Spell> clickedSpell = nullptr;
 
-    std::vector<Character*> heroes;
-    std::vector<Character*> enemies;
+    std::vector<std::shared_ptr<Character>> heroes;
+    std::vector<std::shared_ptr<Character>> enemies;
 
-    AttackOrder* attackOrder = nullptr;
+    std::shared_ptr<AttackOrder> attackOrder = nullptr;
 
     void alignCharacterPositions(double dt);
 
     void checkVictory();
 
-    void pressButton(Button* button);
+    void pressButton(std::shared_ptr<Button> button);
 
-    void handleMousePosition(Character* character, double xPos, double yPos);
+    void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
     void updateButtons();
 
-    void clickCharacter(Character* character);
+    void clickCharacter(std::shared_ptr<Character> character);
 
-    void clickSpell(Spell* spell);
+    void clickSpell(std::shared_ptr<Spell> spell);
 
     void enemyAttack(int index);
 
     int reroll();
 
-    void setClickedCharacter(Character* clickedCharacter_);
+    void setClickedCharacter(std::shared_ptr<Character> clickedCharacter_);
 
-    void setClickedSpell(Spell* clickedSpell_);
+    void setClickedSpell(std::shared_ptr<Spell> clickedSpell_);
+
 public:
-    explicit BattleScene(GameStateManager* gameState);
+    explicit BattleScene(std::shared_ptr<GameStateManager> gameState);
 
     /// getters
     [[nodiscard]] bool areHeroesRolling() const;
@@ -74,11 +75,11 @@ public:
 
     [[nodiscard]] battleGameState getState() const;
 
-    [[nodiscard]] Character* getClickedCharacter() const;
+    [[nodiscard]]  std::shared_ptr<Character> getClickedCharacter() const;
 
-    [[nodiscard]] Spell* getClickedSpell() const;
+    [[nodiscard]]  std::shared_ptr<Spell> getClickedSpell() const;
 
-    [[nodiscard]] AttackOrder* getAttackOrder() const;
+    [[nodiscard]]  std::shared_ptr<AttackOrder> getAttackOrder() const;
 
     [[nodiscard]] int getMana() const;
 
@@ -91,14 +92,14 @@ public:
 
     void setMana(int mana_);
 
-    void setEnemies(const std::vector<Character*> &enemies_);
+    void setEnemies(const std::vector<std::shared_ptr<Character>> &enemies_);
 
-    void setHeroes(const std::vector<Character*> &heroes_);
+    void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setAttackOrder(AttackOrder* attackOrder_);
+    void setAttackOrder(std::shared_ptr<AttackOrder> attackOrder_);
 
     /// functions
-    std::pair<Character*, Character*> getNeighbours(Character* character);
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(std::shared_ptr<Character> character);
 
     void handleMouseButton(double xPos, double yPos) override;
 
@@ -109,7 +110,7 @@ public:
     void update(double dt) override;
 
     /// render
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
+    void render(std::shared_ptr<SpriteRenderer> spriteRenderer, std::shared_ptr<TextRenderer> textRenderer) override;
 
 };
 

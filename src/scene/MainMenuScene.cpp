@@ -8,7 +8,7 @@
 
 namespace DGR {
 
-MainMenuScene::MainMenuScene(GameStateManager* gameState) : Scene("MainMenuScene", gameState) {
+MainMenuScene::MainMenuScene(std::shared_ptr<GameStateManager> gameState) : Scene("MainMenuScene", gameState) {
     double width = DGR_WIDTH;
     double height = DGR_HEIGHT;
 
@@ -17,18 +17,22 @@ MainMenuScene::MainMenuScene(GameStateManager* gameState) : Scene("MainMenuScene
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto* button1 = new Button("StartNewGame", {width / 2 - buttonWidth / 2, i++ * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button1 = std::make_shared<Button>("StartNewGame",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Start New Game");
     buttons.push_back(button1);
 
-    auto* button2 = new Button("LoadGame", {width / 2 - buttonWidth / 2, i++ * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button2 = std::make_shared<Button>("LoadGame",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Load Game");
     buttons.push_back(button2);
 
-    auto* button3 = new Button("Settings", {width / 2 - buttonWidth / 2, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button3 = std::make_shared<Button>("Settings",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
+
     button3->setText("Settings");
     buttons.push_back(button3);
 }
@@ -41,22 +45,21 @@ void MainMenuScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void MainMenuScene::pressButton(Button* button) {
+void MainMenuScene::pressButton(std::shared_ptr<Button> button) {
     std::cout << "pressed a button!" << std::endl;
 
     if (button->getName() == "StartNewGame") {
         gameState->popSceneFromStack();
         gameState->addSceneToStack("CharacterSelectScene");
-    }
-    else if (button->getName() == "LoadGame") {
+    } else if (button->getName() == "LoadGame") {
         gameState->addSceneToStack("LoadGameScene", false);
-    }
-    else if (button->getName() == "Settings") {
+    } else if (button->getName() == "Settings") {
         gameState->addSceneToStack("SettingsScene");
     }
 }
 
-void MainMenuScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void
+MainMenuScene::render(std::shared_ptr<SpriteRenderer> spriteRenderer, std::shared_ptr<TextRenderer> textRenderer) {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

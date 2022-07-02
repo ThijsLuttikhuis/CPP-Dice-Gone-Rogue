@@ -7,9 +7,9 @@
 
 namespace DGR {
 
-InputHandler::InputHandler(GameStateManager* gameState) : gameState(gameState) {}
+InputHandler::InputHandler( std::shared_ptr<GameStateManager> gameState) : gameState(gameState) {}
 
-void InputHandler::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void InputHandler::render( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

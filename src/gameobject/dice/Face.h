@@ -5,7 +5,7 @@
 #ifndef DICEGONEROGUE_FACE_H
 #define DICEGONEROGUE_FACE_H
 
-
+#include <memory>
 #include <string>
 #include <map>
 #include <utility>
@@ -24,7 +24,7 @@ class Dice;
 class Face {
 private:
     std::string name;
-    Dice* dice = nullptr;
+     std::shared_ptr<Dice> dice = nullptr;
 
     int face_{};
     int value{};
@@ -36,16 +36,16 @@ private:
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
 
-    void drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos);
+    void drawFace( std::shared_ptr<SpriteRenderer> spriteRenderer, Dice::dicePos dicePos);
 
-    void drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos);
+    void drawFaceToolTip( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer, Dice::dicePos dicePos);
 public:
     Face() = default;
 
     Face(int face_, int value, FaceType type, FaceModifier modifiers = {})
           : face_(face_), value(value), type(type), modifiers(modifiers) {};
 
-    Face(std::string name, Dice* dice, int face_,
+    Face(std::string name,  std::shared_ptr<Dice> dice, int face_,
          int value, FaceType type, FaceModifier modifiers);
 
     /// getters
@@ -63,9 +63,9 @@ public:
 
     [[nodiscard]] FaceModifier getModifiers() const;
 
-    [[nodiscard]] Face* makeCopy() const;
+    [[nodiscard]]  std::shared_ptr<Face> makeCopy() const;
 
-    [[nodiscard]] Dice* getDice() const;
+    [[nodiscard]]  std::shared_ptr<Dice> getDice() const;
 
     /// setters
     void setName(const std::string &name_);
@@ -86,13 +86,13 @@ public:
 
     void setModifiers(unsigned int modifiers_);
 
-    void setDice(Dice* dice);
+    void setDice( std::shared_ptr<Dice> dice);
 
     /// render
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textureRenderer,
+    void drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textureRenderer,
                    Dice::dicePos dicePos = Dice::diceLayoutPos);
 
-    void draw(SpriteRenderer* spriteRenderer);
+    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer);
 
 };
 

@@ -10,7 +10,7 @@
 
 namespace DGR {
 
-Shader* Shader::use() {
+ std::shared_ptr<Shader> Shader::use() {
     glUseProgram(id);
     return this;
 }

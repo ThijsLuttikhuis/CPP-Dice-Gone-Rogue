@@ -17,7 +17,7 @@ class Spell {
 private:
     std::string name;
 
-    Character* character = nullptr;
+     std::shared_ptr<Character> character = nullptr;
 
     int cost{};
     int value{};
@@ -26,7 +26,7 @@ private:
     bool hover = false;
 
 public:
-    Spell(std::string name, Character* character) : name(std::move(name)), character(character) {}
+    Spell(std::string name,  std::shared_ptr<Character> character) : name(std::move(name)), character(character) {}
 
     Spell(std::string name, int cost, int value, SpellType type)
     : name(std::move(name)), cost(cost), value(value), type(type) {}
@@ -44,25 +44,25 @@ public:
 
     [[nodiscard]] int getCost() const;
 
-    [[nodiscard]] Character* getCharacter() const;
+    [[nodiscard]]  std::shared_ptr<Character> getCharacter() const;
 
     [[nodiscard]] SpellType getType() const;
 
     [[nodiscard]] int getValue() const;
 
-    [[nodiscard]] Spell* makeCopy() const;
+    [[nodiscard]]  std::shared_ptr<Spell> makeCopy() const;
 
     /// setters
-    void setCharacter(Character* character_);
+    void setCharacter( std::shared_ptr<Character> character_);
 
     void setHover(bool hover_);
 
     /// render
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
 
-    void drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawSpellToolTip( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
 
-    void drawBox(SpriteRenderer* spriteRenderer, glm::highp_vec3 color);
+    void drawBox( std::shared_ptr<SpriteRenderer> spriteRenderer, glm::highp_vec3 color);
 
 };
 

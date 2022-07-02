@@ -22,11 +22,11 @@ class Character;
 
 class InputHandler {
 protected:
-    GameStateManager* gameState;
+     std::shared_ptr<GameStateManager> gameState;
 
-    std::vector<Button*> buttons;
+    std::vector<std::shared_ptr<Button>> buttons;
 public:
-    explicit InputHandler(GameStateManager* gameState);
+    explicit InputHandler( std::shared_ptr<GameStateManager> gameState);
 
     virtual void handleMouseButton(double xPos, double yPos) {
         (void)xPos, (void)yPos;
@@ -36,7 +36,7 @@ public:
         (void)xPos, (void)yPos;
     };
 
-    virtual void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    virtual void render( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
 };
 
 }

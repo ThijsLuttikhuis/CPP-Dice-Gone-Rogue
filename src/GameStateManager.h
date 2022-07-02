@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_GAMESTATEMANAGER_H
 #define DICEGONEROGUE_GAMESTATEMANAGER_H
 
+#include <memory>
 #include <vector>
 #include <utilities/AttackOrder.h>
 
@@ -22,40 +23,40 @@ private:
     double t = 0.0;
     double tPrev = 0.0;
 
-    TextRenderer* textRenderer;
-    SpriteRenderer* spriteRenderer;
+    std::shared_ptr<TextRenderer> textRenderer;
+    std::shared_ptr<SpriteRenderer> spriteRenderer;
 
-    Window* window;
+    std::shared_ptr<Window> window;
 
-    std::vector<OnScreenMessage*> onScreenMessages;
+    std::vector<std::shared_ptr<OnScreenMessage>> onScreenMessages;
 
-    std::vector<Character*> allHeroes;
-    std::vector<Character*> allEnemies;
-    std::vector<Scene*> allScenes;
+    std::vector<std::shared_ptr<Character>> allHeroes;
+    std::vector<std::shared_ptr<Character>> allEnemies;
+    std::vector<std::shared_ptr<Scene>> allScenes;
 
-    std::vector<Character*> ownedHeroes;
-    std::vector<Scene*> sceneStack;
+    std::vector<std::shared_ptr<Character>> ownedHeroes;
+    std::vector<std::shared_ptr<Scene>> sceneStack;
 
 public:
-    explicit GameStateManager(Window* window);
+    explicit GameStateManager(std::shared_ptr<Window> window);
 
     /// getters
-    [[nodiscard]] Window* getWindow() const;
+    [[nodiscard]] std::shared_ptr<Window> getWindow() const;
 
-    [[nodiscard]] const std::vector<Scene*> &getAllScenes() const;
+    [[nodiscard]] const std::vector<std::shared_ptr<Scene>> &getAllScenes() const;
 
-    [[nodiscard]] Scene* getScene(const std::string &sceneName, bool onlySceneStack = false) const;
+    [[nodiscard]] std::shared_ptr<Scene> getScene(const std::string &sceneName, bool onlySceneStack = false) const;
 
-    [[nodiscard]] const std::vector<Scene*> &getSceneStack() const;
+    [[nodiscard]] const std::vector<std::shared_ptr<Scene>> &getSceneStack() const;
 
-    [[nodiscard]] const std::vector<Character*> &getAllHeroes() const;
+    [[nodiscard]] const std::vector<std::shared_ptr<Character>> &getAllHeroes() const;
 
-    [[nodiscard]] const std::vector<Character*> &getAllEnemies() const;
+    [[nodiscard]] const std::vector<std::shared_ptr<Character>> &getAllEnemies() const;
 
     /// setters
     bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
-    void addOnScreenMessage(OnScreenMessage* message);
+    void addOnScreenMessage(std::shared_ptr<OnScreenMessage> message);
 
     bool popSceneFromStack(bool enableLastSceneInStack = true);
 

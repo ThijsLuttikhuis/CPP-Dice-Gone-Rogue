@@ -29,12 +29,12 @@ const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
                                                               glm::vec2(11, 2)}};
 
 
-Face::Face(std::string name, Dice* dice, int face_, int value, FaceType type, FaceModifier modifiers)
+Face::Face(std::string name,  std::shared_ptr<Dice> dice, int face_, int value, FaceType type, FaceModifier modifiers)
       : name(std::move(name)), dice(dice), face_(face_), value(value), type(type), modifiers(modifiers) {
 }
 
-Face* Face::makeCopy() const {
-    auto copy = new Face(name, dice, face_, value, type, modifiers);
+ std::shared_ptr<Face> Face::makeCopy() const {
+    auto copy = std::make_shared<Face>(name, dice, face_, value, type, modifiers);
     return copy;
 }
 
@@ -54,7 +54,7 @@ FaceModifier Face::getModifiers() const {
     return modifiers;
 }
 
-Dice* Face::getDice() const {
+ std::shared_ptr<Dice> Face::getDice() const {
     return dice;
 }
 
@@ -107,7 +107,7 @@ void Face::setHover(bool hover_) {
     hover = hover_;
 }
 
-void Face::setDice(Dice* dice_) {
+void Face::setDice( std::shared_ptr<Dice> dice_) {
     dice = dice_;
 }
 
@@ -127,11 +127,11 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
     modifiers.removeModifier(modifier);
 }
 
-void Face::draw(SpriteRenderer* spriteRenderer) {
+void Face::draw( std::shared_ptr<SpriteRenderer> spriteRenderer) {
     drawFace(spriteRenderer, Dice::currentFacePos);
 }
 
-void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+void Face::drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer, Dice::dicePos dicePos) {
     drawFace(spriteRenderer, dicePos);
 
     if (hover) {
@@ -139,7 +139,7 @@ void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer,
     }
 }
 
-void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
+void Face::drawFace( std::shared_ptr<SpriteRenderer> spriteRenderer, Dice::dicePos dicePos) {
     auto position = getPosition(dicePos);
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
@@ -223,7 +223,7 @@ void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
     }
 }
 
-void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+void Face::drawFaceToolTip( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer, Dice::dicePos dicePos) {
     auto position = getPosition(dicePos);
 
     int tooltipWidth = 96;

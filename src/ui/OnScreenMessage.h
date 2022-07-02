@@ -41,7 +41,7 @@ public:
 
     void update(double dt);
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
+    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) const override;
 
 };
 

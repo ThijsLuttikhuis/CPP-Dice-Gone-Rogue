@@ -12,11 +12,11 @@
 
 namespace DGR {
 
-Scene::Scene(std::string name, GameStateManager* gameState)
+Scene::Scene(std::string name,  std::shared_ptr<GameStateManager> gameState)
       : InputHandler(gameState),
         UIElement(std::move(name), glm::vec2(0, 0), glm::vec2(DGR_WIDTH, DGR_HEIGHT)) {}
 
-Scene::Scene(std::string name, GameStateManager* gameState, glm::vec2 position, glm::vec2 size, glm::vec3 color)
+Scene::Scene(std::string name,  std::shared_ptr<GameStateManager> gameState, glm::vec2 position, glm::vec2 size, glm::vec3 color)
       : InputHandler(gameState),
         UIElement(std::move(name), position, size, color) {}
 
@@ -39,7 +39,7 @@ void Scene::update(double dt) {
 void Scene::reset() {
 }
 
-GameStateManager* Scene::getGameStateManager() const {
+ std::shared_ptr<GameStateManager> Scene::getGameStateManager() const {
     return gameState;
 }
 

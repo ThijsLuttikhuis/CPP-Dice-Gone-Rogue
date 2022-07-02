@@ -25,7 +25,7 @@ private:
 
     GLFWwindow* glfwWindow = nullptr;
 
-    GameStateManager* gameState = nullptr;
+     std::shared_ptr<GameStateManager> gameState = nullptr;
 
     void swapBuffers();
 public:
@@ -41,7 +41,7 @@ public:
     [[nodiscard]] bool shouldClose() const;
 
     /// setters
-    void setGameStateManager(GameStateManager* gameState_);
+    void setGameStateManager( std::shared_ptr<GameStateManager> gameState_);
 
     /// functions
     void handleMouseButton(double xPos, double yPos);

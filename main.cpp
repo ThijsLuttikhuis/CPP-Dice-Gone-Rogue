@@ -14,8 +14,8 @@ int main() {
     int height = DGR_HEIGHT;
 
     DGR::Random::initialize(0);
-    auto* window = new DGR::Window(width, height);
-    auto* dgrGame = new DGR::GameStateManager(window);
+    auto window = std::make_shared<DGR::Window>(width, height);
+    auto dgrGame = std::make_shared<DGR::GameStateManager>(window);
     window->setGameStateManager(dgrGame);
 
     while (!window->shouldClose()) {

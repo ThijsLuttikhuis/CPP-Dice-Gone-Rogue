@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_SHADER_H
 #define DICEGONEROGUE_SHADER_H
 
+#include <memory>
 #include <string>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -19,7 +20,7 @@ public:
     Shader() {};
 
     // sets the current shader as active
-    Shader* use();
+     std::shared_ptr<Shader> use();
 
     // compiles the shader from given source code
     void compile(const std::string &vertexSource, const std::string &fragmentSource,

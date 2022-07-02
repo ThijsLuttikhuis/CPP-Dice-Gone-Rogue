@@ -10,7 +10,7 @@
 
 namespace DGR {
 
-Character* AttackOrder::getStoredCharacter(int id) {
+std::shared_ptr<Character> AttackOrder::getStoredCharacter(int id) {
     for (auto &hero : heroes) {
         if (hero->getUniqueID() == id) {
             return hero;
@@ -26,7 +26,7 @@ Character* AttackOrder::getStoredCharacter(int id) {
     exit(404);
 }
 
-Spell* AttackOrder::getStoredSpell(int id) {
+std::shared_ptr<Spell> AttackOrder::getStoredSpell(int id) {
     for (auto &hero : heroes) {
         if (hero->getUniqueID() == id) {
             return hero->getSpell();
@@ -42,7 +42,7 @@ Spell* AttackOrder::getStoredSpell(int id) {
     exit(404);
 }
 
-void AttackOrder::addAttack(Character* character, Character* otherCharacter) {
+void AttackOrder::addAttack(std::shared_ptr<Character> character, std::shared_ptr<Character> otherCharacter) {
     attackOrder.push_back(attackType::character);
 
     int characterID = character->getUniqueID();
@@ -51,7 +51,7 @@ void AttackOrder::addAttack(Character* character, Character* otherCharacter) {
     attackOrderIDs.emplace_back(characterID, otherCharacterID);
 }
 
-void AttackOrder::addAttack(Spell* spell, Character* character) {
+void AttackOrder::addAttack(std::shared_ptr<Spell> spell, std::shared_ptr<Character> character) {
     attackOrder.push_back(attackType::spell);
 
     int characterID = character->getUniqueID();
@@ -71,11 +71,11 @@ void AttackOrder::undo() {
     std::vector<Character*> heroes_ = {};
     std::vector<Character*> enemies_ = {};
     for (auto &hero : heroes) {
-        Character* copy = hero->makeCopy(true);
+        std::shared_ptr<Character> copy = hero->makeCopy(true);
         heroes_.push_back(copy);
     }
     for (auto &enemy : enemies) {
-        Character* copy = enemy->makeCopy(true);
+        std::shared_ptr<Character> copy = enemy->makeCopy(true);
         enemies_.push_back(copy);
     }
 
@@ -121,7 +121,8 @@ void AttackOrder::undo() {
 
 }
 
-void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_) {
+void AttackOrder::setState(const std::vector<std::shared_ptr<Character>> &heroes_,
+                           const std::vector<std::shared_ptr<Character>> &enemies_, int mana_) {
     attackOrder = {};
     attackOrderIDs = {};
     mana = mana_;
@@ -138,11 +139,11 @@ void AttackOrder::setState(const std::vector<Character*> &heroes_, const std::ve
 
     // set new copies
     for (auto &hero : heroes_) {
-        Character* copy = hero->makeCopy(true);
+        std::shared_ptr<Character> copy = hero->makeCopy(true);
         heroes.push_back(copy);
     }
     for (auto &enemy : enemies_) {
-        Character* copy = enemy->makeCopy(true);
+        std::shared_ptr<Character> copy = enemy->makeCopy(true);
         enemies.push_back(copy);
     }
 }

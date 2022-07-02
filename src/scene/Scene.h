@@ -18,9 +18,9 @@ class Scene : public InputHandler, public UIElement {
 protected:
     bool enabled = true;
 public:
-    Scene(std::string name, GameStateManager* gameState);
+    Scene(std::string name,  std::shared_ptr<GameStateManager> gameState);
 
-    Scene(std::string name, GameStateManager* gameState, glm::vec2 position,
+    Scene(std::string name,  std::shared_ptr<GameStateManager> gameState, glm::vec2 position,
           glm::vec2 size = glm::vec2(DGR_WIDTH, DGR_HEIGHT), glm::vec3 color = glm::vec3(1.0f));
 
     /// getters
@@ -28,7 +28,7 @@ public:
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const override;
 
-    [[nodiscard]] GameStateManager* getGameStateManager() const;
+    [[nodiscard]]  std::shared_ptr<GameStateManager> getGameStateManager() const;
 
     /// setters
     void setIsEnabled(bool enabled_);

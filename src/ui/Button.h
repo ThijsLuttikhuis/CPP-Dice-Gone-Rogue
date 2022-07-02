@@ -35,7 +35,7 @@ public:
 
     void setEnabled(bool enabled_);
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
+    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) const override;
 
     void setText(std::string text_);
 };

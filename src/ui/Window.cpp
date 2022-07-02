@@ -12,7 +12,7 @@
 
 namespace DGR {
 
-Window* callback_window_ptr;
+ std::shared_ptr<Window> callback_window_ptr;
 
 void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
     (void) window;
@@ -148,7 +148,7 @@ void Window::handleMousePosition(double xPos, double yPos) {
     gameState->handleMousePosition(xPos, yPos);
 }
 
-void Window::setGameStateManager(GameStateManager* gameState_) {
+void Window::setGameStateManager( std::shared_ptr<GameStateManager> gameState_) {
     gameState = gameState_;
 }
 

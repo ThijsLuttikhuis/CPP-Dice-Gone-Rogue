@@ -2,6 +2,7 @@
 // Created by thijs on 31-05-22.
 //
 
+#include <memory>
 #include <utility>
 #include <iostream>
 #include <utilities/Utilities.h>
@@ -14,7 +15,7 @@
 
 namespace DGR {
 
-Dice::Dice(std::string name, Character* character) :
+Dice::Dice(std::string name,  std::shared_ptr<Character> character) :
       name(std::move(name)), character(character) {
 }
 
@@ -22,10 +23,10 @@ const std::string &Dice::getName() const {
     return name;
 }
 
-Dice* Dice::makeCopy() const {
-    auto copy = new Dice();
+ std::shared_ptr<Dice> Dice::makeCopy() const {
+    auto copy = std::make_shared<Dice>();
 
-    Face* faceCopy;
+     std::shared_ptr<Face> faceCopy;
     for (int i = 0; i < 6; i++) {
         faceCopy = faces[i]->makeCopy();
         faceCopy->setDice(copy);
@@ -87,11 +88,11 @@ bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
     return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
-Face* Dice::getFace(int index) const {
+ std::shared_ptr<Face> Dice::getFace(int index) const {
     return faces[index];
 }
 
-Character* Dice::getCharacter() const {
+ std::shared_ptr<Character> Dice::getCharacter() const {
     return character;
 }
 
@@ -99,7 +100,7 @@ bool Dice::isUsed() const {
     return used;
 }
 
-Face* Dice::getCurrentFace() const {
+ std::shared_ptr<Face> Dice::getCurrentFace() const {
     return faces[currentFace];
 }
 
@@ -121,7 +122,7 @@ void Dice::updateHoverMouse(double xPos, double yPos) {
     }
 }
 
-void Dice::setFace(Face* face, int index) {
+void Dice::setFace( std::shared_ptr<Face> face, int index) {
     faces[index] = face;
 }
 
@@ -130,7 +131,7 @@ void Dice::setCurrentFaceHover(bool hoverCurrentFace_) {
     faces[currentFace]->setHover(hoverCurrentFace_);
 }
 
-void Dice::setCharacter(Character* character_) {
+void Dice::setCharacter( std::shared_ptr<Character> character_) {
     character = character_;
 }
 
@@ -146,7 +147,7 @@ void Dice::roll() {
     currentFace = rng;
 }
 
-void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Dice::draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
     faces[currentFace]->draw(spriteRenderer);
 
     if (lock) {
@@ -168,7 +169,7 @@ void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     }
 }
 
-void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Dice::drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
     glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::backgroundPos);
     glm::vec2 diceTemplateBackgroundSize = getSize(Dice::backgroundPos);
     spriteRenderer->drawSprite("box", 0.9f, diceTemplateBackgroundPosition,

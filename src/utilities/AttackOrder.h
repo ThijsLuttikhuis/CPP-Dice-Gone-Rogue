@@ -21,29 +21,29 @@ public:
     };
 
 private:
-    BattleScene* battleScene;
+     std::shared_ptr<BattleScene> battleScene;
 
     int mana{};
-    std::vector<Character*> heroes;
-    std::vector<Character*> enemies;
+    std::vector<std::shared_ptr<Character>> heroes;
+    std::vector<std::shared_ptr<Character>> enemies;
 
     std::vector<attackType> attackOrder{};
     std::vector<std::pair<int, int>> attackOrderIDs{};
 
-    Character* getStoredCharacter(int id);
+     std::shared_ptr<Character> getStoredCharacter(int id);
 
-    Spell* getStoredSpell(int id);
+     std::shared_ptr<Spell> getStoredSpell(int id);
 
 public:
-    explicit AttackOrder(BattleScene* battleScene) : battleScene(battleScene) {};
+    explicit AttackOrder( std::shared_ptr<BattleScene> battleScene) : battleScene(battleScene) {};
 
-    void addAttack(Character* character, Character* otherCharacter = nullptr);
+    void addAttack( std::shared_ptr<Character> character,  std::shared_ptr<Character> otherCharacter = nullptr);
 
-    void addAttack(Spell* spell, Character* character);
+    void addAttack( std::shared_ptr<Spell> spell,  std::shared_ptr<Character> character);
 
     void undo();
 
-    void setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_);
+    void setState(const std::vector<std::shared_ptr<Character>> &heroes_, const std::vector<std::shared_ptr<Character>> &enemies_, int mana_);
 
     void reset();
 };

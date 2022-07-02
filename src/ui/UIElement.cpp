@@ -6,7 +6,7 @@
 
 namespace DGR {
 
-void UIElement::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
+void UIElement::draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) const {
     (void) textRenderer;
 
     spriteRenderer->drawSprite("box", 1.0f, position, size,

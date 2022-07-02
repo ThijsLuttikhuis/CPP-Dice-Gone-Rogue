@@ -31,8 +31,8 @@ public:
 private:
     std::string name;
 
-    Character* character = nullptr;
-    Face* faces[6]{};
+     std::shared_ptr<Character> character = nullptr;
+     std::shared_ptr<Face> faces[6]{};
     bool lock = false;
     bool used = false;
 
@@ -40,14 +40,14 @@ private:
     bool hoverCurrentFace = false;
 
 public:
-    Dice(std::string name, Character* character);
+    Dice(std::string name,  std::shared_ptr<Character> character);
 
     Dice() = default;
 
     /// getters
-    [[nodiscard]] Face* getCurrentFace() const;
+    [[nodiscard]]  std::shared_ptr<Face> getCurrentFace() const;
 
-    [[nodiscard]] Face* getFace(int index) const;
+    [[nodiscard]]  std::shared_ptr<Face> getFace(int index) const;
 
     [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = backgroundPos) const;
 
@@ -61,9 +61,9 @@ public:
 
     [[nodiscard]] bool isUsed() const;
 
-    [[nodiscard]] Dice* makeCopy() const;
+    [[nodiscard]]  std::shared_ptr<Dice> makeCopy() const;
 
-    [[nodiscard]] Character* getCharacter() const;
+    [[nodiscard]]  std::shared_ptr<Character> getCharacter() const;
 
     /// setters
     void setLocked(bool lock_);
@@ -74,9 +74,9 @@ public:
 
     void setCurrentFaceHover(bool hoverCurrentFace_);
 
-    void setFace(Face* face, int index);
+    void setFace( std::shared_ptr<Face> face, int index);
 
-    void setCharacter(Character* hero_);
+    void setCharacter( std::shared_ptr<Character> hero_);
 
     void setName(const std::string &name_);
 
@@ -86,9 +86,9 @@ public:
     void roll();
 
     /// render
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
 
 };
 

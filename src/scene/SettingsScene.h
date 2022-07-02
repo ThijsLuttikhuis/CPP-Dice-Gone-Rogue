@@ -12,13 +12,13 @@ namespace DGR {
 
 class SettingsScene : public Scene {
 private:
-    void pressButton(Button* button);
+    void pressButton( std::shared_ptr<Button> button);
 public:
-    explicit SettingsScene(GameStateManager* gameState);
+    explicit SettingsScene( std::shared_ptr<GameStateManager> gameState);
 
     void handleMouseButton(double xPos, double yPos) override;
 
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
+    void render( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) override;
 };
 
 }
