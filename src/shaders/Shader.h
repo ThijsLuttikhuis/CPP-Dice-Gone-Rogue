@@ -17,10 +17,10 @@ class Shader {
 public:
     unsigned int id{};
 
-    Shader() {};
+    Shader() = default;
 
     // sets the current shader as active
-     std::shared_ptr<Shader> use();
+    void use();
 
     // compiles the shader from given source code
     void compile(const std::string &vertexSource, const std::string &fragmentSource,

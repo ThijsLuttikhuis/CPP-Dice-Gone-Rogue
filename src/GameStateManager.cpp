@@ -2,8 +2,10 @@
 // Created by thijs on 07-06-22.
 //
 
+#include <experimental/vector>
+#include <vector>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iofilemanager/YamlReader.h>
+#include <io/characters/YamlReader.h>
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
@@ -15,8 +17,8 @@
 
 namespace DGR {
 
-GameStateManager::GameStateManager(std::shared_ptr<Window> window) : window(window) {
-    auto shader = std::make_shared< Shader>();
+GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : window(window) {
+    auto shader = std::make_shared<Shader>();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
     glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(), (float) window->getHeight(),
@@ -28,7 +30,8 @@ GameStateManager::GameStateManager(std::shared_ptr<Window> window) : window(wind
 
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
-    allHeroes = *(std::vector<std::shared_ptr<Character>>*) yamlReaderHeroes.getData()->getFeature();
+    allHeroes = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
+          yamlReaderHeroes.getData()->getFeature()).get();
 
     int size = (int) allHeroes.size();
     for (int i = 0; i < size; i++) {
@@ -40,25 +43,8 @@ GameStateManager::GameStateManager(std::shared_ptr<Window> window) : window(wind
 
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
-    allEnemies = *(std::vector<std::shared_ptr<Character>>*) yamlReaderEnemies.getData()->getFeature();
-
-    auto battleScene = std::make_shared<BattleScene>(this);
-    allScenes.push_back(battleScene);
-
-    auto mainMenuScene = std::make_shared<MainMenuScene>(this);
-    allScenes.push_back(mainMenuScene);
-
-    auto settingsScene = std::make_shared<SettingsScene>(this);
-    allScenes.push_back(settingsScene);
-
-    auto battleVictoryScene = std::make_shared< BattleVictoryScene>(this);
-    allScenes.push_back(battleVictoryScene);
-
-    auto battleDefeatScene = std::make_shared< BattleDefeatScene>(this);
-    allScenes.push_back(battleDefeatScene);
-
-    auto characterSelectScene = std::make_shared< CharacterSelectScene>(this);
-    allScenes.push_back(characterSelectScene);
+    allEnemies = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
+          yamlReaderEnemies.getData()->getFeature()).get();
 }
 
 std::shared_ptr<Window> GameStateManager::getWindow() const {
@@ -93,7 +79,7 @@ void GameStateManager::update() {
     }
 
     onScreenMessages.erase(std::remove_if(onScreenMessages.begin(), onScreenMessages.end(),
-                                          [](std::shared_ptr<OnScreenMessage>& message) {
+                                          [](std::shared_ptr<OnScreenMessage> &message) {
                                               return message->getDuration() < 0.0;
                                           }), onScreenMessages.end());
 
@@ -182,9 +168,39 @@ void GameStateManager::addOnScreenMessage(std::shared_ptr<OnScreenMessage> messa
     onScreenMessages.push_back(message);
 }
 
-void GameStateManager::addOnScreenMessage(const std::string& message) {
-    auto onScreenMessage = std::make_shared< OnScreenMessage>(message);
+void GameStateManager::addOnScreenMessage(const std::string &message) {
+    auto onScreenMessage = std::make_shared<OnScreenMessage>(message);
     onScreenMessages.push_back(onScreenMessage);
+}
+
+void GameStateManager::initializeScenes() {
+    allScenes = {};
+
+    auto sharedFromThis = getSharedFromThis();
+
+    auto battleScene = std::make_shared<BattleScene>(sharedFromThis);
+    battleScene->initialize();
+    allScenes.push_back(battleScene);
+
+    auto mainMenuScene = std::make_shared<MainMenuScene>(sharedFromThis);
+    mainMenuScene->initialize();
+    allScenes.push_back(mainMenuScene);
+
+    auto settingsScene = std::make_shared<SettingsScene>(sharedFromThis);
+    settingsScene->initialize();
+    allScenes.push_back(settingsScene);
+
+    auto battleVictoryScene = std::make_shared<BattleVictoryScene>(sharedFromThis);
+    battleVictoryScene->initialize();
+    allScenes.push_back(battleVictoryScene);
+
+    auto battleDefeatScene = std::make_shared<BattleDefeatScene>(sharedFromThis);
+    battleDefeatScene->initialize();
+    allScenes.push_back(battleDefeatScene);
+
+    auto characterSelectScene = std::make_shared<CharacterSelectScene>(sharedFromThis);
+    characterSelectScene->initialize();
+    allScenes.push_back(characterSelectScene);
 }
 
 void GameStateManager::render() {
@@ -203,6 +219,10 @@ void GameStateManager::render() {
         glClear(GL_DEPTH_BUFFER_BIT);
         message->draw(spriteRenderer, textRenderer);
     }
+}
+
+std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
+    return shared_from_this();
 }
 
 }

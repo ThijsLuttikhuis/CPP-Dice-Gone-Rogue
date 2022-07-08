@@ -21,6 +21,8 @@ public:
     static glm::vec3 color2Vec3(const std::string& color_);
 
     static float colorHex2Float(const std::string &color_);
+
+    static std::string trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v");
 };
 
 }

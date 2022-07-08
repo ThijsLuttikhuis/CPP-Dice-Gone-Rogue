@@ -3,12 +3,15 @@
 //
 
 #include <GameStateManager.h>
+
+#include <utility>
 #include "MainMenuScene.h"
 #include "ui/Button.h"
 
 namespace DGR {
 
-MainMenuScene::MainMenuScene(std::shared_ptr<GameStateManager> gameState) : Scene("MainMenuScene", gameState) {
+MainMenuScene::MainMenuScene(std::weak_ptr<GameStateManager> gameState)
+      : Scene("MainMenuScene", std::move(gameState)) {
     double width = DGR_WIDTH;
     double height = DGR_HEIGHT;
 
@@ -45,21 +48,23 @@ void MainMenuScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void MainMenuScene::pressButton(std::shared_ptr<Button> button) {
+void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
     if (button->getName() == "StartNewGame") {
-        gameState->popSceneFromStack();
-        gameState->addSceneToStack("CharacterSelectScene");
+        gameStatePtr->popSceneFromStack();
+        gameStatePtr->addSceneToStack("CharacterSelectScene");
     } else if (button->getName() == "LoadGame") {
-        gameState->addSceneToStack("LoadGameScene", false);
+        gameStatePtr->addSceneToStack("LoadGameScene", false);
     } else if (button->getName() == "Settings") {
-        gameState->addSceneToStack("SettingsScene");
+        gameStatePtr->addSceneToStack("SettingsScene");
     }
 }
 
-void
-MainMenuScene::render(std::shared_ptr<SpriteRenderer> spriteRenderer, std::shared_ptr<TextRenderer> textRenderer) {
+void MainMenuScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::shared_ptr<TextRenderer> &textRenderer) {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

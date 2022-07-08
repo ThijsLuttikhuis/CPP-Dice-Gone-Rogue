@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <utilities/Utilities.h>
 
 #include "utilities/Constants.h"
 #include "YamlReader.h"
@@ -67,21 +68,10 @@ YamlReader::YamlReader() {
 
 }
 
-std::string YamlReader::trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v") {
-    const auto strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == std::string::npos)
-        return ""; // no content
-
-    const auto strEnd = str.find_last_not_of(whitespace);
-    const auto strRange = strEnd - strBegin + 1;
-
-    return str.substr(strBegin, strRange);
-}
-
 void YamlReader::readFile(const std::string &name) {
     /// read file and put all data into a string
 
-    std::string fileName = "../src/iofilemanager/" + name + ".dgr";
+    std::string fileName = "../src/io/characters/" + name + ".dgr";
     std::ifstream file;
     file.open(fileName);
     if (!file) { // file couldn't be opened
@@ -92,7 +82,7 @@ void YamlReader::readFile(const std::string &name) {
     buffer << file.rdbuf();
     file.close();
 
-    std::string worldStr = trim(buffer.str());
+    std::string worldStr = Utilities::trim(buffer.str());
 
     std::string word;
     size_t i = 0;
@@ -106,7 +96,7 @@ void YamlReader::readFile(const std::string &name) {
         size_t posSemi = worldStr.find(';', i);
 
         if (posSemi < posColon) {
-            word = trim(worldStr.substr(i, posSemi - i));
+            word = Utilities::trim(worldStr.substr(i, posSemi - i));
 
 #if DGR_DEBUG
             std::cout << "\t" << posSemi << " ; " << word << std::endl;
@@ -128,7 +118,7 @@ void YamlReader::readFile(const std::string &name) {
 
             colonCounter--;
         } else {
-            word = trim(worldStr.substr(i, posColon - i));
+            word = Utilities::trim(worldStr.substr(i, posColon - i));
 #if DGR_DEBUG
             std::cout << "\t" << posColon << " : " << word << std::endl;
 #endif

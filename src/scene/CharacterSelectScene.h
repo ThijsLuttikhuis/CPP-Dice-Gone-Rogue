@@ -20,8 +20,9 @@ private:
     int currentLeftCharacterIndex = 0;
 
     void alignCharacterPositions();
+
 public:
-    explicit CharacterSelectScene( std::shared_ptr<GameStateManager> gameState);
+    explicit CharacterSelectScene(std::weak_ptr<GameStateManager> gameState);
 
     /// functions
     void handleMouseButton(double xPos, double yPos) override;
@@ -32,13 +33,14 @@ public:
 
     void update(double dt) override;
 
-    void render( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) override;
+    void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
-    void handleMousePosition( std::shared_ptr<Character> character, double xPos, double yPos);
-
-    void pressButton( std::shared_ptr<Button> button);
+    void pressButton(std::shared_ptr<Button> button);
 
     bool handleHeroesMouseButton(double xPos, double yPos);
+
+    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                const std::shared_ptr<TextRenderer> &textRenderer) override;
 };
 
 }

@@ -3,13 +3,17 @@
 //
 
 #include <utilities/Random.h>
+
+#include <utility>
 #include "BattleScene.h"
 #include "ui/Button.h"
 #include "GameStateManager.h"
 
 namespace DGR {
 
-BattleScene::BattleScene( std::shared_ptr<GameStateManager> gameState) : Scene("BattleScene", gameState) {
+BattleScene::BattleScene(std::weak_ptr<GameStateManager> gameState) :
+      Scene("BattleScene", std::move(gameState)) {
+
     auto button1 = std::make_shared<Button>("leftMainButton", glm::vec2(304, 195), glm::vec2(80, 15));
     button1->setText("2 rerolls left");
     buttons.push_back(button1);
@@ -25,19 +29,21 @@ BattleScene::BattleScene( std::shared_ptr<GameStateManager> gameState) : Scene("
     auto button4 = std::make_shared<Button>("help", glm::vec2(100, 8), glm::vec2(12, 12));
     button4->setText("?");
     buttons.push_back(button4);
+}
 
-    attackOrder = std::make_shared<AttackOrder>(this);
+std::shared_ptr<BattleScene> BattleScene::getSharedFromThis() {
+    return shared_from_this();
 }
 
 BattleScene::battleGameState BattleScene::getState() const {
     return state;
 }
 
- std::shared_ptr<Character> BattleScene::getClickedCharacter() const {
+std::shared_ptr<Character> BattleScene::getClickedCharacter() const {
     return clickedCharacter;
 }
 
- std::shared_ptr<Spell> BattleScene::getClickedSpell() const {
+std::shared_ptr<Spell> BattleScene::getClickedSpell() const {
     return clickedSpell;
 }
 
@@ -49,19 +55,19 @@ int BattleScene::getMana() const {
     return mana;
 }
 
- std::shared_ptr<AttackOrder> BattleScene::getAttackOrder() const {
+std::shared_ptr<BattleLog> BattleScene::getAttackOrder() const {
     return attackOrder;
 }
 
-void BattleScene::setAttackOrder( std::shared_ptr<AttackOrder> attackOrder_) {
+void BattleScene::setAttackOrder(std::shared_ptr<BattleLog> attackOrder_) {
     attackOrder = attackOrder_;
 }
 
-void BattleScene::setClickedCharacter( std::shared_ptr<Character> clickedCharacter_) {
+void BattleScene::setClickedCharacter(std::shared_ptr<Character> clickedCharacter_) {
     clickedCharacter = clickedCharacter_;
 }
 
-void BattleScene::setClickedSpell( std::shared_ptr<Spell> clickedSpell_) {
+void BattleScene::setClickedSpell(std::shared_ptr<Spell> clickedSpell_) {
     clickedSpell = clickedSpell_;
 }
 
@@ -89,7 +95,7 @@ int BattleScene::reroll() {
     return rerolls;
 }
 
-void BattleScene::pressButton( std::shared_ptr<Button> button) {
+void BattleScene::pressButton(std::shared_ptr<Button> button) {
     std::cout << "pressed a button!" << std::endl;
 
     if (button->getName() == "leftMainButton") {
@@ -113,11 +119,15 @@ void BattleScene::pressButton( std::shared_ptr<Button> button) {
     }
 
     if (button->getName() == "settings") {
-        gameState->addSceneToStack("SettingsScene", true);
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+        gameStatePtr->addSceneToStack("SettingsScene", true);
     }
 
     if (button->getName() == "help") {
-        gameState->addSceneToStack("HelpScene", false);
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+        gameStatePtr->addSceneToStack("HelpScene", false);
     }
 }
 
@@ -166,10 +176,13 @@ void BattleScene::setNextGameState() {
             updateButtons();
             break;
         case attack_block_heroes:
+            attackOrder->saveTurn();
+
             for (auto &hero : heroes) {
                 hero->setUsedDice(false);
                 hero->applyDamageStep();
             }
+
             state = rolling_enemies;
             reroll();
             updateButtons();
@@ -185,10 +198,13 @@ void BattleScene::setNextGameState() {
             updateButtons();
             break;
         case attack_block_enemies:
+            attackOrder->saveTurn();
+
             for (auto &enemy : enemies) {
                 enemy->setUsedDice(false);
                 enemy->applyDamageStep();
             }
+
             state = rolling_heroes;
             reroll();
             updateButtons();
@@ -237,7 +253,7 @@ void BattleScene::updateButtons() {
     }
 }
 
-void BattleScene::handleMousePosition( std::shared_ptr<Character> character, double xPos, double yPos) {
+void BattleScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
 
@@ -266,6 +282,10 @@ void BattleScene::handleMousePosition(double xPos, double yPos) {
     for (auto &enemy : enemies) {
         handleMousePosition(enemy, xPos, yPos);
     }
+}
+
+void BattleScene::initialize() {
+    attackOrder = std::make_shared<BattleLog>(shared_from_this());
 }
 
 void BattleScene::reset() {
@@ -329,7 +349,7 @@ void BattleScene::enemyAttack(int index) {
     }
 
     // check if you can interact with yourself
-    success = enemy->interact(( std::shared_ptr<Character>) nullptr, std::make_shared<BattleScene>(this));
+    success = enemy->interact(std::shared_ptr<Character>(nullptr), getSharedFromThis());
 
     // check if you can interact with an ally (=enemy from their perspective)
     if (!success) {
@@ -340,12 +360,12 @@ void BattleScene::enemyAttack(int index) {
         if (mostIncomingDamage > 0) {
             for (auto &otherEnemy : enemies) {
                 if (otherEnemy->getIncomingDamage() == mostIncomingDamage) {
-                    success = otherEnemy->interact(enemy, std::make_shared<BattleScene>(this));
+                    success = otherEnemy->interact(enemy, getSharedFromThis());
                 }
             }
         } else {
             int rng = Random::randInt(0, nEnemies - 1);
-            success = enemies[rng]->interact(enemy, std::make_shared<BattleScene>(this));
+            success = enemies[rng]->interact(enemy, getSharedFromThis());
         }
     }
 
@@ -355,7 +375,7 @@ void BattleScene::enemyAttack(int index) {
         while (true) {
             rng = Random::randInt(0, nHeroes - 1);
             if (!heroes[rng]->isDead()) {
-                success = heroes[rng]->interact(enemy, std::make_shared<BattleScene>(this));
+                success = heroes[rng]->interact(enemy, getSharedFromThis());
                 break;
             }
         }
@@ -367,7 +387,9 @@ void BattleScene::enemyAttack(int index) {
 }
 
 void BattleScene::alignCharacterPositions(double dt) {
-    const int width = gameState->getWindow()->getWidth();
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    const int width = gameStatePtr->getWindow()->getWidth();
     const int center = width / 2;
     const float moveSpeed = 100.0f;
     const float maxDPos = moveSpeed * (float) dt;
@@ -420,7 +442,7 @@ void BattleScene::alignCharacterPositions(double dt) {
     }
 }
 
-void BattleScene::clickSpell( std::shared_ptr<Spell> spell) {
+void BattleScene::clickSpell(const std::shared_ptr<Spell> &spell) {
     switch (state) {
         case rolling_heroes:
             break;
@@ -443,7 +465,7 @@ void BattleScene::clickSpell( std::shared_ptr<Spell> spell) {
     }
 }
 
-void BattleScene::clickCharacter( std::shared_ptr<Character> character) {
+void BattleScene::clickCharacter(const std::shared_ptr<Character> &character) {
     bool success;
 
     switch (state) {
@@ -454,7 +476,7 @@ void BattleScene::clickCharacter( std::shared_ptr<Character> character) {
             break;
         case attack_block_heroes:
             if (clickedCharacter) {
-                success = character->interact(clickedCharacter, std::make_shared<BattleScene>(this));
+                success = character->interact(clickedCharacter, getSharedFromThis());
                 if (success) {
                     clickedCharacter->setUsedDice(true);
                 }
@@ -462,7 +484,7 @@ void BattleScene::clickCharacter( std::shared_ptr<Character> character) {
                 break;
             }
             if (clickedSpell) {
-                success = character->interact(clickedSpell, std::make_shared<BattleScene>(this));
+                success = character->interact(clickedSpell, getSharedFromThis());
                 if (success) {
                     addMana(-clickedSpell->getCost());
                 }
@@ -471,7 +493,7 @@ void BattleScene::clickCharacter( std::shared_ptr<Character> character) {
             }
             if (character->getCharacterType() == "hero") {
                 if (!character->getUsedDice()) {
-                    success = character->interact(( std::shared_ptr<Character>) nullptr, std::make_shared<BattleScene>(this));
+                    success = character->interact(std::shared_ptr<Character>(nullptr), getSharedFromThis());
                     if (success) {
                         character->setUsedDice(true);
                     } else {
@@ -523,11 +545,11 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     setClickedCharacter(nullptr);
 }
 
-std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours( std::shared_ptr<Character> character) {
-    std::pair<std::shared_ptr<Character>,  std::shared_ptr<Character>> neighbours(nullptr, nullptr);
+std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(Character* character) {
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> neighbours(nullptr, nullptr);
     int nHeroes = heroes.size();
     for (int i = 0; i < nHeroes; i++) {
-        if (character == heroes[i]) {
+        if (character->getUniqueID() == heroes[i]->getUniqueID()) {
             int j = i - 1;
             while (j >= 0) {
                 if (!heroes[j]->isDead()) {
@@ -549,7 +571,7 @@ std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::g
     }
     int nEnemies = enemies.size();
     for (int i = 0; i < nEnemies; i++) {
-        if (character == enemies[i]) {
+        if (character->getUniqueID() == enemies[i]->getUniqueID()) {
             int j = i - 1;
             while (j >= 0) {
                 if (!enemies[j]->isDead()) {
@@ -572,7 +594,8 @@ std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::g
     return neighbours;
 }
 
-void BattleScene::render( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
+void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::shared_ptr<TextRenderer> &textRenderer) {
     for (auto &hero : heroes) {
         hero->draw(spriteRenderer, textRenderer);
     }
@@ -618,7 +641,8 @@ void BattleScene::checkVictory() {
         }
     }
     if (allEnemiesDead) {
-        gameState->addSceneToStack("BattleVictoryScene", true);
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        gameStatePtr->addSceneToStack("BattleVictoryScene", true);
         return;
     }
 
@@ -630,7 +654,8 @@ void BattleScene::checkVictory() {
         }
     }
     if (allHeroesDead) {
-        gameState->addSceneToStack("BattleDefeatScene", true);
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        gameStatePtr->addSceneToStack("BattleDefeatScene", true);
         return;
     }
 }

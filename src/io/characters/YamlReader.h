@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_YAMLREADER_H
 #define DICEGONEROGUE_YAMLREADER_H
 
+#include <memory>
 #include <utility>
 #include <string>
 #include <map>
@@ -69,7 +70,7 @@ public:
         return type;
     }
 
-    [[nodiscard]] virtual void* getFeature() {
+    [[nodiscard]] virtual std::shared_ptr<void> getFeature() {
         return nullptr;
     };
 
@@ -91,8 +92,7 @@ public:
 };
 
 class YamlHandleCharacters : public YamlHandle {
-    std::shared_ptr<std::vector<std::shared_ptr<Character>>> characters =
-          std::make_shared<std::vector<std::shared_ptr<Character>>>();
+    std::vector<std::shared_ptr<Character>> characters = std::vector<std::shared_ptr<Character>>();
 
 public:
     YamlHandleCharacters() : YamlHandle(stringCode::characters) {}
@@ -103,10 +103,10 @@ public:
 #endif
         switch (yamlHandle->getType()) {
             case stringCode::hero:
-                characters->push_back(*(std::shared_ptr<Character>*) yamlHandle->getFeature());
+                characters.push_back(std::static_pointer_cast<Character>(yamlHandle->getFeature()));
                 break;
             case stringCode::enemy:
-                characters->push_back(*(std::shared_ptr<Character>*) yamlHandle->getFeature());
+                characters.push_back(std::static_pointer_cast<Character>(yamlHandle->getFeature()));
                 break;
             default:
                 std::cerr << "[YamlHandleCharacters] unsupported feature: " <<
@@ -116,11 +116,11 @@ public:
     }
 
     void reset() override {
-        characters = std::make_shared<std::vector<std::shared_ptr<Character>>>();
+        characters = std::vector<std::shared_ptr<Character>>();
     };
 
-    void* getFeature() override {
-        return (void*) &characters;
+    std::shared_ptr<void> getFeature() override {
+        return std::make_shared<std::vector<std::shared_ptr<Character>>>(characters);
     };
 };
 
@@ -135,7 +135,6 @@ public:
           : YamlHandle(stringCode), name(std::move(name)) {}
 
     void reset() override {
-
         spell = nullptr;
         dice = nullptr;
         maxHP = {};
@@ -144,16 +143,16 @@ public:
     void handle(std::shared_ptr<YamlHandle> yamlHandle) override {
         switch (yamlHandle->getType()) {
             case stringCode::hp:
-                maxHP = *(int*) yamlHandle->getFeature();
+                maxHP = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::size:
-                size = *(int*) yamlHandle->getFeature();
+                size = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::spell:
-                spell = *(std::shared_ptr<Spell>*) yamlHandle->getFeature();
+                spell = std::static_pointer_cast<Spell>(yamlHandle->getFeature());
                 break;
             case stringCode::dice:
-                dice = *(std::shared_ptr<Dice>*) yamlHandle->getFeature();
+                dice = std::static_pointer_cast<Dice>(yamlHandle->getFeature());
                 break;
             default:
                 std::cerr << "[YamlHandleCharacter] unsupported feature: " <<
@@ -162,7 +161,7 @@ public:
         }
     }
 
-    void* getFeature() override {
+    std::shared_ptr<void> getFeature() override {
         std::shared_ptr<Character> character;
         switch (getType()) {
             case stringCode::hero:
@@ -181,16 +180,16 @@ public:
         character->setSize(glm::vec2(size));
         if (spell) {
             character->setSpell(spell);
-            character->getSpell()->setCharacter(character);
+            character->getSpell()->setCharacter(character->getSharedFromThis());
         } else {
             spell = std::make_shared<Spell>("empty", 0, 0, SpellType(SpellType::empty));
             character->setSpell(spell);
-            character->getSpell()->setCharacter(character);
+            character->getSpell()->setCharacter(character->getSharedFromThis());
         }
         character->setDice(dice);
-        character->getDice()->setCharacter(character);
+        character->getDice()->setCharacter(character->getSharedFromThis());
         character->getDice()->setName(character->getName());
-        return (void*) &character;
+        return character;
     };
 };
 
@@ -212,7 +211,7 @@ public:
 
         switch (yamlHandle->getType()) {
             case stringCode::face:
-                face = *(std::shared_ptr<Face>*) yamlHandle->getFeature();
+                face = std::static_pointer_cast<Face>(yamlHandle->getFeature());
                 index = face->getFace_();
                 faces[index] = face;
                 break;
@@ -223,14 +222,14 @@ public:
         }
     }
 
-    void* getFeature() override {
-        auto dice = std::make_shared<Dice>();
+    std::shared_ptr<void> getFeature() override {
+        std::shared_ptr dice = std::make_shared<Dice>();
         for (int i = 0; i < 6; i++) {
             dice->setFace(faces[i], i);
-            dice->getFace(i)->setDice(dice);
+            dice->getFace(i)->setDice(dice->getSharedFromThis());
             dice->getFace(i)->setName(dice->getName());
         }
-        return (void*) &dice;
+        return dice;
     };
 };
 
@@ -252,39 +251,39 @@ public:
         switch (yamlHandle->getType()) {
             case stringCode::damage:
                 type = FaceType::damage;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::shield:
                 type = FaceType::shield;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal:
                 type = FaceType::heal;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::bonus_health:
                 type = FaceType::bonus_health;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::mana:
                 type = FaceType::mana;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::shield_and_mana:
                 type = FaceType::shield_and_mana;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_and_shield:
                 type = FaceType::heal_and_shield;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_and_self_shield:
                 type = FaceType::damage_and_self_shield;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_and_mana:
                 type = FaceType::heal_and_mana;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::dodge:
                 type = FaceType::dodge;
@@ -292,10 +291,10 @@ public:
                 break;
             case stringCode::empty:
                 type = FaceType::empty;
-                value = *(int*) yamlHandle->getFeature();
+                value = 0;
                 break;
             case stringCode::mod:
-                modifiers.addModifier(*(std::string*) yamlHandle->getFeature());
+                modifiers.addModifier(*std::static_pointer_cast<std::string>(yamlHandle->getFeature()).get());
                 break;
             default:
                 std::cerr << "[YamlHandleFace] unsupported feature: " <<
@@ -304,9 +303,8 @@ public:
         }
     }
 
-    void* getFeature() override {
-        std::shared_ptr<Face> face = std::make_shared<Face>(face_, value, type, modifiers);
-        return (void*) &face;
+    std::shared_ptr<void> getFeature() override {
+        return std::make_shared<Face>(face_, value, type, modifiers);
     };
 };
 
@@ -328,38 +326,38 @@ public:
     void handle(std::shared_ptr<YamlHandle> yamlHandle) override {
         switch (yamlHandle->getType()) {
             case stringCode::name:
-                name = *(std::string*) yamlHandle->getFeature();
+                name = *std::static_pointer_cast<std::string>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::cost:
-                cost = *(int*) yamlHandle->getFeature();
+                cost = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage:
                 type = SpellType::damage;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal:
                 type = SpellType::heal;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_or_shield:
                 type = SpellType::damage_or_shield;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_or_shield:
                 type = SpellType::heal_or_shield;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_if_full_health:
                 type = SpellType::damage_if_full_health;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::kill_if_below_threshold:
                 type = SpellType::kill_if_below_threshold;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::cleanse:
                 type = SpellType::cleanse;
-                value = *(int*) yamlHandle->getFeature();
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             default:
                 std::cerr << "[YamlHandleSpell] unsupported feature: " <<
@@ -368,9 +366,8 @@ public:
         }
     }
 
-    void* getFeature() override {
-        auto spell = std::make_shared<Spell>(name, cost, value, type);
-        return (void*) &spell;
+    std::shared_ptr<void> getFeature() override {
+        return std::make_shared<Spell>(name, cost, value, type);
     };
 };
 
@@ -388,8 +385,8 @@ public:
         }
     }
 
-    void* getFeature() override {
-        return (void*) &feature;
+    std::shared_ptr<void> getFeature() override {
+        return std::make_shared<std::string>(feature);
     }
 };
 
@@ -403,8 +400,8 @@ public:
         feature = (int) strtol(value.c_str(), ptr, 10);
     };
 
-    void* getFeature() override {
-        return (void*) &feature;
+    std::shared_ptr<void> getFeature() override {
+        return std::make_shared<int>(feature);
     };
 };
 
@@ -416,8 +413,6 @@ private:
 
 public:
     YamlReader();
-
-    static std::string trim(const std::string &str, const std::string &whitespace);
 
     void readFile(const std::string &string);
 

@@ -19,9 +19,6 @@ include_directories(include
         include/glfw-3.3.7/include/
         include/glm-0.9.7.1/)
 
-find_package(GLM REQUIRED)
-find_package(GLFW3 REQUIRED)
-
 add_library(GLAD "src/glad.c")
 set(LIBS ${LIBS} GLAD)
 
@@ -47,8 +44,8 @@ set(INCLUDE_GAMEOBJECT
         )
 
 set(INCLUDE_IOFILEMANAGER
-        src/iofilemanager/YamlReader.cpp
-        src/iofilemanager/YamlReader.h
+        src/io/characters/YamlReader.cpp
+        src/io/characters/YamlReader.h
         )
 
 set(INCLUDE_SCENE
@@ -93,8 +90,8 @@ set(INCLUDE_UI
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
-        src/utilities/AttackOrder.cpp
-        src/utilities/AttackOrder.h
+        src/utilities/BattleLog.cpp
+        src/utilities/BattleLog.h
         src/utilities/Random.cpp
         src/utilities/Random.h
 

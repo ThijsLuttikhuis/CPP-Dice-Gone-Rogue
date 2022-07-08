@@ -70,7 +70,8 @@ public:
     void setHoverMouse(bool hover);
 
     /// render
-    virtual void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) const;
+    virtual void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                      const std::shared_ptr<TextRenderer> &textRenderer) const;
 
 };
 

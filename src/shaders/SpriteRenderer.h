@@ -26,11 +26,11 @@ private:
     std::map<std::string,  std::shared_ptr<Texture2D>> textures;
 
     std::vector<std::pair<std::string,
-          void (*)(const  std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture,
+          void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
                    float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
                    const glm::vec3 &color, float alpha)>> specialSpritesToFunction;
 
-    static void drawBoxSprite(std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture, float zIndex,
+    static void drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
                               const glm::vec2 &position, const glm::vec2 &size, float rotate = 0.0f,
                               const glm::vec3 &color = glm::vec3(1.0f), float alpha = 1.0f);
 

@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "Scene.h"
-#include "utilities/AttackOrder.h"
+#include "utilities/BattleLog.h"
 #include "ui/Window.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
-class BattleScene : public Scene {
+class BattleScene : public std::enable_shared_from_this<BattleScene>, public Scene {
 public:
     enum battleGameState {
         rolling_heroes,
@@ -37,7 +37,7 @@ private:
     std::vector<std::shared_ptr<Character>> heroes;
     std::vector<std::shared_ptr<Character>> enemies;
 
-    std::shared_ptr<AttackOrder> attackOrder = nullptr;
+    std::shared_ptr<BattleLog> attackOrder = nullptr;
 
     void alignCharacterPositions(double dt);
 
@@ -49,9 +49,9 @@ private:
 
     void updateButtons();
 
-    void clickCharacter(std::shared_ptr<Character> character);
+    void clickCharacter(const std::shared_ptr<Character> &character);
 
-    void clickSpell(std::shared_ptr<Spell> spell);
+    void clickSpell(const std::shared_ptr<Spell> &spell);
 
     void enemyAttack(int index);
 
@@ -62,9 +62,11 @@ private:
     void setClickedSpell(std::shared_ptr<Spell> clickedSpell_);
 
 public:
-    explicit BattleScene(std::shared_ptr<GameStateManager> gameState);
+    explicit BattleScene(std::weak_ptr<GameStateManager> gameState);
 
     /// getters
+    [[nodiscard]] std::shared_ptr<BattleScene> getSharedFromThis();
+
     [[nodiscard]] bool areHeroesRolling() const;
 
     [[nodiscard]] bool areEnemiesRolling() const;
@@ -79,7 +81,7 @@ public:
 
     [[nodiscard]]  std::shared_ptr<Spell> getClickedSpell() const;
 
-    [[nodiscard]]  std::shared_ptr<AttackOrder> getAttackOrder() const;
+    [[nodiscard]]  std::shared_ptr<BattleLog> getAttackOrder() const;
 
     [[nodiscard]] int getMana() const;
 
@@ -96,10 +98,10 @@ public:
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setAttackOrder(std::shared_ptr<AttackOrder> attackOrder_);
+    void setAttackOrder(std::shared_ptr<BattleLog> attackOrder_);
 
     /// functions
-    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(std::shared_ptr<Character> character);
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(Character* character);
 
     void handleMouseButton(double xPos, double yPos) override;
 
@@ -110,8 +112,10 @@ public:
     void update(double dt) override;
 
     /// render
-    void render(std::shared_ptr<SpriteRenderer> spriteRenderer, std::shared_ptr<TextRenderer> textRenderer) override;
+    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                const std::shared_ptr<TextRenderer> &textRenderer) override;
 
+    void initialize() override;
 };
 
 }

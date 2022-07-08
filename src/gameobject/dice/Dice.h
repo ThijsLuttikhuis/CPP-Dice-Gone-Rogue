@@ -20,7 +20,7 @@ class Character;
 
 class Face;
 
-class Dice {
+class Dice : public std::enable_shared_from_this<Dice> {
 public:
     enum dicePos {
         backgroundPos,
@@ -31,8 +31,8 @@ public:
 private:
     std::string name;
 
-     std::shared_ptr<Character> character = nullptr;
-     std::shared_ptr<Face> faces[6]{};
+    std::weak_ptr<Character> character{};
+    std::shared_ptr<Face> faces[6]{};
     bool lock = false;
     bool used = false;
 
@@ -40,11 +40,11 @@ private:
     bool hoverCurrentFace = false;
 
 public:
-    Dice(std::string name,  std::shared_ptr<Character> character);
-
     Dice() = default;
 
     /// getters
+    [[nodiscard]] std::shared_ptr<Dice> getSharedFromThis();
+
     [[nodiscard]]  std::shared_ptr<Face> getCurrentFace() const;
 
     [[nodiscard]]  std::shared_ptr<Face> getFace(int index) const;
@@ -63,8 +63,6 @@ public:
 
     [[nodiscard]]  std::shared_ptr<Dice> makeCopy() const;
 
-    [[nodiscard]]  std::shared_ptr<Character> getCharacter() const;
-
     /// setters
     void setLocked(bool lock_);
 
@@ -74,9 +72,9 @@ public:
 
     void setCurrentFaceHover(bool hoverCurrentFace_);
 
-    void setFace( std::shared_ptr<Face> face, int index);
+    void setFace(const std::shared_ptr<Face> &face, int index);
 
-    void setCharacter( std::shared_ptr<Character> hero_);
+    void setCharacter(const std::weak_ptr<Character> &character_);
 
     void setName(const std::string &name_);
 
@@ -86,9 +84,11 @@ public:
     void roll();
 
     /// render
-    void drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
+    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::shared_ptr<TextRenderer> &textRenderer);
 
-    void draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer);
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer);
 
 };
 

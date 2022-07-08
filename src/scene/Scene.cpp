@@ -12,13 +12,19 @@
 
 namespace DGR {
 
-Scene::Scene(std::string name,  std::shared_ptr<GameStateManager> gameState)
-      : InputHandler(gameState),
+Scene::Scene(std::string name, std::weak_ptr<GameStateManager> gameState)
+      : InputHandler(std::move(gameState)),
         UIElement(std::move(name), glm::vec2(0, 0), glm::vec2(DGR_WIDTH, DGR_HEIGHT)) {}
 
-Scene::Scene(std::string name,  std::shared_ptr<GameStateManager> gameState, glm::vec2 position, glm::vec2 size, glm::vec3 color)
-      : InputHandler(gameState),
+Scene::Scene(std::string name, std::weak_ptr<GameStateManager> gameState, glm::vec2 position, glm::vec2 size,
+             glm::vec3 color)
+      : InputHandler(std::move(gameState)),
         UIElement(std::move(name), position, size, color) {}
+
+
+std::weak_ptr<GameStateManager> Scene::getGameStateManager() const {
+    return gameState;
+}
 
 bool Scene::isEnabled() const {
     return enabled;
@@ -32,15 +38,16 @@ bool Scene::isMouseHovering(double xPos, double yPos) const {
     return Utilities::isPositionInBox(xPos, yPos, glm::vec2(0, 0), size);
 }
 
-void Scene::update(double dt) {
-    (void) dt;
+
+void Scene::initialize() {
 }
 
 void Scene::reset() {
 }
 
- std::shared_ptr<GameStateManager> Scene::getGameStateManager() const {
-    return gameState;
+void Scene::update(double dt) {
+    (void) dt;
 }
+
 
 }

@@ -12,12 +12,13 @@
 
 namespace DGR {
 
- std::shared_ptr<Window> callback_window_ptr;
+std::weak_ptr<Window> callback_window_ptr;
 
 void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
     (void) window;
 
-    callback_window_ptr->handleMousePosition(xPos, yPos);
+    auto windowPtr = std::shared_ptr<Window>(callback_window_ptr);
+    windowPtr->handleMousePosition(xPos, yPos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -27,7 +28,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         if (action == GLFW_RELEASE) {
-            callback_window_ptr->handleMouseButton(xpos, ypos);
+            auto windowPtr = std::shared_ptr<Window>(callback_window_ptr);
+            windowPtr->handleMouseButton(xpos, ypos);
         }
     }
 }
@@ -57,7 +59,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     std::cout << "framebuffer size callback" << std::endl;
 #endif
 
-    callback_window_ptr->setWindowSize(width, height);
+    auto windowPtr = std::shared_ptr<Window>(callback_window_ptr);
+    windowPtr->setWindowSize(width, height);
     glViewport(0, 0, width, height);
 }
 
@@ -90,7 +93,6 @@ Window::Window(int width, int height)
     glfwSetMouseButtonCallback(glfwWindow, mouse_button_callback);
     glfwSetCursorPosCallback(glfwWindow, mouse_position_callback);
     glfwSetFramebufferSizeCallback(glfwWindow, framebuffer_size_callback);
-    callback_window_ptr = this;
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
@@ -112,6 +114,10 @@ Window::Window(int width, int height)
     const int wScreen = 1280;
     const int hScreen = 720;
     glfwSetWindowSize(glfwWindow, wScreen, hScreen);
+}
+
+std::shared_ptr<Window> Window::getSharedFromThis() {
+    return shared_from_this();
 }
 
 bool Window::shouldClose() const {
@@ -138,17 +144,21 @@ void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    gameState->handleMouseButton(xPos, yPos);
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    gameStatePtr->handleMouseButton(xPos, yPos);
 }
 
 void Window::handleMousePosition(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    gameState->handleMousePosition(xPos, yPos);
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    gameStatePtr->handleMousePosition(xPos, yPos);
 }
 
-void Window::setGameStateManager( std::shared_ptr<GameStateManager> gameState_) {
+void Window::setGameStateManager(const std::weak_ptr<GameStateManager> &gameState_) {
     gameState = gameState_;
 }
 
@@ -157,11 +167,17 @@ void Window::setWindowSize(int displayWidth_, int displayHeight_) {
     displayHeight = displayHeight_;
 }
 
+void Window::initialize() {
+    callback_window_ptr = getSharedFromThis();
+}
+
 void Window::render() {
     glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    gameState->render();
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    gameStatePtr->render();
 
     swapBuffers();
 

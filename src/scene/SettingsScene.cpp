@@ -4,12 +4,14 @@
 
 #include "SettingsScene.h"
 #include <GameStateManager.h>
+
+#include <utility>
 #include "ui/Button.h"
 
 namespace DGR {
 
-SettingsScene::SettingsScene(std::shared_ptr<GameStateManager> gameState)
-      : Scene("SettingsScene", gameState,
+SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
+      : Scene("SettingsScene", std::move(gameState),
               glm::vec2(DGR_WIDTH * 0.1, DGR_HEIGHT * 0.1),
               glm::vec2(DGR_WIDTH * 0.8, DGR_HEIGHT * 0.8)) {
 
@@ -36,7 +38,8 @@ SettingsScene::SettingsScene(std::shared_ptr<GameStateManager> gameState)
 
 void SettingsScene::handleMouseButton(double xPos, double yPos) {
     if (!isMouseHovering(xPos, yPos)) {
-        gameState->popSceneFromStack();
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        gameStatePtr->popSceneFromStack();
     }
 
     for (auto &button : buttons) {
@@ -47,11 +50,13 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
 }
 
 void SettingsScene::pressButton(std::shared_ptr<Button> button) {
+    (void) button;
     std::cout << "pressed a button!" << std::endl;
 
 }
 
-void SettingsScene::render(std::shared_ptr<SpriteRenderer> spriteRenderer, std::shared_ptr<TextRenderer> textRenderer) {
+void SettingsScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::shared_ptr<TextRenderer> &textRenderer) {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 

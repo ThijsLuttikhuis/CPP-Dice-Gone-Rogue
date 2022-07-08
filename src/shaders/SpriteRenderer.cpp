@@ -18,7 +18,7 @@ SpriteRenderer::SpriteRenderer(std::shared_ptr<Shader> shader, glm::mat4 project
 
     specialSpritesToFunction.push_back(
           std::make_pair<std::string,
-                void (*)(const std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture,
+                void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
                          float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
                          const glm::vec3 &color, float alpha)>("box", drawBoxSprite));
 
@@ -61,7 +61,7 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
 
     for (auto &specialSprite : specialSpritesToFunction) {
         if (textureName == specialSprite.first) {
-            specialSprite.second(std::make_shared<SpriteRenderer>(this), textureName, zIndex, position, size, rotate,
+            specialSprite.second(this, textureName, zIndex, position, size, rotate,
                                  color, alpha);
             return;
         }
@@ -129,7 +129,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     }
 }
 
-void SpriteRenderer::drawBoxSprite(std::shared_ptr<SpriteRenderer> spriteRenderer, const std::string &texture,
+void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture,
                                    float zIndex,
                                    const glm::vec2 &position, const glm::vec2 &size, float edgeAlpha,
                                    const glm::vec3 &color, float alpha) {
@@ -154,7 +154,7 @@ void SpriteRenderer::drawBoxSprite(std::shared_ptr<SpriteRenderer> spriteRendere
 }
 
 bool SpriteRenderer::hasTexture(const std::string &textureName) {
-    return textures[textureName];
+    return textures.find(textureName) != textures.end();
 }
 
 void SpriteRenderer::setBaseUI(std::shared_ptr<DGR::UIElement> baseUI_) {

@@ -15,22 +15,21 @@
 
 namespace DGR {
 
-Dice::Dice(std::string name,  std::shared_ptr<Character> character) :
-      name(std::move(name)), character(character) {
-}
+//Dice::Dice(std::string name,  std::shared_ptr<Character> character) :
+//      name(std::move(name)), character(character) {
+//}
 
 const std::string &Dice::getName() const {
     return name;
 }
 
- std::shared_ptr<Dice> Dice::makeCopy() const {
+std::shared_ptr<Dice> Dice::makeCopy() const {
     auto copy = std::make_shared<Dice>();
 
-     std::shared_ptr<Face> faceCopy;
     for (int i = 0; i < 6; i++) {
-        faceCopy = faces[i]->makeCopy();
-        faceCopy->setDice(copy);
-        copy->setFace(faceCopy, i);
+        std::shared_ptr<Face> faceCopy = faces[i]->makeCopy();
+        faceCopy->setDice(copy->getSharedFromThis());
+        copy->setFace(faceCopy->getSharedFromThis(), i);
     }
 
     copy->setName(name);
@@ -45,17 +44,18 @@ const std::string &Dice::getName() const {
 }
 
 glm::vec2 Dice::getPosition(dicePos dicePos) const {
-    glm::vec2 heroPosition = character->getPosition();
+    auto characterPtr = std::shared_ptr<Character>(character);
+    glm::vec2 heroPosition = characterPtr->getPosition();
     glm::vec2 dPos(0, 0);
     switch (dicePos) {
         case backgroundPos:
-            dPos = glm::vec2(-8, -95.99 + std::max(character->getSize().y, 32.0f));
+            dPos = glm::vec2(-8, -95.99 + std::max(characterPtr->getSize().y, 32.0f));
             break;
         case diceLayoutPos:
-            dPos = glm::vec2(0, -84 + std::max(character->getSize().y, 32.0f));
+            dPos = glm::vec2(0, -84 + std::max(characterPtr->getSize().y, 32.0f));
             break;
         case currentFacePos:
-            dPos = glm::vec2(character->getSize().x / 2 - 8, character->getSize().y + 4);
+            dPos = glm::vec2(characterPtr->getSize().x / 2 - 8, characterPtr->getSize().y + 4);
             break;
         default:
             std::cerr << "Dice::getPosition: dicePos unknown: " << dicePos << std::endl;
@@ -88,19 +88,15 @@ bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
     return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
- std::shared_ptr<Face> Dice::getFace(int index) const {
+std::shared_ptr<Face> Dice::getFace(int index) const {
     return faces[index];
-}
-
- std::shared_ptr<Character> Dice::getCharacter() const {
-    return character;
 }
 
 bool Dice::isUsed() const {
     return used;
 }
 
- std::shared_ptr<Face> Dice::getCurrentFace() const {
+std::shared_ptr<Face> Dice::getCurrentFace() const {
     return faces[currentFace];
 }
 
@@ -122,8 +118,8 @@ void Dice::updateHoverMouse(double xPos, double yPos) {
     }
 }
 
-void Dice::setFace( std::shared_ptr<Face> face, int index) {
-    faces[index] = face;
+void Dice::setFace(const std::shared_ptr<Face> &face_, int index) {
+    faces[index] = face_;
 }
 
 void Dice::setCurrentFaceHover(bool hoverCurrentFace_) {
@@ -131,7 +127,7 @@ void Dice::setCurrentFaceHover(bool hoverCurrentFace_) {
     faces[currentFace]->setHover(hoverCurrentFace_);
 }
 
-void Dice::setCharacter( std::shared_ptr<Character> character_) {
+void Dice::setCharacter(const std::weak_ptr<Character> &character_) {
     character = character_;
 }
 
@@ -147,7 +143,9 @@ void Dice::roll() {
     currentFace = rng;
 }
 
-void Dice::draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
+void Dice::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                const std::shared_ptr<TextRenderer> &textRenderer) {
+
     faces[currentFace]->draw(spriteRenderer);
 
     if (lock) {
@@ -169,7 +167,8 @@ void Dice::draw( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_pt
     }
 }
 
-void Dice::drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shared_ptr<TextRenderer> textRenderer) {
+void Dice::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer) {
     glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::backgroundPos);
     glm::vec2 diceTemplateBackgroundSize = getSize(Dice::backgroundPos);
     spriteRenderer->drawSprite("box", 0.9f, diceTemplateBackgroundPosition,
@@ -188,6 +187,10 @@ void Dice::drawHover( std::shared_ptr<SpriteRenderer> spriteRenderer,  std::shar
     for (auto &face : faces) {
         face->drawHover(spriteRenderer, textRenderer);
     }
+}
+
+std::shared_ptr<Dice> Dice::getSharedFromThis() {
+    return shared_from_this();
 }
 
 }

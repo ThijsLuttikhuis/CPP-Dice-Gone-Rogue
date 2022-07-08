@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <vector>
-#include <utilities/AttackOrder.h>
+#include <utilities/BattleLog.h>
 
 #include "ui/Window.h"
 #include "ui/OnScreenMessage.h"
@@ -17,7 +17,7 @@ namespace DGR {
 
 class Scene;
 
-class GameStateManager {
+class GameStateManager : public std::enable_shared_from_this<GameStateManager> {
 private:
     double dt{};
     double t = 0.0;
@@ -32,15 +32,17 @@ private:
 
     std::vector<std::shared_ptr<Character>> allHeroes;
     std::vector<std::shared_ptr<Character>> allEnemies;
-    std::vector<std::shared_ptr<Scene>> allScenes;
-
     std::vector<std::shared_ptr<Character>> ownedHeroes;
+
+    std::vector<std::shared_ptr<Scene>> allScenes;
     std::vector<std::shared_ptr<Scene>> sceneStack;
 
 public:
-    explicit GameStateManager(std::shared_ptr<Window> window);
+    explicit GameStateManager(const std::shared_ptr<Window>& window);
 
     /// getters
+    [[nodiscard]] std::shared_ptr<GameStateManager> getSharedFromThis();
+
     [[nodiscard]] std::shared_ptr<Window> getWindow() const;
 
     [[nodiscard]] const std::vector<std::shared_ptr<Scene>> &getAllScenes() const;
@@ -61,6 +63,8 @@ public:
     bool popSceneFromStack(bool enableLastSceneInStack = true);
 
     /// functions
+    void initializeScenes();
+
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
