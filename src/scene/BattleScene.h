@@ -37,7 +37,7 @@ private:
     std::vector<std::shared_ptr<Character>> heroes;
     std::vector<std::shared_ptr<Character>> enemies;
 
-    std::shared_ptr<BattleLog> attackOrder = nullptr;
+    std::shared_ptr<BattleLog> battleLog = nullptr;
 
     void alignCharacterPositions(double dt);
 
@@ -81,7 +81,7 @@ public:
 
     [[nodiscard]]  std::shared_ptr<Spell> getClickedSpell() const;
 
-    [[nodiscard]]  std::shared_ptr<BattleLog> getAttackOrder() const;
+    [[nodiscard]]  std::shared_ptr<BattleLog> getBattleLog() const;
 
     [[nodiscard]] int getMana() const;
 
@@ -98,7 +98,7 @@ public:
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setAttackOrder(std::shared_ptr<BattleLog> attackOrder_);
+    void setBattleLog(std::shared_ptr<BattleLog> battleLog_);
 
     /// functions
     std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(Character* character);
@@ -106,6 +106,8 @@ public:
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;
+
+    void rerunBattleFromStart();
 
     void reset() override;
 

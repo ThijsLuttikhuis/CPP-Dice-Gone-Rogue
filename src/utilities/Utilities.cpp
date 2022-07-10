@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Utilities.h"
+#include "Constants.h"
 
 namespace DGR {
 
@@ -54,5 +55,22 @@ std::string Utilities::trim(const std::string &str, const std::string &whitespac
     return str.substr(strBegin, strRange);
 }
 
+std::string Utilities::checkAndRemoveDGRFileVersion(const std::string &fileContents, const std::string &fileName) {
+    if (fileContents.substr(0, 13) == ".dgr.version=") {
+        if (fileContents.substr(13, std::string(DGR_FILE_VERSION).size()) != DGR_FILE_VERSION) {
+            std::cerr << "[Utilities::checkAndRemoveDGRFileVersion] file" << fileName
+                      << " does not have the correct version (version "
+                      << fileContents.substr(13, std::string(DGR_FILE_VERSION).size())
+                      << ", should be " << DGR_FILE_VERSION << ")" << std::endl;
+            return "";
+        }
+    } else {
+        std::cerr << "[Utilities::checkAndRemoveDGRFileVersion] file " << fileName
+                  << " does not start with \".dgr.version=\"" << std::endl;
+        return "";
+    }
+    return fileContents.substr(13 + std::string(DGR_FILE_VERSION).size(),
+                               fileContents.length() - 13 - std::string(DGR_FILE_VERSION).size());
+}
 
 }

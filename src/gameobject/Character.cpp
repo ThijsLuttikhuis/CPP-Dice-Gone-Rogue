@@ -193,7 +193,7 @@ bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
     }
 
     if (success && storeAction) {
-        battleScene->getAttackOrder()->addAttack(clickedSpell.get(), this);
+        battleScene->getBattleLog()->addAttack(clickedSpell.get(), this);
     }
 
     if (!success) {
@@ -331,7 +331,7 @@ Character::interact(const std::shared_ptr<Character> &otherCharacter,
     }
 
     if (success && storeAction) {
-        battleScene->getAttackOrder()->addAttack(this, otherCharacter.get());
+        battleScene->getBattleLog()->addAttack(this, otherCharacter.get());
     }
 
     if (!success && otherCharacter) {

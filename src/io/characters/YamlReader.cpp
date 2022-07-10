@@ -70,19 +70,23 @@ YamlReader::YamlReader() {
 
 void YamlReader::readFile(const std::string &name) {
     /// read file and put all data into a string
-
     std::string fileName = "../src/io/characters/" + name + ".dgr";
-    std::ifstream file;
-    file.open(fileName);
-    if (!file) { // file couldn't be opened
+    std::ifstream ifile;
+    ifile.open(fileName);
+    if (!ifile) { // file couldn't be opened
         std::cerr << "[YamlReader::readfile] file could not be opened" << std::endl;
         exit(1);
     }
     std::stringstream buffer;
-    buffer << file.rdbuf();
-    file.close();
+    buffer << ifile.rdbuf();
+    ifile.close();
 
     std::string worldStr = Utilities::trim(buffer.str());
+    worldStr = Utilities::checkAndRemoveDGRFileVersion(worldStr, name);
+    if (worldStr.empty()) {
+        std::cerr << "[YamlReader::readfile] error file reading version" << std::endl;
+        exit(-1);
+    }
 
     std::string word;
     size_t i = 0;

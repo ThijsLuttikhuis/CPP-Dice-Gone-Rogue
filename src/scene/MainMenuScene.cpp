@@ -57,6 +57,7 @@ void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
         gameStatePtr->popSceneFromStack();
         gameStatePtr->addSceneToStack("CharacterSelectScene");
     } else if (button->getName() == "LoadGame") {
+        gameStatePtr->popSceneFromStack();
         gameStatePtr->addSceneToStack("LoadGameScene", false);
     } else if (button->getName() == "Settings") {
         gameStatePtr->addSceneToStack("SettingsScene");

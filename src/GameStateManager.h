@@ -33,6 +33,7 @@ private:
     std::vector<std::shared_ptr<Character>> allHeroes;
     std::vector<std::shared_ptr<Character>> allEnemies;
     std::vector<std::shared_ptr<Character>> ownedHeroes;
+    std::shared_ptr<Character> nullCharacter = nullptr;
 
     std::vector<std::shared_ptr<Scene>> allScenes;
     std::vector<std::shared_ptr<Scene>> sceneStack;
@@ -55,6 +56,8 @@ public:
 
     [[nodiscard]] const std::vector<std::shared_ptr<Character>> &getAllEnemies() const;
 
+    [[nodiscard]] const std::shared_ptr<Character> &getCharacterByID(int id) const;
+
     /// setters
     bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
@@ -75,6 +78,7 @@ public:
     void render();
 
     void addOnScreenMessage(const std::string &message);
+
 };
 
 }

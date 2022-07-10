@@ -23,6 +23,8 @@ public:
     static float colorHex2Float(const std::string &color_);
 
     static std::string trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v");
+
+    static std::string checkAndRemoveDGRFileVersion(const std::string &fileContents, const std::string &fileName = "");
 };
 
 }

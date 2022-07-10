@@ -28,57 +28,11 @@ public:
     struct Turn {
         std::vector<attackType> attackOrder = {};
         std::vector<std::pair<int, int>> attackOrderIDs = {};
+        bool heroesAttacked;
 
-        static Turn getTurnFromString(std::string turnString) {
-            Turn turn;
-            std::pair<int, int> ids;
-            int idNotSet = -12345;
-            turnString = Utilities::trim(turnString);
-            std::string word;
-            size_t i = 0;
-            auto turnStrLength = turnString.size();
+        static Turn getTurnFromString(std::string turnString);
 
-            while (i < turnStrLength) {
-                size_t posComma = turnString.find(',', i);
-                word = Utilities::trim(turnString.substr(i, posComma - i));
-                i = posComma + 1;
-
-                if (word == "character") {
-                    turn.attackOrder.push_back(attackType::character);
-                }
-                else if (word == "spell") {
-                    turn.attackOrder.push_back(attackType::spell);
-                }
-                else if (word.substr(0, 4) == "dst:") {
-                    char** ptr = nullptr;
-                    ids.first = (int) strtol(word.c_str() + 4, ptr, 10);
-                }
-                else if (word.substr(0, 4) == "src:") {
-                    char** ptr = nullptr;
-                    ids.second = (int) strtol(word.c_str() + 4, ptr, 10);
-                }
-
-                if (ids.first != idNotSet && ids.second != idNotSet) {
-                    turn.attackOrderIDs.push_back(ids);
-                    ids.first = idNotSet;
-                    ids.second = idNotSet;
-                }
-
-            }
-
-            return turn;
-        }
-
-        std::string toString() {
-            std::string turnString;
-            for (int i = 0; i < (int) attackOrder.size(); i++) {
-                turnString += attackOrder[i] == attackType::character ? "character, dst: " : "spell, dst: ";
-                turnString += std::to_string(attackOrderIDs[i].first) + ", src: " +
-                              std::to_string(attackOrderIDs[i].second) + ";\n";
-            }
-            std::cout << turnString << std::endl;
-            return turnString;
-        }
+        [[nodiscard]] std::string toString() const;
     };
 
 private:
@@ -88,6 +42,8 @@ private:
     std::vector<std::shared_ptr<Character>> heroes;
     std::vector<std::shared_ptr<Character>> enemies;
 
+    static int heroesTurnCounter;
+    static int enemiesTurnCounter;
     Turn thisTurn;
     std::vector<Turn> turns;
 
@@ -95,10 +51,17 @@ private:
 
     std::shared_ptr<Spell> getStoredSpell(int id);
 
-    void printCharacterIDs();
+    [[nodiscard]] std::string idsCharacternamesToString() const;
+
+    [[nodiscard]] std::string idsFaceidsToString() const;
+
+    static std::string loadBattleHeader(const std::shared_ptr<GameStateManager> &gameState,
+                                        std::string battleString, std::shared_ptr<BattleLog> &battleLog);
+
 public:
-    explicit BattleLog(std::weak_ptr<BattleScene>
-                       battleScene);
+    BattleLog() = default;
+
+    explicit BattleLog(std::weak_ptr<BattleScene> battleScene);
 
     void addAttack(Character* character, Character* otherCharacter = nullptr);
 
@@ -106,12 +69,20 @@ public:
 
     void undo();
 
-    void saveTurn();
+    void saveTurn(bool heroesAttacked);
+
+    static std::shared_ptr<BattleLog> loadBattle(const std::shared_ptr<GameStateManager> &gameState,
+                                                 const std::string &fileName);
 
     void setState(const std::vector<std::shared_ptr<Character>> &heroes_,
                   const std::vector<std::shared_ptr<Character>> &enemies_, int mana_);
 
+    [[nodiscard]] std::tuple<std::vector<std::shared_ptr<Character>>*,
+          std::vector<std::shared_ptr<Character>>*,
+          int> getState();
+
     void reset();
+
 };
 
 }

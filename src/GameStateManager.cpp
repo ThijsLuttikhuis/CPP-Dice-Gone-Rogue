@@ -11,6 +11,7 @@
 #include <scene/BattleVictoryScene.h>
 #include <scene/BattleDefeatScene.h>
 #include <scene/CharacterSelectScene.h>
+#include <scene/LoadGameScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
@@ -160,6 +161,21 @@ const std::vector<std::shared_ptr<Character>> &GameStateManager::getAllHeroes() 
     return allHeroes;
 }
 
+const std::shared_ptr<Character> &GameStateManager::getCharacterByID(int id) const {
+    for (const auto &hero : allHeroes) {
+        if (hero->getUniqueID() == id) {
+            return hero;
+        }
+    }
+    for (const auto &enemy : allEnemies) {
+        if (enemy->getUniqueID() == id) {
+            return enemy;
+        }
+    }
+    return nullCharacter;
+}
+
+
 const std::vector<std::shared_ptr<Character>> &GameStateManager::getAllEnemies() const {
     return allEnemies;
 }
@@ -201,6 +217,10 @@ void GameStateManager::initializeScenes() {
     auto characterSelectScene = std::make_shared<CharacterSelectScene>(sharedFromThis);
     characterSelectScene->initialize();
     allScenes.push_back(characterSelectScene);
+
+    auto loadGameScene = std::make_shared<LoadGameScene>(sharedFromThis);
+    loadGameScene->initialize();
+    allScenes.push_back(loadGameScene);
 }
 
 void GameStateManager::render() {

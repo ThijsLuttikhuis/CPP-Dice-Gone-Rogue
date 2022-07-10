@@ -55,20 +55,20 @@ int BattleScene::getMana() const {
     return mana;
 }
 
-std::shared_ptr<BattleLog> BattleScene::getAttackOrder() const {
-    return attackOrder;
+std::shared_ptr<BattleLog> BattleScene::getBattleLog() const {
+    return battleLog;
 }
 
-void BattleScene::setAttackOrder(std::shared_ptr<BattleLog> attackOrder_) {
-    attackOrder = attackOrder_;
+void BattleScene::setBattleLog(std::shared_ptr<BattleLog> battleLog_) {
+    battleLog = std::move(battleLog_);
 }
 
 void BattleScene::setClickedCharacter(std::shared_ptr<Character> clickedCharacter_) {
-    clickedCharacter = clickedCharacter_;
+    clickedCharacter = std::move(clickedCharacter_);
 }
 
 void BattleScene::setClickedSpell(std::shared_ptr<Spell> clickedSpell_) {
-    clickedSpell = clickedSpell_;
+    clickedSpell = std::move(clickedSpell_);
 }
 
 int BattleScene::reroll() {
@@ -106,7 +106,7 @@ void BattleScene::pressButton(std::shared_ptr<Button> button) {
                 setNextGameState();
             }
         } else if (areHeroesAttacking()) {
-            getAttackOrder()->undo();
+            getBattleLog()->undo();
         }
     }
 
@@ -170,13 +170,13 @@ void BattleScene::setNextGameState() {
                 hero->setDiceLock(false);
             }
             rerolls = rerollsMax;
-            attackOrder->setState(heroes, enemies, mana);
+            battleLog->setState(heroes, enemies, mana);
 
             state = attack_block_heroes;
             updateButtons();
             break;
         case attack_block_heroes:
-            attackOrder->saveTurn();
+            battleLog->saveTurn(true);
 
             for (auto &hero : heroes) {
                 hero->setUsedDice(false);
@@ -192,13 +192,13 @@ void BattleScene::setNextGameState() {
                 enemy->setDiceLock(false);
             }
             rerolls = rerollsMax;
-            attackOrder->setState(heroes, enemies, mana);
+            battleLog->setState(heroes, enemies, mana);
 
             state = attack_block_enemies;
             updateButtons();
             break;
         case attack_block_enemies:
-            attackOrder->saveTurn();
+            battleLog->saveTurn(false);
 
             for (auto &enemy : enemies) {
                 enemy->setUsedDice(false);
@@ -285,7 +285,7 @@ void BattleScene::handleMousePosition(double xPos, double yPos) {
 }
 
 void BattleScene::initialize() {
-    attackOrder = std::make_shared<BattleLog>(shared_from_this());
+    battleLog = std::make_shared<BattleLog>(shared_from_this());
 }
 
 void BattleScene::reset() {
@@ -297,7 +297,7 @@ void BattleScene::reset() {
     clickedCharacter = nullptr;
     clickedSpell = nullptr;
 
-    attackOrder->reset();
+    battleLog->reset();
 
     heroes = {};
     enemies = {};
@@ -658,6 +658,16 @@ void BattleScene::checkVictory() {
         gameStatePtr->addSceneToStack("BattleDefeatScene", true);
         return;
     }
+}
+
+void BattleScene::rerunBattleFromStart() {
+
+    std::vector<std::shared_ptr<Character>>* heroesPtr, enemiesPtr;
+    int mana;
+    std::tie(heroesPtr, enemiesPtr, mana) = battleLog->getState();
+
+
+    //TODO: THIS>>>>>
 }
 
 }

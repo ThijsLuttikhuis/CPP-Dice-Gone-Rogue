@@ -97,7 +97,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        )
+        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h)
 
 
 add_executable(DiceGoneRogue main.cpp
