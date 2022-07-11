@@ -309,7 +309,7 @@ void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
             battleScene->setEnemies(battleEnemies);
 
             gameStatePtr->popSceneFromStack();
-            gameStatePtr->addSceneToStack("BattleScene");
+            gameStatePtr->pushSceneToStack("BattleScene");
         } else {
             gameStatePtr->addOnScreenMessage("Please select three characters!");
         }

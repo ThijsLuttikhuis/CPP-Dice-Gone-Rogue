@@ -12,7 +12,7 @@
 
 #define DGR_WIDTH 32*16
 #define DGR_HEIGHT 32*9
-#define DGR_ANIMATION_SPEED 10
+#define DGR_ANIMATION_SPEED 1.0
 
 #define DGR_FILE_VERSION "0.2"
 

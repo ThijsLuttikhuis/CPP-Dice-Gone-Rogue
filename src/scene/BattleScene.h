@@ -30,6 +30,8 @@ private:
     battleGameState state = rolling_enemies;
 
     int animationCounter = 0;
+    bool rerunBattle = false;
+    bool allowButtonPress = true;
 
     std::shared_ptr<Character> clickedCharacter = nullptr;
     std::shared_ptr<Spell> clickedSpell = nullptr;
@@ -38,6 +40,7 @@ private:
     std::vector<std::shared_ptr<Character>> enemies;
 
     std::shared_ptr<BattleLog> battleLog = nullptr;
+
 
     void alignCharacterPositions(double dt);
 
@@ -88,7 +91,7 @@ public:
     [[nodiscard]] int getRerolls() const;
 
     /// setters
-    void setNextGameState();
+    void setNextGameState(bool doSaveTurn = true);
 
     void addMana(int mana_);
 
@@ -98,7 +101,7 @@ public:
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setBattleLog(std::shared_ptr<BattleLog> battleLog_);
+    void setBattleLog(const std::shared_ptr<BattleLog>& battleLog_, bool copyBattleState = true);
 
     /// functions
     std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(Character* character);
@@ -118,6 +121,11 @@ public:
                 const std::shared_ptr<TextRenderer> &textRenderer) override;
 
     void initialize() override;
+
+
+    void updateRerunBattle();
+
+    void onPopFromStack() override;
 };
 
 }

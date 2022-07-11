@@ -59,8 +59,15 @@ std::shared_ptr<BattleLog> BattleScene::getBattleLog() const {
     return battleLog;
 }
 
-void BattleScene::setBattleLog(std::shared_ptr<BattleLog> battleLog_) {
-    battleLog = std::move(battleLog_);
+void BattleScene::setBattleLog(const std::shared_ptr<BattleLog> &battleLog_, bool copyBattleState) {
+    battleLog_->setBattleScene(shared_from_this());
+    if (copyBattleState) {
+        auto battleLogState = battleLog_->getState();
+        heroes = *std::get<0>(battleLogState);
+        enemies = *std::get<1>(battleLogState);
+        mana = std::get<2>(battleLogState);
+    }
+    battleLog = battleLog_;
 }
 
 void BattleScene::setClickedCharacter(std::shared_ptr<Character> clickedCharacter_) {
@@ -121,13 +128,13 @@ void BattleScene::pressButton(std::shared_ptr<Button> button) {
     if (button->getName() == "settings") {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
-        gameStatePtr->addSceneToStack("SettingsScene", true);
+        gameStatePtr->pushSceneToStack("SettingsScene", true);
     }
 
     if (button->getName() == "help") {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
-        gameStatePtr->addSceneToStack("HelpScene", false);
+        gameStatePtr->pushSceneToStack("HelpScene", false);
     }
 }
 
@@ -163,7 +170,7 @@ bool BattleScene::areEnemiesAttacking() const {
     return state == attack_block_enemies;
 }
 
-void BattleScene::setNextGameState() {
+void BattleScene::setNextGameState(bool doSaveTurn) {
     switch (state) {
         case rolling_heroes:
             for (auto &hero : heroes) {
@@ -176,7 +183,9 @@ void BattleScene::setNextGameState() {
             updateButtons();
             break;
         case attack_block_heroes:
-            battleLog->saveTurn(true);
+            if (doSaveTurn) {
+                battleLog->saveTurn(true);
+            }
 
             for (auto &hero : heroes) {
                 hero->setUsedDice(false);
@@ -198,8 +207,9 @@ void BattleScene::setNextGameState() {
             updateButtons();
             break;
         case attack_block_enemies:
-            battleLog->saveTurn(false);
-
+            if (doSaveTurn) {
+                battleLog->saveTurn(false);
+            }
             for (auto &enemy : enemies) {
                 enemy->setUsedDice(false);
                 enemy->applyDamageStep();
@@ -293,6 +303,8 @@ void BattleScene::reset() {
     mana = 0;
     state = rolling_enemies;
     animationCounter = 0;
+    rerunBattle = false;
+    allowButtonPress = true;
 
     clickedCharacter = nullptr;
     clickedSpell = nullptr;
@@ -306,6 +318,11 @@ void BattleScene::reset() {
 void BattleScene::update(double dt) {
     alignCharacterPositions(dt);
     checkVictory();
+
+    if (rerunBattle) {
+        updateRerunBattle();
+        return;
+    }
 
     //TODO: add animations etc
     int slowDown = 30 / DGR_ANIMATION_SPEED;
@@ -511,6 +528,12 @@ void BattleScene::clickCharacter(const std::shared_ptr<Character> &character) {
 }
 
 void BattleScene::handleMouseButton(double xPos, double yPos) {
+    if (!allowButtonPress) {
+        setClickedSpell(nullptr);
+        setClickedCharacter(nullptr);
+        return;
+    }
+
     for (auto &button : buttons) {
         if (button->isPressed(xPos, yPos)) {
             pressButton(button);
@@ -642,7 +665,7 @@ void BattleScene::checkVictory() {
     }
     if (allEnemiesDead) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
-        gameStatePtr->addSceneToStack("BattleVictoryScene", true);
+        gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
         return;
     }
 
@@ -655,19 +678,50 @@ void BattleScene::checkVictory() {
     }
     if (allHeroesDead) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
-        gameStatePtr->addSceneToStack("BattleDefeatScene", true);
+        gameStatePtr->pushSceneToStack("BattleDefeatScene", true);
         return;
     }
 }
 
 void BattleScene::rerunBattleFromStart() {
+    rerunBattle = true;
 
-    std::vector<std::shared_ptr<Character>>* heroesPtr, enemiesPtr;
-    int mana;
-    std::tie(heroesPtr, enemiesPtr, mana) = battleLog->getState();
+    auto battleLogState = battleLog->getState();
+    heroes = *std::get<0>(battleLogState);
+    enemies = *std::get<1>(battleLogState);
+    mana = std::get<2>(battleLogState);
+
+}
+
+void BattleScene::updateRerunBattle() {
+    static int turnIndex = 0;
+    static int attackIndex = 0;
+    static bool initState = false;
+    if (!initState) {
+        state = battleGameState::attack_block_enemies;
+        initState = true;
+    }
 
 
-    //TODO: THIS>>>>>
+    int slowDown = 30 / DGR_ANIMATION_SPEED;
+    animationCounter++;
+    if (animationCounter % slowDown != 0) {
+        return;
+    }
+    animationCounter = 0;
+
+    bool done = battleLog->doRerunBattleAttack(turnIndex, attackIndex);
+    rerunBattleFromStart();
+    if (done) {
+        turnIndex = 0;
+        attackIndex = 0;
+        initState = false;
+        rerunBattle = false;
+    }
+}
+
+void BattleScene::onPopFromStack() {
+    reset();
 }
 
 }

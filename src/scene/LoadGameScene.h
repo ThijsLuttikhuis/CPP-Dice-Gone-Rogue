@@ -36,13 +36,14 @@ public:
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
-    void pressButton(std::shared_ptr<Button> button);
+    void pressButton(const std::shared_ptr<Button>& button);
 
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                 const std::shared_ptr<TextRenderer> &textRenderer) override;
 
     void initialize() override;
 
+    void onPushToStack() override;
 };
 
 }

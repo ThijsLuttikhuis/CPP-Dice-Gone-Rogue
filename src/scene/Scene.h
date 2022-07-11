@@ -18,9 +18,9 @@ class Scene : public InputHandler, public UIElement {
 protected:
     bool enabled = true;
 public:
-    Scene(std::string name,  std::weak_ptr<GameStateManager> gameState);
+    Scene(std::string name, std::weak_ptr<GameStateManager> gameState);
 
-    Scene(std::string name,  std::weak_ptr<GameStateManager> gameState, glm::vec2 position,
+    Scene(std::string name, std::weak_ptr<GameStateManager> gameState, glm::vec2 position,
           glm::vec2 size = glm::vec2(DGR_WIDTH, DGR_HEIGHT), glm::vec3 color = glm::vec3(1.0f));
 
     /// getters
@@ -35,6 +35,10 @@ public:
 
     /// functions
     virtual void initialize();
+
+    virtual void onPushToStack();
+
+    virtual void onPopFromStack();
 
     virtual void reset();
 

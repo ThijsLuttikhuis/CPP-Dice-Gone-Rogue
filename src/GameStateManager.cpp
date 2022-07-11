@@ -116,13 +116,14 @@ const std::vector<std::shared_ptr<Scene>> &GameStateManager::getSceneStack() con
     return sceneStack;
 }
 
-bool GameStateManager::addSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
+bool GameStateManager::pushSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
     bool sceneFound = false;
     for (auto &scene : allScenes) {
         if (scene->getName() == sceneName) {
             sceneFound = true;
             sceneStack.push_back(scene);
             scene->setIsEnabled(true);
+            scene->onPushToStack();
             break;
         }
     }
@@ -139,6 +140,7 @@ bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
     if (sceneStack.empty()) {
         return false;
     }
+    sceneStack.back()->onPopFromStack();
     sceneStack.pop_back();
     if (!sceneStack.empty() && enableLastSceneInStack) {
         sceneStack.back()->setIsEnabled(true);

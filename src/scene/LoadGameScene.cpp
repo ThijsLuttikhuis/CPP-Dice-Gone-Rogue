@@ -184,7 +184,11 @@ void LoadGameScene::alignSavesPositions() {
 }
 
 void LoadGameScene::reset() {
-    Scene::reset();
+    loadedGames = {};
+    selectedGame = 0;
+
+    maxSavesOnRow = 4;
+    currentLeftSaveIndex = 0;
 }
 
 void LoadGameScene::update(double dt) {
@@ -204,7 +208,7 @@ void LoadGameScene::update(double dt) {
 
 }
 
-void LoadGameScene::pressButton(std::shared_ptr<Button> button) {
+void LoadGameScene::pressButton(const std::shared_ptr<Button>& button) {
     std::cout << "pressed a button!" << std::endl;
 
     auto &buttonName = button->getName();
@@ -245,12 +249,15 @@ void LoadGameScene::pressButton(std::shared_ptr<Button> button) {
         battleScene->rerunBattleFromStart();
 
         gameStatePtr->popSceneFromStack();
-        gameStatePtr->addSceneToStack("BattleScene");
+        gameStatePtr->pushSceneToStack("BattleScene");
     }
-
 }
 
-void LoadGameScene::initialize() {
+void LoadGameScene::onPushToStack() {
+    loadedGames = {};
+
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
     std::string dir = "../src/io/saves/";
     auto dirIt = std::filesystem::directory_iterator(dir);
     for (const auto &entry : dirIt) {
@@ -259,13 +266,22 @@ void LoadGameScene::initialize() {
 #endif
         if (entry.path().extension() == ".save.dgr" || entry.path().extension() == ".dgr") {
             std::shared_ptr<BattleLog> battle =
-                  BattleLog::loadBattle(std::shared_ptr<GameStateManager>(gameState), entry.path());
+                  BattleLog::loadBattle(gameStatePtr, entry.path());
 
-            loadedGames.push_back(battle);
+            if (battle) {
+                loadedGames.push_back(battle);
+            }
         }
+    }
+
+    if (loadedGames.empty()) {
+        gameStatePtr->popSceneFromStack();
+        gameStatePtr->pushSceneToStack("CharacterSelectScene");
     }
 }
 
+void LoadGameScene::initialize() {
+}
 
 void LoadGameScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer) {

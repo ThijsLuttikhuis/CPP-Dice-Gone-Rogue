@@ -59,11 +59,11 @@ public:
     [[nodiscard]] const std::shared_ptr<Character> &getCharacterByID(int id) const;
 
     /// setters
-    bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
-
-    void addOnScreenMessage(std::shared_ptr<OnScreenMessage> message);
+    bool pushSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
     bool popSceneFromStack(bool enableLastSceneInStack = true);
+
+    void addOnScreenMessage(std::shared_ptr<OnScreenMessage> message);
 
     /// functions
     void initializeScenes();

@@ -55,12 +55,12 @@ void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
 
     if (button->getName() == "StartNewGame") {
         gameStatePtr->popSceneFromStack();
-        gameStatePtr->addSceneToStack("CharacterSelectScene");
+        gameStatePtr->pushSceneToStack("CharacterSelectScene");
     } else if (button->getName() == "LoadGame") {
         gameStatePtr->popSceneFromStack();
-        gameStatePtr->addSceneToStack("LoadGameScene", false);
+        gameStatePtr->pushSceneToStack("LoadGameScene", false);
     } else if (button->getName() == "Settings") {
-        gameStatePtr->addSceneToStack("SettingsScene");
+        gameStatePtr->pushSceneToStack("SettingsScene");
     }
 }
 

@@ -42,6 +42,12 @@ bool Scene::isMouseHovering(double xPos, double yPos) const {
 void Scene::initialize() {
 }
 
+void Scene::onPushToStack() {
+}
+
+void Scene::onPopFromStack() {
+}
+
 void Scene::reset() {
 }
 

@@ -14,9 +14,6 @@
 
 namespace DGR {
 
-int BattleLog::heroesTurnCounter = 0;
-int BattleLog::enemiesTurnCounter = 0;
-
 BattleLog::BattleLog(std::weak_ptr<BattleScene> battleScene)
       : battleScene(std::move(battleScene)) {}
 
@@ -32,7 +29,7 @@ std::shared_ptr<Character> BattleLog::getStoredCharacter(int id) {
         }
     }
 
-    std::cerr << "AttackOrder::getStoredCharacter: error: no character found!" << std::endl;
+    std::cerr << "BattleLog::getStoredCharacter: error: no character found!" << std::endl;
     exit(404);
 }
 
@@ -48,7 +45,7 @@ std::shared_ptr<Spell> BattleLog::getStoredSpell(int id) {
         }
     }
 
-    std::cerr << "AttackOrder::getStoredSpell: error: no spell found!" << std::endl;
+    std::cerr << "BattleLog::getStoredSpell: error: no spell found!" << std::endl;
     exit(404);
 }
 
@@ -101,7 +98,7 @@ void BattleLog::undo() {
             auto otherCharacter = ids.second >= 0 ? getStoredCharacter(ids.second) : nullptr;
             auto success = character->interact(otherCharacter, battleScenePtr, false);
             if (!success) {
-                std::cerr << "AttackOrder::undo(): character->interact(character) unsuccessful!" << std::endl;
+                std::cerr << "BattleLog::undo(): character->interact(character) unsuccessful!" << std::endl;
                 exit(-10);
             }
             if (otherCharacter) {
@@ -115,7 +112,7 @@ void BattleLog::undo() {
             auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
             auto success = character->interact(spell, battleScenePtr, false);
             if (!success) {
-                std::cerr << "AttackOrder::undo(): character->interact(spell) unsuccessful!" << std::endl;
+                std::cerr << "BattleLog::undo(): character->interact(spell) unsuccessful!" << std::endl;
                 exit(-10);
             }
             battleScenePtr->addMana(-spell->getCost());
@@ -138,6 +135,7 @@ std::tuple<std::vector<std::shared_ptr<Character>>*,
 
 void BattleLog::setState(const std::vector<std::shared_ptr<Character>> &heroes_,
                          const std::vector<std::shared_ptr<Character>> &enemies_, int mana_) {
+    thisTurn.idsToCurrentFace = {};
     thisTurn.attackOrder = {};
     thisTurn.attackOrderIDs = {};
     mana = mana_;
@@ -149,10 +147,12 @@ void BattleLog::setState(const std::vector<std::shared_ptr<Character>> &heroes_,
     for (auto &hero : heroes_) {
         std::shared_ptr<Character> copy = hero->makeCopy(true);
         heroes.push_back(copy);
+        thisTurn.idsToCurrentFace[copy->getUniqueID()] = copy->getDice()->getCurrentFace()->getFace_();
     }
     for (auto &enemy : enemies_) {
         std::shared_ptr<Character> copy = enemy->makeCopy(true);
         enemies.push_back(copy);
+        thisTurn.idsToCurrentFace[copy->getUniqueID()] = copy->getDice()->getCurrentFace()->getFace_();
     }
 }
 
@@ -161,11 +161,12 @@ void BattleLog::reset() {
 
     thisTurn.attackOrder = {};
     thisTurn.attackOrderIDs = {};
+    thisTurn.idsToCurrentFace = {};
     turns = {};
 }
 
 void BattleLog::saveTurn(bool heroesAttacked) {
-    thisTurn.heroesAttacked = heroesAttacked;
+    thisTurn.heroesTurn = heroesAttacked;
     turns.push_back(thisTurn);
 
     std::string fileString;
@@ -173,12 +174,11 @@ void BattleLog::saveTurn(bool heroesAttacked) {
         fileString += (std::string) ".dgr.version=" + DGR_FILE_VERSION + "\n\n";
         fileString += idsCharacternamesToString();
     }
-    if (thisTurn.heroesAttacked) {
+    if (thisTurn.heroesTurn) {
         fileString += "hero turn " + std::to_string(++heroesTurnCounter) + ";\n";
     } else {
         fileString += "enemy turn " + std::to_string(++enemiesTurnCounter) + ";\n";
     }
-    fileString += idsFaceidsToString();
     fileString += thisTurn.toString();
 
     std::ofstream ofile;
@@ -237,6 +237,10 @@ std::shared_ptr<BattleLog> BattleLog::loadBattle(const std::shared_ptr<GameState
 
     battleString = loadBattleHeader(gameState, battleString, battle);
 
+    while (!battleString.empty()) {
+        battleString = BattleLog::Turn::getTurnFromString(gameState, battleString, battle);
+    }
+
     return battle;
 }
 
@@ -254,15 +258,15 @@ std::string BattleLog::loadBattleHeader(const std::shared_ptr<GameStateManager> 
 
     size_t posSemiColon = 0;
     size_t posComma;
+    size_t posReturnSemiColon = 0;
 
     while (i < (int) battleString.length()) {
+        posReturnSemiColon = posSemiColon;
         posSemiColon = battleString.find(';', i);
         line = Utilities::trim(battleString.substr(i, posSemiColon - i));
-        std::cout << line << std::endl;
 
         /// get id
         if (!(line.substr(0, 3) == "id:")) {
-            std::cout << ":(" << std::endl;
             break;
         }
         posComma = line.find(',', 0);
@@ -273,13 +277,11 @@ std::string BattleLog::loadBattleHeader(const std::shared_ptr<GameStateManager> 
         /// get name
         word = Utilities::trim(line.substr(posComma + 1, posSemiColon));
         if (!(word.substr(0, 5) == "name:")) {
-            std::cout << ":(2" << std::endl;
             break;
         }
         std::string name = Utilities::trim(word.substr(5, word.length() - 5));
 
         /// get character
-        std::cout << id << ", " << name << std::endl;
         auto character = gameState->getCharacterByID(id);
         if (!character.get()) {
             break;
@@ -288,17 +290,81 @@ std::string BattleLog::loadBattleHeader(const std::shared_ptr<GameStateManager> 
         if (character->getCharacterType() == "hero") {
             heroes.push_back(character);
         }
+        if (character->getCharacterType() == "enemy") {
+            enemies.push_back(character);
+        }
 
         i = (int) posSemiColon + 1;
-
-
     }
+
     battleLog->setState(heroes, enemies, 0);
-    return battleString.substr(posSemiColon + 1, battleString.length() - (posSemiColon + 1));
+    return battleString.substr(posReturnSemiColon + 1, battleString.length() - (posReturnSemiColon + 1));
+}
+
+bool BattleLog::doRerunBattleAttack(int &currentTurn, int &currentAttack) {
+    auto battleScenePtr = std::shared_ptr<BattleScene>(battleScene);
+
+    /// update turn
+    if (currentTurn >= (int) turns.size()) {
+        return true;
+    }
+    thisTurn = turns[currentTurn];
+    if (currentAttack >= (int) thisTurn.attackOrder.size()) {
+        battleScenePtr->setNextGameState(false);
+        battleScenePtr->setNextGameState(false);
+        currentTurn++;
+        currentAttack = 0;
+        return false;
+    }
+
+    /// update currentFace
+    for (auto &pair : thisTurn.idsToCurrentFace) {
+        std::shared_ptr<Character> character = getStoredCharacter(pair.first);
+        character->getDice()->setCurrentFace(pair.second);
+    }
+
+    /// perform attack
+    if (thisTurn.attackOrder[currentAttack] == attackType::character) {
+        auto ids = thisTurn.attackOrderIDs[currentAttack];
+        auto character = getStoredCharacter(ids.first);
+        auto otherCharacter = ids.second >= 0 ? getStoredCharacter(ids.second) : nullptr;
+        auto success = character->interact(otherCharacter, battleScenePtr, false);
+        if (!success) {
+            std::cerr << "BattleLog::doRerunBattleAttack(): character->interact(character) unsuccessful!"
+                      << std::endl;
+            exit(-10);
+        }
+        if (otherCharacter) {
+            otherCharacter->setUsedDice(true);
+        } else {
+            character->setUsedDice(true);
+        }
+    } else if (thisTurn.attackOrder[currentAttack] == attackType::spell) {
+        auto ids = thisTurn.attackOrderIDs[currentAttack];
+        auto character = getStoredCharacter(ids.first);
+        auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
+        auto success = character->interact(spell, battleScenePtr, false);
+        if (!success) {
+            std::cerr << "BattleLog::doRerunBattleAttack(): character->interact(spell) unsuccessful!" << std::endl;
+            exit(-10);
+        }
+        battleScenePtr->addMana(-spell->getCost());
+    }
+    currentAttack++;
+    return false;
+}
+
+void BattleLog::setBattleScene(std::weak_ptr<BattleScene> battleScene_) {
+    battleScene = std::move(battleScene_);
 }
 
 std::string BattleLog::Turn::toString() const {
     std::string turnString;
+    for (const auto &pair : idsToCurrentFace) {
+        turnString += "id: " + std::to_string(pair.first) + ", faceid: " + std::to_string(pair.second) + ";\n";
+    }
+    turnString += "\n";
+
     for (int i = 0; i < (int) attackOrder.size(); i++) {
         turnString += std::string(attackOrder[i] == attackType::character ?
                                   "type: character, dst: " : "type: spell, dst: ") +=
@@ -309,43 +375,111 @@ std::string BattleLog::Turn::toString() const {
     return turnString;
 }
 
-BattleLog::Turn BattleLog::Turn::getTurnFromString(std::string turnString) {
-    //TODO:
+std::string BattleLog::Turn::getTurnFromString(const std::shared_ptr<GameStateManager> &gameState,
+                                               std::string battleString,
+                                               std::shared_ptr<BattleLog> &battleLog) {
+
+    (void) gameState;
+
     Turn turn;
-    std::pair<int, int> ids;
-    int idNotSet = -12345;
-    turnString = Utilities::trim(turnString);
-    std::string word;
-    size_t i = 0;
-    auto turnStrLength = turnString.size();
 
-    while (i < turnStrLength) {
-        size_t posComma = turnString.find(',', i);
-        size_t posSemiColon = turnString.find(',', i);
-
-        word = Utilities::trim(turnString.substr(i, posComma - i));
-        i = posComma + 1;
-
-        if (word == "character") {
-            turn.attackOrder.push_back(attackType::character);
-        } else if (word == "spell") {
-            turn.attackOrder.push_back(attackType::spell);
-        } else if (word.substr(0, 4) == "dst:") {
-            char** ptr = nullptr;
-            ids.first = (int) strtol(word.c_str() + 4, ptr, 10);
-        } else if (word.substr(0, 4) == "src:") {
-            char** ptr = nullptr;
-            ids.second = (int) strtol(word.c_str() + 4, ptr, 10);
-        }
-
-        if (ids.first != idNotSet && ids.second != idNotSet) {
-            turn.attackOrderIDs.push_back(ids);
-            ids.first = idNotSet;
-            ids.second = idNotSet;
-        }
-
+    battleString = Utilities::trim(battleString);
+    if (battleString.substr(0, 10) == "hero turn ") {
+        turn.heroesTurn = true;
+        battleString = Utilities::trim(battleString.substr(13, battleString.length() - 13));
+    } else if (battleString.substr(0, 11) == "enemy turn ") {
+        turn.heroesTurn = false;
+        battleString = Utilities::trim(battleString.substr(14, battleString.length() - 14));
+    } else {
+        return {};
     }
-    return turn;
+
+    std::string line;
+    std::string word;
+    int i = 0;
+    char** ptr = nullptr;
+
+    size_t posSemiColon = 0;
+    size_t posComma;
+    size_t posComma2;
+    size_t posReturnSemiColon = 0;
+
+    while (i < (int) battleString.length()) {
+        posReturnSemiColon = posSemiColon;
+        posSemiColon = battleString.find(';', i);
+        line = Utilities::trim(battleString.substr(i, posSemiColon - i));
+
+        /// get id
+        if (!(line.substr(0, 3) == "id:")) {
+            break;
+        }
+        posComma = line.find(',', 0);
+        word = Utilities::trim(line.substr(3, posComma));
+        int id = (int) strtol(word.c_str(), ptr, 10);
+
+        /// get faceid
+        word = Utilities::trim(line.substr(posComma + 1, posSemiColon));
+        if (!(word.substr(0, 7) == "faceid:")) {
+            break;
+        }
+        int faceid = (int) strtol(word.substr(7, word.length() - 7).c_str(), ptr, 10);
+        if (faceid < 0 || faceid > 5) {
+            break;
+        }
+
+        turn.idsToCurrentFace[id] = faceid;
+
+        i = (int) posSemiColon + 1;
+    }
+
+    i = (int) posReturnSemiColon + 1;
+    posSemiColon = i;
+
+    while (i < (int) battleString.length()) {
+        posReturnSemiColon = posSemiColon;
+        posSemiColon = battleString.find(';', i);
+        line = Utilities::trim(battleString.substr(i, posSemiColon - i));
+
+        /// get type
+        if (!(line.substr(0, 5) == "type:")) {
+            break;
+        }
+        posComma = line.find(',', 0);
+        word = Utilities::trim(line.substr(5, posComma - 5));
+        attackType attType;
+        if (word == "character") {
+            attType = attackType::character;
+        } else if (word == "spell") {
+            attType = attackType::spell;
+        } else {
+            break;
+        }
+
+        /// get dst
+        posComma2 = line.find(',', posComma + 1);
+        word = Utilities::trim(line.substr(posComma + 1, posComma2 - (posComma + 1)));
+        if (!(word.substr(0, 4) == "dst:")) {
+            break;
+        }
+        int dstid = (int) strtol(word.substr(4, word.length() - 4).c_str(), ptr, 10);
+
+        /// get src
+        word = Utilities::trim(line.substr(posComma2 + 1, posSemiColon));
+        if (!(word.substr(0, 4) == "src:")) {
+            break;
+        }
+        int srcid = (int) strtol(word.substr(4, word.length() - 4).c_str(), ptr, 10);
+
+        turn.attackOrder.push_back(attType);
+        turn.attackOrderIDs.emplace_back(dstid, srcid);
+
+        i = (int) posSemiColon + 1;
+    }
+
+    battleLog->thisTurn = turn;
+    battleLog->turns.push_back(turn);
+
+    return battleString.substr(posReturnSemiColon + 1, battleString.length() - (posReturnSemiColon + 1));
 }
 
 }

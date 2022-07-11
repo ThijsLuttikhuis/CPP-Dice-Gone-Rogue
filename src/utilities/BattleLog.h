@@ -26,11 +26,14 @@ public:
     };
 
     struct Turn {
+        std::map<int, int> idsToCurrentFace = {};
         std::vector<attackType> attackOrder = {};
         std::vector<std::pair<int, int>> attackOrderIDs = {};
-        bool heroesAttacked;
+        bool heroesTurn;
 
-        static Turn getTurnFromString(std::string turnString);
+        static std::string getTurnFromString(const std::shared_ptr<GameStateManager> &gameState,
+                                             std::string battleString,
+                                             std::shared_ptr<BattleLog> &battleLog);
 
         [[nodiscard]] std::string toString() const;
     };
@@ -42,8 +45,9 @@ private:
     std::vector<std::shared_ptr<Character>> heroes;
     std::vector<std::shared_ptr<Character>> enemies;
 
-    static int heroesTurnCounter;
-    static int enemiesTurnCounter;
+    int heroesTurnCounter = 0;
+    int enemiesTurnCounter = 0;
+
     Turn thisTurn;
     std::vector<Turn> turns;
 
@@ -73,6 +77,10 @@ public:
 
     static std::shared_ptr<BattleLog> loadBattle(const std::shared_ptr<GameStateManager> &gameState,
                                                  const std::string &fileName);
+
+    bool doRerunBattleAttack(int &currentTurn, int &currentAttack);
+
+    void setBattleScene(std::weak_ptr<BattleScene> battleScene_);
 
     void setState(const std::vector<std::shared_ptr<Character>> &heroes_,
                   const std::vector<std::shared_ptr<Character>> &enemies_, int mana_);
