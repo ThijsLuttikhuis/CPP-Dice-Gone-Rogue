@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <vector>
-#include <utilities/BattleLog.h>
+#include <io/BattleLog.h>
 
 #include "ui/Window.h"
 #include "ui/OnScreenMessage.h"

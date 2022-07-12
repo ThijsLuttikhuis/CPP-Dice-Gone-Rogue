@@ -73,6 +73,7 @@ public:
     virtual void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                       const std::shared_ptr<TextRenderer> &textRenderer) const;
 
+    void drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
 };
 
 }

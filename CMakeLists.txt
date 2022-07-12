@@ -44,8 +44,8 @@ set(INCLUDE_GAMEOBJECT
         )
 
 set(INCLUDE_IOFILEMANAGER
-        src/io/characters/YamlReader.cpp
-        src/io/characters/YamlReader.h
+        src/io/YamlReader.cpp
+        src/io/YamlReader.h
         )
 
 set(INCLUDE_SCENE
@@ -90,14 +90,14 @@ set(INCLUDE_UI
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
-        src/utilities/BattleLog.cpp
-        src/utilities/BattleLog.h
+        src/io/BattleLog.cpp
+        src/io/BattleLog.h
         src/utilities/Random.cpp
         src/utilities/Random.h
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h)
+        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h src/scene/AreYouSureScene.cpp src/scene/AreYouSureScene.h)
 
 
 add_executable(DiceGoneRogue main.cpp

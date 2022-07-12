@@ -156,13 +156,16 @@ void BattleLog::setState(const std::vector<std::shared_ptr<Character>> &heroes_,
     }
 }
 
+void BattleLog::clearAutoSave() {
+    std::string fileName = "../src/io/saves/" + DGR_AUTOSAVE_NAME;
+    std::filesystem::remove(fileName);
+}
+
 void BattleLog::reset() {
     setState({}, {}, 0);
-
-    thisTurn.attackOrder = {};
-    thisTurn.attackOrderIDs = {};
-    thisTurn.idsToCurrentFace = {};
     turns = {};
+    heroesTurnCounter = 0;
+    enemiesTurnCounter = 0;
 }
 
 void BattleLog::saveTurn(bool heroesAttacked) {
@@ -182,25 +185,11 @@ void BattleLog::saveTurn(bool heroesAttacked) {
     fileString += thisTurn.toString();
 
     std::ofstream ofile;
-    std::string fileName = "../src/io/saves/" + DGR_SAVEGAMENAME + ".save.dgr";
+    std::string fileName = "../src/io/saves/" + DGR_AUTOSAVE_NAME;
     ofile.open(fileName, std::fstream::app);
     ofile << fileString;
     ofile.flush();
     ofile.close();
-}
-
-std::string BattleLog::idsFaceidsToString() const {
-    std::string idFaceString;
-    for (const auto &hero : heroes) {
-        idFaceString += "id: " + std::to_string(hero->getUniqueID()) +
-                        ", faceid: " + std::to_string(hero->getDice()->getCurrentFace()->getFace_()) + ";\n";
-    }
-    for (const auto &enemy : enemies) {
-        idFaceString += "id: " + std::to_string(enemy->getUniqueID()) +
-                        ", faceid: " + std::to_string(enemy->getDice()->getCurrentFace()->getFace_()) + ";\n";
-    }
-    idFaceString += "\n";
-    return idFaceString;
 }
 
 std::string BattleLog::idsCharacternamesToString() const {
@@ -378,7 +367,6 @@ std::string BattleLog::Turn::toString() const {
 std::string BattleLog::Turn::getTurnFromString(const std::shared_ptr<GameStateManager> &gameState,
                                                std::string battleString,
                                                std::shared_ptr<BattleLog> &battleLog) {
-
     (void) gameState;
 
     Turn turn;
@@ -386,9 +374,11 @@ std::string BattleLog::Turn::getTurnFromString(const std::shared_ptr<GameStateMa
     battleString = Utilities::trim(battleString);
     if (battleString.substr(0, 10) == "hero turn ") {
         turn.heroesTurn = true;
+        battleLog->heroesTurnCounter++;
         battleString = Utilities::trim(battleString.substr(13, battleString.length() - 13));
     } else if (battleString.substr(0, 11) == "enemy turn ") {
         turn.heroesTurn = false;
+        battleLog->enemiesTurnCounter++;
         battleString = Utilities::trim(battleString.substr(14, battleString.length() - 14));
     } else {
         return {};

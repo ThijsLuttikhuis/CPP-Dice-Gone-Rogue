@@ -63,8 +63,6 @@ private:
 public:
     Character(std::string name, std::string characterType);
 
-    //Character(const std::string& name, std::string characterType, glm::vec2 position, glm::vec2 size);
-
     /// getters
     [[nodiscard]] std::shared_ptr<Character> getSharedFromThis();
 
@@ -80,9 +78,9 @@ public:
 
     [[nodiscard]] std::string getCharacterType() const;
 
-    [[nodiscard]]  std::shared_ptr<Spell> getSpell() const;
+    [[nodiscard]] std::shared_ptr<Spell> getSpell() const;
 
-    [[nodiscard]]  std::shared_ptr<Character> makeCopy(bool copyUniqueID = false) const;
+    [[nodiscard]] std::shared_ptr<Character> makeCopy(bool copyUniqueID = false) const;
 
     /// setters
     void setDice(const std::shared_ptr<Dice> &dice);

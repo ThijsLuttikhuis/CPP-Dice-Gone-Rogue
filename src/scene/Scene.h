@@ -17,6 +17,7 @@ class GameStateManager;
 class Scene : public InputHandler, public UIElement {
 protected:
     bool enabled = true;
+    double t = 0.0;
 public:
     Scene(std::string name, std::weak_ptr<GameStateManager> gameState);
 
@@ -41,6 +42,8 @@ public:
     virtual void onPopFromStack();
 
     virtual void reset();
+
+    virtual std::string message(const std::string &data);
 
     virtual void update(double dt);
 };

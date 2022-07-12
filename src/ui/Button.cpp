@@ -4,6 +4,8 @@
 
 #include "Button.h"
 
+#include <iostream>
+
 namespace DGR {
 
 bool Button::isPressed(double xPos, double yPos) const {
@@ -17,7 +19,22 @@ void Button::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                                    1.0f, color, textHasAlpha ? 0.0f : alpha);
     }
 
-    textRenderer->drawText(text, 0.0f, position, size, color, textHasAlpha ? alpha : 1.0f);
+    float blinkAlpha = alpha;
+    if (doBlink) {
+        blinkAlpha = 0.5f * (float) (1.0f + std::sin(blinkTimer * 2.0 * 3.14159 / blinkPeriod));
+    }
+    textRenderer->drawText(text, 0.0f, position, size, color, textHasAlpha ? blinkAlpha : 1.0f);
+}
+
+
+void Button::drawColor(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                       const std::shared_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex) const {
+    if (drawButton) {
+        spriteRenderer->drawSprite("box", zIndex, position, size,
+                                   1.0f, color_, textHasAlpha ? 0.0f : alpha);
+    }
+
+    textRenderer->drawText(text, 0.0f, position, size, color_, textHasAlpha ? alpha : 1.0f);
 }
 
 void Button::setText(std::string text_) {
@@ -30,6 +47,16 @@ bool Button::isEnabled() const {
 
 void Button::setEnabled(bool enabled_) {
     enabled = enabled_;
+}
+
+void Button::update(double t) {
+    if (doBlink) {
+        blinkTimer = t;
+    }
+}
+
+void Button::setDoBlink(bool doBlink_) {
+    doBlink = doBlink_;
 }
 
 }

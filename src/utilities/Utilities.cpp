@@ -2,9 +2,6 @@
 // Created by thijs on 09-06-22.
 //
 
-#include <algorithm>
-#include <glm/vec2.hpp>
-#include <iostream>
 
 #include "Utilities.h"
 #include "Constants.h"
@@ -57,10 +54,10 @@ std::string Utilities::trim(const std::string &str, const std::string &whitespac
 
 std::string Utilities::checkAndRemoveDGRFileVersion(const std::string &fileContents, const std::string &fileName) {
     if (fileContents.substr(0, 13) == ".dgr.version=") {
-        if (fileContents.substr(13, std::string(DGR_FILE_VERSION).size()) != DGR_FILE_VERSION) {
+        if (fileContents.substr(13, DGR_FILE_VERSION.size()) != DGR_FILE_VERSION) {
             std::cerr << "[Utilities::checkAndRemoveDGRFileVersion] file" << fileName
                       << " does not have the correct version (version "
-                      << fileContents.substr(13, std::string(DGR_FILE_VERSION).size())
+                      << fileContents.substr(13, DGR_FILE_VERSION.size())
                       << ", should be " << DGR_FILE_VERSION << ")" << std::endl;
             return "";
         }
@@ -69,8 +66,21 @@ std::string Utilities::checkAndRemoveDGRFileVersion(const std::string &fileConte
                   << " does not start with \".dgr.version=\"" << std::endl;
         return "";
     }
-    return fileContents.substr(13 + std::string(DGR_FILE_VERSION).size(),
-                               fileContents.length() - 13 - std::string(DGR_FILE_VERSION).size());
+    return fileContents.substr(13 + DGR_FILE_VERSION.size(),
+                               fileContents.length() - 13 - DGR_FILE_VERSION.size());
+}
+
+std::vector<std::filesystem::path> Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &extension) {
+    std::vector<std::filesystem::path> filePaths;
+
+    auto dirIt = std::filesystem::directory_iterator(dir);
+    for (const auto &entry : dirIt) {
+        if (entry.path().extension() == extension) {
+            filePaths.push_back(entry.path());
+        }
+    }
+
+    return filePaths;
 }
 
 }

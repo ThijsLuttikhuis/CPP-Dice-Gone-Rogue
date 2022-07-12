@@ -29,8 +29,6 @@ public:
 
     void handleMousePosition(double xPos, double yPos) override;
 
-    void reset() override;
-
     void update(double dt) override;
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);

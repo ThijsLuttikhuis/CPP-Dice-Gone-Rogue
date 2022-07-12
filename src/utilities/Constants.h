@@ -14,8 +14,7 @@
 #define DGR_HEIGHT 32*9
 #define DGR_ANIMATION_SPEED 1.0
 
-#define DGR_FILE_VERSION "0.2"
-
-static std::string DGR_SAVEGAMENAME = "auto";
+#define DGR_FILE_VERSION std::string("0.2")
+#define DGR_AUTOSAVE_NAME std::string("auto.save.dgr")
 
 #endif //DICEGONEROGUE_CONSTANTS_H

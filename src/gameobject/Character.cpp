@@ -18,11 +18,6 @@ namespace DGR {
 Character::Character(std::string name, std::string characterType)
       : GameObject(std::move(name)), characterType(std::move(characterType)) {}
 
-//Character::Character(const std::string &name, std::string characterType, glm::vec2 position, glm::vec2 size)
-//      : GameObject(name, position, size), characterType(std::move(characterType)),
-//        dice(std::make_shared<Dice>(name, std::make_shared<Character>(this))) {}
-
-
 std::shared_ptr<Character> Character::makeCopy(bool copyUniqueID) const {
     auto copy = std::make_shared<Character>(name, getCharacterType());
 
@@ -480,8 +475,9 @@ void Character::applyFaceModifierCleanse(const std::shared_ptr<Face> &face, cons
 
 void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
                                               const std::shared_ptr<BattleScene> &battleScene) {
+
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
-    auto neighbours = battleScene->getNeighbours(this);
+    auto neighbours = battleScene->getNeighbours(shared_from_this());
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
             switch (type) {
@@ -596,6 +592,10 @@ Character::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 
 void Character::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
+}
+
+void GameObject::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 
 std::shared_ptr<Character> Character::getSharedFromThis() {

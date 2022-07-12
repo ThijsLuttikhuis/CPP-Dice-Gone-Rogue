@@ -52,8 +52,11 @@ void Scene::reset() {
 }
 
 void Scene::update(double dt) {
-    (void) dt;
+    t += dt;
 }
 
+std::string Scene::message(const std::string &data) {
+    return data;
+}
 
 }

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "Scene.h"
-#include "utilities/BattleLog.h"
+#include "io/BattleLog.h"
 #include "ui/Window.h"
 #include "gameobject/spell/Spell.h"
 
@@ -64,7 +64,8 @@ private:
 
     void setClickedSpell(std::shared_ptr<Spell> clickedSpell_);
 
-    void updateRerunBattle();
+    void updateRerunBattle(bool reset = false);
+
 public:
     explicit BattleScene(std::weak_ptr<GameStateManager> gameState);
 
@@ -91,6 +92,9 @@ public:
 
     [[nodiscard]] int getRerolls() const;
 
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>>
+    getNeighbours(const std::shared_ptr<Character>& character) const;
+
     /// setters
     void setNextGameState(bool doSaveTurn = true);
 
@@ -104,11 +108,9 @@ public:
 
     void setCharactersFromBattleLog();
 
-    void setBattleLog(const std::shared_ptr<BattleLog>& battleLog_);
+    void setBattleLog(const std::shared_ptr<BattleLog> &battleLog_);
 
     /// functions
-    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(Character* character);
-
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;

@@ -5,13 +5,14 @@
 #include <experimental/vector>
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
-#include <io/characters/YamlReader.h>
+#include <io/YamlReader.h>
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
 #include <scene/BattleDefeatScene.h>
 #include <scene/CharacterSelectScene.h>
 #include <scene/LoadGameScene.h>
+#include <scene/AreYouSureScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
@@ -199,6 +200,10 @@ void GameStateManager::initializeScenes() {
     auto battleScene = std::make_shared<BattleScene>(sharedFromThis);
     battleScene->initialize();
     allScenes.push_back(battleScene);
+
+    auto areYouSureScene = std::make_shared<AreYouSureScene>(sharedFromThis);
+    areYouSureScene->initialize();
+    allScenes.push_back(areYouSureScene);
 
     auto mainMenuScene = std::make_shared<MainMenuScene>(sharedFromThis);
     mainMenuScene->initialize();

@@ -10,7 +10,7 @@
 #include <set>
 #include <utility>
 #include <filesystem>
-#include "utilities/BattleLog.h"
+#include "io/BattleLog.h"
 
 namespace DGR {
 
@@ -27,7 +27,7 @@ LoadGameScene::LoadGameScene(std::weak_ptr<GameStateManager> gameState)
 
     auto button1 = std::make_shared<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
                                             glm::vec2(buttonWidth * 2, buttonHeight / 2));
-    button1->setText("Select three characters");
+    button1->setText("Load game");
     buttons.push_back(button1);
 
     auto button2 = std::make_shared<Button>("Ready",
@@ -65,37 +65,42 @@ LoadGameScene::LoadGameScene(std::weak_ptr<GameStateManager> gameState)
 
     auto button3 = std::make_shared<Button>("ScrollLeft",
                                             glm::vec2(leftButtonX, leftRightButtonY),
-                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight));
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
+                                            glm::vec3(0.4f),
+                                            0.0f, true, true);
     button3->setText(" <<");
     buttons.push_back(button3);
 
     auto button4 = std::make_shared<Button>("ScrollRight",
                                             glm::vec2(rightButtonX, leftRightButtonY),
-                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight));
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
+                                            glm::vec3(0.4f),
+                                            0.0f, true, true);
     button4->setText(" >>");
     buttons.push_back(button4);
 
+
     auto button5 = std::make_shared<Button>("SelectSave0",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
-                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight));
     button5->setText("");
     buttons.push_back(button5);
 
-    auto button6 = std::make_shared<Button>("SelectSave0",
+    auto button6 = std::make_shared<Button>("SelectSave1",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
-                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight));
     button6->setText("");
     buttons.push_back(button6);
 
-    auto button7 = std::make_shared<Button>("SelectSave0",
+    auto button7 = std::make_shared<Button>("SelectSave2",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
-                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight));
     button7->setText("");
     buttons.push_back(button7);
 
-    auto button8 = std::make_shared<Button>("SelectSave0",
+    auto button8 = std::make_shared<Button>("SelectSave3",
                                             glm::vec2(midButtonStart + i * midButtonWidth, leftRightButtonY),
-                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight));
     button8->setText("");
     buttons.push_back(button8);
 
@@ -127,60 +132,8 @@ void LoadGameScene::handleMouseButton(double xPos, double yPos) {
 }
 
 void LoadGameScene::handleMousePosition(double xPos, double yPos) {
+    (void) xPos, (void) yPos;
     //TODO: show preview of save game
-//    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
-//    for (auto &hero : gameStatePtr->getAllHeroes()) {
-//        handleMousePosition(hero, xPos, yPos);
-//
-//        auto spell = hero->getSpell();
-//        if (spell) {
-//            spell->setHover(spell->isMouseHovering(xPos, yPos));
-//        }
-//    }
-}
-
-void LoadGameScene::alignSavesPositions() {
-    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
-
-    const int width = gameStatePtr->getWindow()->getWidth();
-    const int center = width / 2;
-    const int dWidth = 48;
-    const int maxTotalWidth = maxSavesOnRow * (dWidth + 32);
-
-    int startLeft;
-    int totalWidth;
-    int left, up;
-    totalWidth = 0;
-
-    auto allHeroes = gameStatePtr->getAllHeroes();
-    int allHeroesSize = allHeroes.size();
-    for (int i = currentLeftSaveIndex; i < allHeroesSize; i++) {
-        totalWidth += dWidth + (int) allHeroes[i]->getSize().x;
-    }
-
-    totalWidth = std::min(totalWidth, maxTotalWidth);
-
-    startLeft = (int) center - totalWidth / 2;
-    left = startLeft;
-    up = 9 * 16;
-
-    for (int i = 0; i < allHeroesSize; i++) {
-        auto hero = allHeroes[i];
-        glm::vec2 size = hero->getSize();
-
-        if (i < currentLeftSaveIndex) {
-            hero->setPosition(-left, -up);
-            continue;
-        }
-        if ((int) size.x + left - startLeft > maxTotalWidth) {
-            hero->setPosition(-left, -up);
-            continue;
-        }
-        glm::vec2 targetPos(left, (float) up - size.y);
-        hero->setPosition(targetPos);
-
-        left += dWidth + (int) hero->getSize().x;
-    }
 }
 
 void LoadGameScene::reset() {
@@ -192,23 +145,20 @@ void LoadGameScene::reset() {
 }
 
 void LoadGameScene::update(double dt) {
-    (void) dt;
+    t += dt;
 
+    for (auto & button : buttons) {
+        if (button->getName() == "ScrollRight") {
+            button->setDoBlink((int) loadedGameNames.size() > currentLeftSaveIndex + maxSavesOnRow);
+        } else if (button->getName() == "ScrollLeft") {
+            button->setDoBlink(currentLeftSaveIndex > 0);
+        }
 
-//    auto allHeroes = gameState->getAllHeroes();
-//    if (allHeroes.empty()) {
-//        auto allHeroes_ = gameState->getAllHeroes();
-//        for (auto &hero : allHeroes_) {
-//            auto copy = hero->makeCopy(true);
-//            allHeroes.push_back(copy);
-//        }
-//    }
-
-    alignSavesPositions();
-
+        button->update(t);
+    }
 }
 
-void LoadGameScene::pressButton(const std::shared_ptr<Button>& button) {
+void LoadGameScene::pressButton(const std::shared_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     auto &buttonName = button->getName();
@@ -218,25 +168,55 @@ void LoadGameScene::pressButton(const std::shared_ptr<Button>& button) {
     if (buttonName == "ScrollRight") {
         currentLeftSaveIndex++;
         currentLeftSaveIndex = std::min(currentLeftSaveIndex,
-                                        (int) gameStatePtr->getAllHeroes().size() - maxSavesOnRow);
+                                        std::max(0, (int) loadedGames.size() - maxSavesOnRow));
     } else if (buttonName == "ScrollLeft") {
         currentLeftSaveIndex--;
         currentLeftSaveIndex = std::max(currentLeftSaveIndex, 0);
-    } else if (buttonName == "Randomize") {
 
     } else if (buttonName == "Return") {
         gameStatePtr->popSceneFromStack();
 
+    } else if (buttonName == "DeleteSave") {
+        if (selectedGame >= (int) loadedGames.size()) {
+            gameStatePtr->addOnScreenMessage("No data found, please select another save.");
+            return;
+        }
+        auto &fileName = loadedGameNames[selectedGame];
+        std::string dir = "../src/io/saves/";
+        auto dirIt = std::filesystem::directory_iterator(dir);
+        for (const auto &entry : dirIt) {
+#if DGR_DEBUG
+            std::cout << entry.path().stem() << std::endl;
+#endif
+            if (entry.path().extension() == ".save.dgr" || entry.path().extension() == ".dgr") {
+
+                if (fileName == entry.path().stem()) {
+                    gameStatePtr->getScene("AreYouSureScene")->message(
+                          "LoadGameScene: delete, " + std::string(entry.path()));
+
+                    gameStatePtr->pushSceneToStack("AreYouSureScene");
+                }
+            }
+        }
+
     } else if (buttonName == "SelectSave0") {
+        selectedGame = currentLeftSaveIndex;
 
     } else if (buttonName == "SelectSave1") {
+        selectedGame = currentLeftSaveIndex + 1;
 
     } else if (buttonName == "SelectSave2") {
+        selectedGame = currentLeftSaveIndex + 2;
 
     } else if (buttonName == "SelectSave3") {
+        selectedGame = currentLeftSaveIndex + 3;
 
     } else if (buttonName == "Ready") {
-        auto &battle = loadedGames[selectedGame];
+        if (selectedGame >= (int) loadedGames.size()) {
+            gameStatePtr->addOnScreenMessage("No data found, please select another save.");
+            return;
+        }
+        auto &battle = loadedGames[loadedGameNames[selectedGame]];
         std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(
               gameStatePtr->getScene("BattleScene"));
         if (!battleScene) {
@@ -244,7 +224,6 @@ void LoadGameScene::pressButton(const std::shared_ptr<Button>& button) {
             exit(404);
         }
 
-        battleScene->reset();
         battleScene->setBattleLog(battle);
         battleScene->rerunBattleFromStart();
 
@@ -255,33 +234,66 @@ void LoadGameScene::pressButton(const std::shared_ptr<Button>& button) {
 
 void LoadGameScene::onPushToStack() {
     loadedGames = {};
+    loadedGameNames = {};
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     std::string dir = "../src/io/saves/";
     auto dirIt = std::filesystem::directory_iterator(dir);
-    for (const auto &entry : dirIt) {
+    auto allSaves = Utilities::getAllFileNamesInDir(dir, ".dgr");
+    for (const auto &save : allSaves) {
 #if DGR_DEBUG
         std::cout << entry.path() << std::endl;
 #endif
-        if (entry.path().extension() == ".save.dgr" || entry.path().extension() == ".dgr") {
-            std::shared_ptr<BattleLog> battle =
-                  BattleLog::loadBattle(gameStatePtr, entry.path());
+        std::shared_ptr<BattleLog> battle =
+              BattleLog::loadBattle(gameStatePtr, save);
 
-            if (battle) {
-                loadedGames.push_back(battle);
-            }
+        if (battle) {
+            auto name = std::string(save.stem());
+            loadedGames[name] = battle;
+            loadedGameNames.push_back(name);
         }
     }
 
-    if (loadedGames.empty()) {
+    if (loadedGameNames.empty()) {
         gameStatePtr->popSceneFromStack();
         gameStatePtr->pushSceneToStack("CharacterSelectScene");
     }
 }
 
-void LoadGameScene::initialize() {
+std::string LoadGameScene::message(const std::string &data) {
+
+    if (data.substr(0, 5) != "yes: ") {
+        return data;
+    }
+
+    if (data.substr(5, 8) == "delete, ") {
+        /// delete save
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        std::string filePath = data.substr(13, data.size() - 13);
+        std::string dir = "../src/io/saves/";
+        auto dirIt = std::filesystem::directory_iterator(dir);
+        auto allSaveNames = Utilities::getAllFileNamesInDir(dir, ".save.dgr");
+        for (const auto &saveName : allSaveNames) {
+
+            if (filePath == saveName) {
+                std::cout << saveName.stem() << std::endl;
+
+                std::cout << "deleting.." << std::endl;
+
+                std::filesystem::remove(saveName);
+                return data;
+            }
+        }
+
+        /// reload
+        gameStatePtr->popSceneFromStack();
+        gameStatePtr->pushSceneToStack("LoadGameScene");
+
+    }
+    return data;
 }
+
 
 void LoadGameScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer) {
@@ -290,19 +302,49 @@ void LoadGameScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer
 
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
+
+        for (int i = 0; i < 4; i++) {
+            if (button->getName() == "SelectSave" + std::to_string(i)) {
+                if (i == selectedGame - currentLeftSaveIndex) {
+                    button->drawColor(spriteRenderer, textRenderer, glm::vec3(1, 0, 0), 0.9f);
+                }
+                auto position = button->getPosition();
+                auto size = button->getSize();
+                drawLoadedGame(spriteRenderer, textRenderer, i, position, size);
+            }
+        }
+    }
+}
+
+void LoadGameScene::drawLoadedGame(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                                   const std::shared_ptr<TextRenderer> &textRenderer, int index,
+                                   glm::vec2 position, glm::vec2 size) {
+
+    if (index + currentLeftSaveIndex >= (int) loadedGames.size()) {
+        return;
     }
 
-    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    auto gameName = loadedGameNames[index + currentLeftSaveIndex];
+    auto game = loadedGames[gameName];
+    auto state = game->getState();
+    auto heroes = std::get<0>(state);
 
-//    for (auto &hero : gameStatePtr->getAllHeroes()) {
-//        hero->draw(spriteRenderer, textRenderer);
-//    }
+    textRenderer->drawText(gameName, 0.0f, position, size);
+    for (int i = 0; i < (int) heroes->size(); i++) {
+        auto hero = heroes->at(i);
 
-//    for (auto &hero : gameStatePtr->getAllHeroes()) {
-//        hero->setHoverMouse(true);
-//        hero->drawHover(spriteRenderer, textRenderer);
-//    }
+        int nX = (int) size.x / 32;
+        int xI = i % nX;
+        int yI = i / nX;
+        double dPos = size.x / (double) nX;
+        double xPos = position.x + xI * dPos + (dPos - 32.0) / 2.0;
+        double yPos = position.y + yI * dPos + (dPos - 32.0) / 2.0 + 16;
 
+        hero->setPosition(glm::vec2(xPos, yPos));
+        hero->drawHeroOnly(spriteRenderer);
+
+    }
 }
+
 
 }

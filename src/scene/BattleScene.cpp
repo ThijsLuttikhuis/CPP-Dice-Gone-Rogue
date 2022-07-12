@@ -314,9 +314,11 @@ void BattleScene::update(double dt) {
     checkVictory();
 
     if (rerunBattle) {
+        allowButtonPress = false;
         updateRerunBattle();
         return;
     }
+    allowButtonPress = true;
 
     //TODO: add animations etc
     int slowDown = 30 / DGR_ANIMATION_SPEED;
@@ -562,45 +564,28 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     setClickedCharacter(nullptr);
 }
 
-std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(Character* character) {
+std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>>
+BattleScene::getNeighbours(const std::shared_ptr<Character> &character) const {
+
     std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> neighbours(nullptr, nullptr);
-    int nHeroes = heroes.size();
-    for (int i = 0; i < nHeroes; i++) {
-        if (character->getUniqueID() == heroes[i]->getUniqueID()) {
+    auto &characters = character->getCharacterType() == "hero" ? heroes :
+                       character->getCharacterType() == "enemy" ? enemies : std::vector<std::shared_ptr<Character>>();
+
+    int nCharacters = characters.size();
+    for (int i = 0; i < nCharacters; i++) {
+        if (character->getUniqueID() == characters[i]->getUniqueID()) {
             int j = i - 1;
             while (j >= 0) {
-                if (!heroes[j]->isDead()) {
-                    neighbours.first = heroes[j];
+                if (!characters[j]->isDead()) {
+                    neighbours.first = characters[j];
                     break;
                 }
                 j--;
             }
             j = i + 1;
-            while (j < nHeroes) {
-                if (!heroes[j]->isDead()) {
-                    neighbours.second = heroes[j];
-                    break;
-                }
-                j++;
-            }
-            return neighbours;
-        }
-    }
-    int nEnemies = enemies.size();
-    for (int i = 0; i < nEnemies; i++) {
-        if (character->getUniqueID() == enemies[i]->getUniqueID()) {
-            int j = i - 1;
-            while (j >= 0) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.first = enemies[j];
-                    break;
-                }
-                j--;
-            }
-            j = i + 1;
-            while (j < nHeroes) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.second = enemies[j];
+            while (j < nCharacters) {
+                if (!characters[j]->isDead()) {
+                    neighbours.second = characters[j];
                     break;
                 }
                 j++;
@@ -660,6 +645,7 @@ void BattleScene::checkVictory() {
     if (allEnemiesDead) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
+        updateRerunBattle(true);
         return;
     }
 
@@ -673,6 +659,7 @@ void BattleScene::checkVictory() {
     if (allHeroesDead) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         gameStatePtr->pushSceneToStack("BattleDefeatScene", true);
+        updateRerunBattle(true);
         return;
     }
 }
@@ -689,10 +676,19 @@ void BattleScene::rerunBattleFromStart() {
     setCharactersFromBattleLog();
 }
 
-void BattleScene::updateRerunBattle() {
+void BattleScene::updateRerunBattle(bool reset) {
     static int turnIndex = 0;
     static int attackIndex = 0;
     static bool initState = false;
+
+    if (reset) {
+        turnIndex = 0;
+        attackIndex = 0;
+        initState = false;
+        rerunBattle = false;
+        return;
+    }
+
     if (!initState) {
         state = battleGameState::attack_block_enemies;
         initState = true;

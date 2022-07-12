@@ -49,8 +49,7 @@ void BattleDefeatScene::pressButton(std::shared_ptr<Button> button) {
     std::cout << "pressed a button!" << std::endl;
 }
 
-void
-BattleDefeatScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+void BattleDefeatScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                           const std::shared_ptr<TextRenderer> &textRenderer) {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
