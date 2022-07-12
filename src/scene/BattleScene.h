@@ -64,6 +64,7 @@ private:
 
     void setClickedSpell(std::shared_ptr<Spell> clickedSpell_);
 
+    void updateRerunBattle();
 public:
     explicit BattleScene(std::weak_ptr<GameStateManager> gameState);
 
@@ -101,7 +102,9 @@ public:
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setBattleLog(const std::shared_ptr<BattleLog>& battleLog_, bool copyBattleState = true);
+    void setCharactersFromBattleLog();
+
+    void setBattleLog(const std::shared_ptr<BattleLog>& battleLog_);
 
     /// functions
     std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(Character* character);
@@ -112,6 +115,10 @@ public:
 
     void rerunBattleFromStart();
 
+    void initialize() override;
+
+    void onPopFromStack() override;
+
     void reset() override;
 
     void update(double dt) override;
@@ -120,12 +127,7 @@ public:
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                 const std::shared_ptr<TextRenderer> &textRenderer) override;
 
-    void initialize() override;
 
-
-    void updateRerunBattle();
-
-    void onPopFromStack() override;
 };
 
 }

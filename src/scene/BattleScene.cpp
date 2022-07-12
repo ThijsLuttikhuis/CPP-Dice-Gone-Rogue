@@ -59,15 +59,9 @@ std::shared_ptr<BattleLog> BattleScene::getBattleLog() const {
     return battleLog;
 }
 
-void BattleScene::setBattleLog(const std::shared_ptr<BattleLog> &battleLog_, bool copyBattleState) {
-    battleLog_->setBattleScene(shared_from_this());
-    if (copyBattleState) {
-        auto battleLogState = battleLog_->getState();
-        heroes = *std::get<0>(battleLogState);
-        enemies = *std::get<1>(battleLogState);
-        mana = std::get<2>(battleLogState);
-    }
+void BattleScene::setBattleLog(const std::shared_ptr<BattleLog> &battleLog_) {
     battleLog = battleLog_;
+    battleLog->setBattleScene(shared_from_this());
 }
 
 void BattleScene::setClickedCharacter(std::shared_ptr<Character> clickedCharacter_) {
@@ -683,14 +677,16 @@ void BattleScene::checkVictory() {
     }
 }
 
-void BattleScene::rerunBattleFromStart() {
-    rerunBattle = true;
-
+void BattleScene::setCharactersFromBattleLog() {
     auto battleLogState = battleLog->getState();
     heroes = *std::get<0>(battleLogState);
     enemies = *std::get<1>(battleLogState);
     mana = std::get<2>(battleLogState);
+}
 
+void BattleScene::rerunBattleFromStart() {
+    rerunBattle = true;
+    setCharactersFromBattleLog();
 }
 
 void BattleScene::updateRerunBattle() {
@@ -702,7 +698,6 @@ void BattleScene::updateRerunBattle() {
         initState = true;
     }
 
-
     int slowDown = 30 / DGR_ANIMATION_SPEED;
     animationCounter++;
     if (animationCounter % slowDown != 0) {
@@ -711,7 +706,7 @@ void BattleScene::updateRerunBattle() {
     animationCounter = 0;
 
     bool done = battleLog->doRerunBattleAttack(turnIndex, attackIndex);
-    rerunBattleFromStart();
+    setCharactersFromBattleLog();
     if (done) {
         turnIndex = 0;
         attackIndex = 0;
