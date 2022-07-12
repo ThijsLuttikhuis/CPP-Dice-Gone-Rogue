@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_SPRITERENDERER_H
 #define DICEGONEROGUE_SPRITERENDERER_H
 
+
 #include <map>
 #include <vector>
 
@@ -13,20 +14,25 @@
 
 namespace DGR {
 
+class UIElement;
+
 class SpriteRenderer {
 private:
     Shader* shader;
     unsigned int quadVAO{};
 
+    UIElement* baseUI;
+
     std::map<std::string, Texture2D*> textures;
 
-    std::vector<std::pair<std::string, void (*)(SpriteRenderer* spriteRenderer, const std::string &texture,
-                                                float zIndex, glm::vec2 position, glm::vec2 size, float rotate,
-                                                glm::vec3 color, float alpha)>> specialSpritesToFunction;
+    std::vector<std::pair<std::string,
+          void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
+                   float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
+                   const glm::vec3 &color, float alpha)>> specialSpritesToFunction;
 
-    static void drawBoxSprite(SpriteRenderer* spriteRenderer, const std::string& texture, float zIndex,
-                              glm::vec2 position, glm::vec2 size, float rotate = 0.0f,
-                              glm::vec3 color = glm::vec3(1.0f), float alpha = 1.0f);
+    static void drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
+                              const glm::vec2 &position, const glm::vec2 &size, float rotate = 0.0f,
+                              const glm::vec3 &color = glm::vec3(1.0f), float alpha = 1.0f);
 
 public:
     SpriteRenderer(Shader* shader, glm::mat4 projection);
@@ -39,13 +45,16 @@ public:
 
     void addTexture(const std::string &fileDir, const std::string &name);
 
-    void drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size, float rotate = 0.0f,
-                    glm::vec3 color = glm::vec3(1.0f), float alpha = 1.0f);
-
+    void drawSprite(const std::string &textureName, float zIndex, const glm::vec2 &position, const glm::vec2 &size,
+                    float rotate = 0.0f, const glm::vec3 &color = glm::vec3(1.0f),
+                    float alpha = 1.0f) const;
 
     bool hasTexture(const std::string &textureName);
+
+    void setBaseUI(DGR::UIElement* baseUI_);
 };
 
 }
+
 
 #endif //DICEGONEROGUE_SPRITERENDERER_H

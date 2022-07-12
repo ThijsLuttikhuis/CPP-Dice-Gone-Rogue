@@ -1,21 +1,22 @@
 characters:
   knight:
+    size: 32;
     hp: 12;
     dice:
       face0:
-        damage: 4;
+        damage: 5;
       ;
       face1:
         damage: 2;
       ;
       face2:
-        damage: 3;
+        damage: 5;
       ;
       face3:
         damage: 2;
       ;
       face4:
-        shield: 3;
+        shield: 4;
       ;
       face5:
         shield: 2;
@@ -24,6 +25,7 @@ characters:
   ;
 
   rogue:
+    size: 32;
     hp: 9;
     dice:
       face0:
@@ -31,14 +33,14 @@ characters:
         mod: "poison";
       ;
       face1:
-        damage: 2;
+        damage: 3;
         mod: "ranged";
       ;
       face2:
         dodge: 0;
       ;
       face3:
-        damage: 2;
+        damage: 3;
         mod: "ranged";
       ;
       face4:
@@ -54,11 +56,43 @@ characters:
     ;
   ;
 
+  hunter:
+    size: 32;
+    hp: 10;
+    dice:
+      face0:
+        damage: 5;
+        mod: "ranged";
+      ;
+      face1:
+        damage: 1;
+        mod: "poison";
+      ;
+      face2:
+        damage: 3;
+        mod: "ranged";
+      ;
+      face3:
+        damage: 1;
+        mod: "poison";
+      ;
+      face4:
+        damage: 2;
+        mod: "ranged";
+      ;
+      face5:
+        damage: 1;
+          mod: "ranged";
+      ;
+    ;
+  ;
+
   paladin:
+    size: 32;
     hp: 14;
     dice:
       face0:
-        damage and self shield: 2;
+        damage and self shield: 3;
       ;
       face1:
         shield: 1;
@@ -77,34 +111,36 @@ characters:
         heal and shield: 2;
       ;
       face5:
-        mana: 2;
+        empty: 0;
       ;
     ;
   ;
 
   wizard:
+    size: 32;
     hp: 8;
     spell:
-      name: "Fireball";
+      name: "fireball";
       damage: 6;
       cost: 4;
     ;
     dice:
       face0:
-        mana: 4;
+        mana: 2;
       ;
       face1:
-        mana: 2;
+        mana: 4;
+        mod: "single use";
       ;
       face2:
         shield and mana: 2;
       ;
       face3:
-        mana: 2;
+        mana: 4;
+        mod: "single use";
       ;
       face4:
-        mana: 3;
-        mod: "single use";
+        mana: 2;
       ;
       face5:
         empty: 0;
@@ -113,6 +149,7 @@ characters:
   ;
 
   druid:
+    size: 32;
     hp: 10;
     dice:
       face0:
@@ -120,18 +157,55 @@ characters:
         mod: "growth";
       ;
       face1:
+        heal: 1;
+        mod: "regen";
+      ;
+      face2:
+        damage: 4;
+        mod: "decay";
+      ;
+      face3:
+        heal: 1;
+        mod: "regen";
+      ;
+      face4:
+        heal: 2;
+        mod: "growth";
+      ;
+      face5:
+        heal: 4;
+        mod: "decay";
+      ;
+    ;
+  ;
+
+  priest:
+    size: 32;
+    hp: 9;
+    spell:
+      name: "cleanse";
+      cleanse: 0;
+      cost: 2;
+    ;
+    dice:
+      face0:
+        bonus health: 3;
+      ;
+      face1:
         heal and mana: 2;
         mod: "single use";
       ;
       face2:
-        damage: 3;
+        bonus health: 3;
       ;
       face3:
         heal and mana: 2;
         mod: "single use";
       ;
       face4:
-        heal: 3;
+        heal: 1;
+        mod: "cleanse";
+        mod1: "sweeping edge";
       ;
       face5:
         empty: 0;

@@ -5,13 +5,13 @@
 #ifndef DICEGONEROGUE_ATTACKORDER_H
 #define DICEGONEROGUE_ATTACKORDER_H
 
-#include <gameobject/Enemy.h>
-#include <gameobject/Hero.h>
 #include "gameobject/Character.h"
 #include "gameobject/spell/Spell.h"
 #include "gameobject/dice/Face.h"
 
 namespace DGR {
+
+class BattleScene;
 
 class AttackOrder {
 public:
@@ -21,26 +21,21 @@ public:
     };
 
 private:
+    BattleScene* battleScene;
 
-    struct ChCh {
-        Character* character;
-        Character* otherCharacter;
-    };
-    struct SpCh {
-        Spell* spell;
-        Character* character;
-    };
-
-    GameStateManager* gameState;
-    std::vector<Hero*> heroes;
-    std::vector<Enemy*> enemies;
+    int mana{};
+    std::vector<Character*> heroes;
+    std::vector<Character*> enemies;
 
     std::vector<attackType> attackOrder{};
-    std::vector<ChCh> characterAttacks{};
-    std::vector<SpCh> characterSpells{};
+    std::vector<std::pair<int, int>> attackOrderIDs{};
+
+    Character* getStoredCharacter(int id);
+
+    Spell* getStoredSpell(int id);
 
 public:
-    explicit AttackOrder(GameStateManager* gameState) : gameState(gameState) {};
+    explicit AttackOrder(BattleScene* battleScene) : battleScene(battleScene) {};
 
     void addAttack(Character* character, Character* otherCharacter = nullptr);
 
@@ -48,7 +43,9 @@ public:
 
     void undo();
 
-    void setCharacters(const std::vector<Hero*> &heroes_, const std::vector<Enemy*> &enemies_);
+    void setState(const std::vector<Character*> &heroes_, const std::vector<Character*> &enemies_, int mana_);
+
+    void reset();
 };
 
 }

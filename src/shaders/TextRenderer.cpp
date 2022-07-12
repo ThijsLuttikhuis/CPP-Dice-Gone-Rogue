@@ -2,13 +2,14 @@
 // Created by thijs on 06-06-22.
 //
 
+#include <iostream>
 #include <string>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "TextRenderer.h"
 #include "utilities/Constants.h"
-
+#include "ui/UIElement.h"
 
 namespace DGR {
 
@@ -35,7 +36,7 @@ TextRenderer::TextRenderer(Shader* shader, glm::mat4 projection)
     std::string dir = "../src/textures/textrenderer/";
     auto dirIt = std::filesystem::directory_iterator(dir);
     for (const auto &entry : dirIt) {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << entry.path() << std::endl;
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
@@ -107,12 +108,23 @@ TextRenderer::~TextRenderer() {
 }
 
 void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
-                            glm::vec3 color, float alpha) {
+                            glm::vec3 color, float alpha) const {
+
+    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0,0);
+    glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
+    glm::vec2 screenPos = textStart + basePos;
+
+    if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
+        textStart.x + size.x > baseSize.x || textStart.y + size.y > baseSize.y) {
+
+        return;
+    }
+
 
     glm::vec3 white = glm::vec3(1.0f);
     glm::vec3 textColor = white;
 
-    glm::vec2 currentTextPos = textStart + glm::vec2(1, 1);
+    glm::vec2 currentTextPos = screenPos + glm::vec2(1, 1);
 
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
@@ -126,7 +138,7 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 tex
 
         /// if a space is found, display word
         if (letter == ' ' || letter == '^') {
-            currentTextPos = displayWord(currentTextPos, textStart, size, wordVAO, textColor, alpha, zIndex);
+            currentTextPos = displayWord(currentTextPos, screenPos, size, wordVAO, textColor, alpha, zIndex);
             wordVAO = {};
         }
 
@@ -138,12 +150,12 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 tex
     }
 
     /// display final word
-    currentTextPos = displayWord(currentTextPos, textStart, size, wordVAO, textColor, alpha, zIndex);
+    currentTextPos = displayWord(currentTextPos, screenPos, size, wordVAO, textColor, alpha, zIndex);
 }
 
 glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::vec2 &textStart, const glm::vec2 &size,
                                     const std::vector<int> &wordVAO, const glm::vec3 &color, float alpha,
-                                    float zIndex) {
+                                    float zIndex) const {
 
     glm::vec2 currentTextPos = initialTextPos;
     glm::vec2 letterSize(5, 7);
@@ -155,7 +167,7 @@ glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::
     }
 
     /// check if the word should be put on a new line
-    if (currentTextPos.x + wordWidth > textStart.x + size.x) {
+    if (currentTextPos.x != textStart.x + 1 && currentTextPos.x + wordWidth > textStart.x + size.x) {
         currentTextPos = glm::vec2(textStart.x + 1, currentTextPos.y + letterSize.y + 1);
     }
 
@@ -182,6 +194,10 @@ glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::
     }
 
     return currentTextPos;
+}
+
+void TextRenderer::setBaseUI(DGR::UIElement* baseUI_) {
+    baseUI = baseUI_;
 }
 
 }

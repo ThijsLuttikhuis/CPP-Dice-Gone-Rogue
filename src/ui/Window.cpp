@@ -3,24 +3,25 @@
 //
 
 #include <iostream>
+#include <scene/BattleScene.h>
 
 #include "Window.h"
-#include "GameController.h"
 #include "gameobject/dice/Dice.h"
-#include "Constants.h"
+#include "utilities/Constants.h"
+#include "GameStateManager.h"
 
 namespace DGR {
 
 Window* callback_window_ptr;
 
 void mouse_position_callback(GLFWwindow* window, double xPos, double yPos) {
-    (void)window;
+    (void) window;
 
     callback_window_ptr->handleMousePosition(xPos, yPos);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    (void)mods;
+    (void) mods;
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
@@ -32,9 +33,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    (void)scancode, (void)mode;
+    (void) scancode, (void) mode;
 
-#if DEBUG
+#if DGR_DEBUG
     std::cout << "key callback" << std::endl;
 #endif
     // when a user presses the escape key, we set the WindowShouldClose property to true, closing the application
@@ -51,8 +52,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    (void)window;
-#if DEBUG
+    (void) window;
+#if DGR_DEBUG
     std::cout << "framebuffer size callback" << std::endl;
 #endif
 
@@ -133,27 +134,22 @@ int Window::getHeight() const {
     return height;
 }
 
-std::vector<Button*> Window::getButtons() const {
-    return inputHandler->getButtons();
-}
-
 void Window::handleMouseButton(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    inputHandler->handleMouseButton(xPos, yPos);
+    gameState->handleMouseButton(xPos, yPos);
 }
 
 void Window::handleMousePosition(double xPos, double yPos) {
     xPos *= (double) width / displayWidth;
     yPos *= (double) height / displayHeight;
 
-    inputHandler->handleMousePosition(xPos, yPos);
+    gameState->handleMousePosition(xPos, yPos);
 }
 
-void Window::setGameController(GameController* gameController_) {
-    gameController = gameController_;
-    inputHandler = new InputHandler(gameController_);
+void Window::setGameStateManager(GameStateManager* gameState_) {
+    gameState = gameState_;
 }
 
 void Window::setWindowSize(int displayWidth_, int displayHeight_) {
@@ -165,12 +161,10 @@ void Window::render() {
     glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    inputHandler->render();
-    gameController->render();
+    gameState->render();
 
     swapBuffers();
 
 }
-
 
 }

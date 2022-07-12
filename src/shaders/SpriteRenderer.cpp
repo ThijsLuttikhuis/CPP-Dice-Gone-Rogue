@@ -2,12 +2,14 @@
 // Created by thijs on 30-05-22.
 //
 
+#include <iostream>
 #include <filesystem>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "SpriteRenderer.h"
 #include "utilities/Constants.h"
+#include "ui/UIElement.h"
 
 namespace DGR {
 
@@ -15,9 +17,10 @@ SpriteRenderer::SpriteRenderer(Shader* shader, glm::mat4 projection)
       : shader(shader) {
 
     specialSpritesToFunction.push_back(
-          std::make_pair<std::string, void (*)(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
-                                               glm::vec2 position, glm::vec2 size, float rotate,
-                                               glm::vec3 color, float alpha)>("box", drawBoxSprite));
+          std::make_pair<std::string,
+                void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
+                         float zIndex, const glm::vec2 &position, const glm::vec2 &size, float rotate,
+                         const glm::vec3 &color, float alpha)>("box", drawBoxSprite));
 
     shader->use();
     shader->setInteger("sprite", 0);
@@ -52,9 +55,9 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-
-void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, glm::vec2 position, glm::vec2 size,
-                                float rotate, glm::vec3 color, float alpha) {
+void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
+                                const glm::vec2 &position, const glm::vec2 &size,
+                                float rotate, const glm::vec3 &color, float alpha) const {
 
     for (auto &specialSprite : specialSpritesToFunction) {
         if (textureName == specialSprite.first) {
@@ -63,8 +66,16 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, gl
         }
     }
 
+    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0,0);
+    glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
+    glm::vec2 screenPos = position + basePos;
+    if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
+          position.x + size.x > baseSize.x + 1 || position.y + size.y > baseSize.y + 1) {
+        return;
+    }
+
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));
+    model = glm::translate(model, glm::vec3(screenPos, 0.0f));
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
@@ -78,13 +89,13 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex, gl
 
     glActiveTexture(GL_TEXTURE0);
 
-    if (textures[textureName]) {
-        textures[textureName]->bind();
+    if (textures.find(textureName) != textures.end()) {
+        textures.at(textureName)->bind();
     } else {
-#if PRINT_NO_TEXTURE
+#if DGR_PRINT_NO_TEXTURE
         std::cerr << "SpriteRenderer::drawSprite: error, no texture exist with name " << textureName << std::endl;
 #endif
-        textures["no_texture"]->bind();
+        textures.at("no_texture")->bind();
     }
 
     glBindVertexArray(this->quadVAO);
@@ -107,7 +118,7 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     std::string dir = "../src/" + dirName + "/";
     auto dirIt = std::filesystem::directory_iterator(dir);
     for (const auto &entry : dirIt) {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << entry.path() << std::endl;
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
@@ -117,10 +128,11 @@ void SpriteRenderer::addAllTexturesInDir(const std::string &dirName) {
     }
 }
 
-void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
-                                   glm::vec2 position, glm::vec2 size, float drawEdges, glm::vec3 color, float alpha) {
-
+void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const std::string &texture, float zIndex,
+                                   const glm::vec2 &position, const glm::vec2 &size, float edgeAlpha,
+                                   const glm::vec3 &color, float alpha) {
     (void) texture;
+
     std::string tex = "pixel";
     float left = position.x;
     float right = position.x + size.x;
@@ -129,17 +141,21 @@ void SpriteRenderer::drawBoxSprite(SpriteRenderer* spriteRenderer, const std::st
 
     // draw center
     spriteRenderer->drawSprite(tex, zIndex, position, size, 0.0f, color, alpha);
-    if (drawEdges > 0.001f) {
+    if (edgeAlpha > 0.001f) {
         // draw edges
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
-        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, 1.0);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), 0.0f, color, edgeAlpha);
+        spriteRenderer->drawSprite(tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), 0.0f, color, edgeAlpha);
     }
 }
 
 bool SpriteRenderer::hasTexture(const std::string &textureName) {
     return textures[textureName];
+}
+
+void SpriteRenderer::setBaseUI(DGR::UIElement* baseUI_) {
+    baseUI = baseUI_;
 }
 
 }

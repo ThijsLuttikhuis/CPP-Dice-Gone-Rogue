@@ -3,19 +3,20 @@
 //
 
 
-#include "GameController.h"
+#include <utilities/Constants.h>
+#include "GameStateManager.h"
 #include "utilities/Random.h"
-#include "utilities/Window.h"
+#include "ui/Window.h"
 
 int main() {
 
-    int width = 28*16;
-    int height = 28*9;
+    int width = DGR_WIDTH;
+    int height = DGR_HEIGHT;
 
     DGR::Random::initialize(0);
     auto* window = new DGR::Window(width, height);
-    auto* dgrGame = new DGR::GameController(window);
-    window->setGameController(dgrGame);
+    auto* dgrGame = new DGR::GameStateManager(window);
+    window->setGameStateManager(dgrGame);
 
     while (!window->shouldClose()) {
         dgrGame->update();

@@ -12,6 +12,7 @@ BiDirectionalMap<std::string, FaceType::faceType> FaceType::stringsAndFaceTypes 
             {"damage",                 damage},
             {"mana",                   mana},
             {"heal",                   heal},
+            {"bonus health",           bonus_health},
             {"shield",                 shield},
             {"dodge",                  dodge},
             {"undying",                undying},

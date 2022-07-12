@@ -20,8 +20,13 @@ YamlReader::YamlReader() {
     keyToFunc["paladin"] = new YamlHandleCharacter("paladin", stringCode::hero);
     keyToFunc["druid"] = new YamlHandleCharacter("druid", stringCode::hero);
     keyToFunc["wizard"] = new YamlHandleCharacter("wizard", stringCode::hero);
+    keyToFunc["priest"] = new YamlHandleCharacter("priest", stringCode::hero);
+    keyToFunc["hunter"] = new YamlHandleCharacter("hunter", stringCode::hero);
 
+    keyToFunc["skeleton"] = new YamlHandleCharacter("skeleton", stringCode::enemy);
     keyToFunc["rat"] = new YamlHandleCharacter("rat", stringCode::enemy);
+    keyToFunc["slime"] = new YamlHandleCharacter("slime", stringCode::enemy);
+    keyToFunc["dragon"] = new YamlHandleCharacter("dragon", stringCode::enemy);
 
     keyToFunc["spell"] = new YamlHandleSpell();
     keyToFunc["dice"] = new YamlHandleDice();
@@ -33,6 +38,7 @@ YamlReader::YamlReader() {
     keyToFunc["face5"] = new YamlHandleFace(5);
 
     keyToFunc["hp"] = new YamlHandleInt(stringCode::hp);
+    keyToFunc["size"] = new YamlHandleInt(stringCode::size);
     keyToFunc["name"] = new YamlHandleString(stringCode::name);
     keyToFunc["cost"] = new YamlHandleInt(stringCode::cost);
     keyToFunc["mod"] = new YamlHandleString(stringCode::mod);
@@ -40,6 +46,7 @@ YamlReader::YamlReader() {
     keyToFunc["damage"] = new YamlHandleInt(stringCode::damage);
     keyToFunc["shield"] = new YamlHandleInt(stringCode::shield);
     keyToFunc["heal"] = new YamlHandleInt(stringCode::heal);
+    keyToFunc["bonus health"] = new YamlHandleInt(stringCode::bonus_health);
     keyToFunc["damage and self shield"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["self shield and damage"] = new YamlHandleInt(stringCode::damage_and_self_shield);
     keyToFunc["mana"] = new YamlHandleInt(stringCode::mana);
@@ -51,6 +58,7 @@ YamlReader::YamlReader() {
     keyToFunc["heal and mana"] = new YamlHandleInt(stringCode::heal_and_mana);
     keyToFunc["mana and heal"] = new YamlHandleInt(stringCode::heal_and_mana);
     keyToFunc["empty"] = new YamlHandleInt(stringCode::empty);
+    keyToFunc["cleanse"] = new YamlHandleInt(stringCode::cleanse);
 
     keyToFunc["damage or shield"] = new YamlHandleInt(stringCode::damage_or_shield);
     keyToFunc["heal or shield"] = new YamlHandleInt(stringCode::heal_or_shield);
@@ -100,7 +108,7 @@ void YamlReader::readFile(const std::string &name) {
         if (posSemi < posColon) {
             word = trim(worldStr.substr(i, posSemi - i));
 
-#if DEBUG
+#if DGR_DEBUG
             std::cout << "\t" << posSemi << " ; " << word << std::endl;
 #endif
             i = posSemi + 1;
@@ -121,7 +129,7 @@ void YamlReader::readFile(const std::string &name) {
             colonCounter--;
         } else {
             word = trim(worldStr.substr(i, posColon - i));
-#if DEBUG
+#if DGR_DEBUG
             std::cout << "\t" << posColon << " : " << word << std::endl;
 #endif
             i = posColon + 1;

@@ -15,8 +15,7 @@
 #include <fstream>
 #include <type_traits>
 
-#include "gameobject/Enemy.h"
-#include "gameobject/Hero.h"
+#include "gameobject/Character.h"
 #include "gameobject/dice/Dice.h"
 #include "gameobject/dice/Face.h"
 #include "gameobject/spell/Spell.h"
@@ -33,6 +32,7 @@ enum struct stringCode : int {
     face,
     mod,
     hp,
+    size,
     damage,
     mana,
     heal,
@@ -49,6 +49,9 @@ enum struct stringCode : int {
     heal_or_shield,
     damage_if_full_health,
     kill_if_below_threshold,
+    bonus_health,
+    cleanse,
+
     empty,
 
 };
@@ -94,7 +97,7 @@ public:
     YamlHandleCharacters() : YamlHandle(stringCode::characters) {}
 
     void handle(YamlHandle* yamlHandle) override {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << "yh.characters: adding object" << std::endl;
 #endif
         switch (yamlHandle->getType()) {
@@ -124,6 +127,7 @@ class YamlHandleCharacter : public YamlHandle {
     Spell* spell = nullptr;
     Dice* dice = nullptr;
     int maxHP{};
+    int size{};
     std::string name;
 public:
     explicit YamlHandleCharacter(std::string name, stringCode stringCode)
@@ -139,6 +143,9 @@ public:
         switch (yamlHandle->getType()) {
             case stringCode::hp:
                 maxHP = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::size:
+                size = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::spell:
                 spell = (Spell*) yamlHandle->getFeature();
@@ -157,10 +164,10 @@ public:
         Character* character;
         switch (getType()) {
             case stringCode::hero:
-                character = new Hero(name);
+                character = new Character(name, "hero");
                 break;
             case stringCode::enemy:
-                character = new Enemy(name);
+                character = new Character(name, "enemy");
                 break;
             default:
                 std::cerr << "[YamlHandleCharacter] unknown character type: " <<
@@ -169,6 +176,7 @@ public:
         }
 
         character->setMaxHP(maxHP);
+        character->setSize(glm::vec2(size));
         if (spell) {
             character->setSpell(spell);
             character->getSpell()->setCharacter(character);
@@ -251,6 +259,10 @@ public:
                 break;
             case stringCode::heal:
                 type = FaceType::heal;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::bonus_health:
+                type = FaceType::bonus_health;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             case stringCode::mana:
@@ -342,6 +354,10 @@ public:
                 break;
             case stringCode::kill_if_below_threshold:
                 type = SpellType::kill_if_below_threshold;
+                value = *(int*) yamlHandle->getFeature();
+                break;
+            case stringCode::cleanse:
+                type = SpellType::cleanse;
                 value = *(int*) yamlHandle->getFeature();
                 break;
             default:

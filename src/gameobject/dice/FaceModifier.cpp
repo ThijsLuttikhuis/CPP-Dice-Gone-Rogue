@@ -16,6 +16,7 @@ BiDirectionalMap<std::string, FaceModifier::modifier> FaceModifier::stringsAndMo
             {"sweeping edge", modifier::sweeping_edge},
             {"single use",    modifier::single_use},
             {"poison",        modifier::poison},
+            {"regen",        modifier::regen},
             {"cleanse",       modifier::cleanse},
             {"first blood",   modifier::first_blood},
             {"growth",        modifier::growth},
@@ -50,21 +51,25 @@ glm::vec3 FaceModifier::toColor() const {
     if (modifiers == 0) {
         return glm::vec3(1.0f);
     }
+    if (modifiers & static_cast<unsigned int>(modifier::poison)) {
+        return glm::vec3(0.2f, 0.7f, 0.1f);
+    }
+    if (modifiers & static_cast<unsigned int>(modifier::regen)) {
+        return glm::vec3(0.7f, 0.2f, 0.1f);
+    }
 
+    if (modifiers & static_cast<unsigned int>(modifier::first_blood)) {
+        return glm::vec3(1.5f, 0.4f, 0.2f);
+    }
     if (modifiers & static_cast<unsigned int>(modifier::ranged)) {
         return glm::vec3(0.9f, 0.5f, 0.5f);
     }
     if (modifiers & static_cast<unsigned int>(modifier::sweeping_edge)) {
         return glm::vec3(1.5f, 2.0f, 0.6f);
     }
-    if (modifiers & static_cast<unsigned int>(modifier::poison)) {
-        return glm::vec3(0.2f, 0.7f, 0.1f);
-    }
+    
     if (modifiers & static_cast<unsigned int>(modifier::cleanse)) {
         return glm::vec3(0.8f, 1.0f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::first_blood)) {
-        return glm::vec3(1.5f, 0.4f, 0.2f);
     }
     if (modifiers & static_cast<unsigned int>(modifier::growth)) {
         return glm::vec3(1.0f, 1.4f, 1.0f);

@@ -19,6 +19,7 @@ public:
         heal_or_shield,
         damage_if_full_health,
         kill_if_below_threshold,
+        cleanse,
     };
 private:
     static BiDirectionalMap<std::string, spellType> stringsAndSpellTypes;

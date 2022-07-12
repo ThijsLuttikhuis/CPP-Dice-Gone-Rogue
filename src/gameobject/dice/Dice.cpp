@@ -4,12 +4,13 @@
 
 #include <utility>
 #include <iostream>
+#include <utilities/Utilities.h>
 
 #include "Dice.h"
 #include "Face.h"
-#include "gameobject/Hero.h"
 #include "utilities/Random.h"
 #include "utilities/Constants.h"
+#include "gameobject/Character.h"
 
 namespace DGR {
 
@@ -38,6 +39,7 @@ Dice* Dice::makeCopy() const {
     copy->setCurrentFace(currentFace);
     copy->setCurrentFaceHover(hoverCurrentFace);
 
+    copy->setCharacter(character);
     return copy;
 }
 
@@ -46,10 +48,10 @@ glm::vec2 Dice::getPosition(dicePos dicePos) const {
     glm::vec2 dPos(0, 0);
     switch (dicePos) {
         case backgroundPos:
-            dPos = glm::vec2(-8, -63.99);
+            dPos = glm::vec2(-8, -95.99 + std::max(character->getSize().y, 32.0f));
             break;
         case diceLayoutPos:
-            dPos = glm::vec2(0, -56);
+            dPos = glm::vec2(0, -84 + std::max(character->getSize().y, 32.0f));
             break;
         case currentFacePos:
             dPos = glm::vec2(character->getSize().x / 2 - 8, character->getSize().y + 4);
@@ -82,12 +84,15 @@ glm::vec2 Dice::getSize(dicePos dicePos) const {
 bool Dice::isMouseHovering(double xPos, double yPos, dicePos dicePos) const {
     auto position = getPosition(dicePos);
     auto size = getSize(dicePos);
-    return (xPos > position.x && xPos < position.x + size.x)
-           && (yPos > position.y && yPos < position.y + size.y);
+    return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
 Face* Dice::getFace(int index) const {
     return faces[index];
+}
+
+Character* Dice::getCharacter() const {
+    return character;
 }
 
 bool Dice::isUsed() const {
@@ -166,8 +171,13 @@ void Dice::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 void Dice::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
     glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::backgroundPos);
     glm::vec2 diceTemplateBackgroundSize = getSize(Dice::backgroundPos);
-    spriteRenderer->drawSprite("box", 0.9f,
-                               diceTemplateBackgroundPosition, diceTemplateBackgroundSize, 1.0f, glm::vec3(0.2f), 0.5f);
+    spriteRenderer->drawSprite("box", 0.9f, diceTemplateBackgroundPosition,
+                               diceTemplateBackgroundSize, 1.0f, glm::vec3(0.2f), 0.5f);
+
+    glm::vec2 diceTemplateTextBoxSize = glm::vec2(getSize(Dice::backgroundPos).x, 8);
+    spriteRenderer->drawSprite("box", 0.8f, diceTemplateBackgroundPosition,
+                               diceTemplateTextBoxSize, 1.0f, glm::vec3(0.2f), 0.5f);
+    textRenderer->drawText(name, 0.1f, diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
 
     glm::vec2 diceTemplatePosition = getPosition(Dice::diceLayoutPos);
     glm::vec2 diceTemplateSize = getSize(Dice::diceLayoutPos);

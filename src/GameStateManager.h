@@ -8,91 +8,68 @@
 #include <vector>
 #include <utilities/AttackOrder.h>
 
-#include "utilities/Window.h"
-#include "gameobject/Hero.h"
-#include "gameobject/Enemy.h"
+#include "ui/Window.h"
+#include "ui/OnScreenMessage.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
+class Scene;
+
 class GameStateManager {
-public:
-    enum gameState {
-        rolling_heroes,
-        attack_block_heroes,
-        rolling_enemies,
-        attack_block_enemies
-    };
 private:
-    gameState state = rolling_heroes;
-    int rerollsMax = 3;
-    int rerolls = rerollsMax;
-    int mana = 0;
+    double dt{};
+    double t = 0.0;
+    double tPrev = 0.0;
+
+    TextRenderer* textRenderer;
+    SpriteRenderer* spriteRenderer;
 
     Window* window;
 
-    Character* clickedCharacter = nullptr;
-    Spell* clickedSpell = nullptr;
+    std::vector<OnScreenMessage*> onScreenMessages;
 
-    std::vector<Hero*> heroes;
-    std::vector<Enemy*> enemies;
+    std::vector<Character*> allHeroes;
+    std::vector<Character*> allEnemies;
+    std::vector<Scene*> allScenes;
 
-    AttackOrder* attackOrder = nullptr;
+    std::vector<Character*> ownedHeroes;
+    std::vector<Scene*> sceneStack;
 
-    void updateButtons();
 public:
-    explicit GameStateManager(Window* window) : window(window) { };
+    explicit GameStateManager(Window* window);
 
     /// getters
-    [[nodiscard]] const std::vector<Hero*> &getHeroes() const;
-
-    [[nodiscard]] const std::vector<Enemy*> &getEnemies() const;
-
-    [[nodiscard]] gameState getGameState() const;
-
-    [[nodiscard]] Character* getClickedCharacter() const;
-
-    [[nodiscard]] Spell* getClickedSpell() const;
-
-    [[nodiscard]] bool areHeroesRolling() const;
-
-    [[nodiscard]] bool areEnemiesRolling() const;
-
-    [[nodiscard]] bool areHeroesAttacking() const;
-
-    [[nodiscard]] bool areEnemiesAttacking() const;
-
-    [[nodiscard]] int getRerolls() const;
-
-    [[nodiscard]] int getMana() const;
-
     [[nodiscard]] Window* getWindow() const;
 
-    [[nodiscard]] AttackOrder* getAttackOrder() const;
+    [[nodiscard]] const std::vector<Scene*> &getAllScenes() const;
+
+    [[nodiscard]] Scene* getScene(const std::string &sceneName, bool onlySceneStack = false) const;
+
+    [[nodiscard]] const std::vector<Scene*> &getSceneStack() const;
+
+    [[nodiscard]] const std::vector<Character*> &getAllHeroes() const;
+
+    [[nodiscard]] const std::vector<Character*> &getAllEnemies() const;
 
     /// setters
-    void setHeroes(const std::vector<Hero*> &heroes_);
+    bool addSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
-    void setEnemies(const std::vector<Enemy*> &enemies);
+    void addOnScreenMessage(OnScreenMessage* message);
 
-    void setClickedCharacter(Character* clickedCharacter_);
-
-    void setClickedSpell(Spell* clickedSpell_);
-
-    void setNextGameState();
-
-    void setAttackOrder(AttackOrder* attackOrder_);
+    bool popSceneFromStack(bool enableLastSceneInStack = true);
 
     /// functions
-    int reroll();
+    void handleMouseButton(double xPos, double yPos);
 
-    void addMana(int mana_);
+    void handleMousePosition(double xPos, double yPos);
 
-    std::pair<Character*, Character*> getNeighbours(Character* character);
+    void update();
 
     /// render
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void render();
 
+    void addOnScreenMessage(const std::string &message);
 };
 
 }

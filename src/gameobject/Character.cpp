@@ -9,12 +9,9 @@
 #include "dice/Face.h"
 #include "spell/Spell.h"
 #include "GameStateManager.h"
+#include "scene/BattleScene.h"
 
 namespace DGR {
-
-Character::Character(const std::string &name, glm::vec2 position, glm::vec2 size)
-      : GameObject(name, position, size), dice(new Dice(name, this)) {
-}
 
 Dice* Character::getDice() const {
     return dice;
@@ -43,7 +40,7 @@ bool Character::isDead() const {
 }
 
 std::string Character::getCharacterType() const {
-    return "character type not set";
+    return characterType;
 }
 
 Spell* Character::getSpell() const {
@@ -81,6 +78,14 @@ void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
     }
 }
 
+void Character::setIncomingPoison(int incomingPoison_) {
+    incomingPoison = incomingPoison_;
+}
+
+void Character::setIncomingRegen(int incomingRegen_) {
+    incomingRegen = incomingRegen_;
+}
+
 void Character::setUndying(bool isUndying_) {
     isUndying = isUndying_;
 }
@@ -105,9 +110,7 @@ void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
 }
 
-bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
-    Spell* spellCopy = clickedSpell->makeCopy();
-
+bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool storeAction) {
     bool success = false;
 
     SpellType type = clickedSpell->getType();
@@ -120,9 +123,15 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
         case SpellType::damage:
             if (differentCharacterType) {
                 if (!backRow) {
-                    applySpellTypeDamage(clickedSpell, gameState);
+                    applySpellTypeDamage(clickedSpell, battleScene);
                     success = true;
                 }
+            }
+            break;
+        case SpellType::cleanse:
+            if (!differentCharacterType) {
+                applySpellTypeCleanse(clickedSpell, battleScene);
+                success = true;
             }
             break;
         case SpellType::heal:
@@ -137,17 +146,24 @@ bool Character::interact(Spell* clickedSpell, GameStateManager* gameState) {
             break;
     }
 
-    if (success) {
-        gameState->getAttackOrder()->addAttack(spellCopy, this);
+    if (success && storeAction) {
+        battleScene->getAttackOrder()->addAttack(clickedSpell, this);
+    }
+
+    if (!success) {
+        std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
+        battleScene->getGameStateManager()->addOnScreenMessage(message);
     }
 
     return success;
 }
 
-bool Character::interact(Character* otherCharacter, GameStateManager* gameState) {
+
+bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction) {
     bool success = false;
     Face* face;
     FaceType type;
+    bool differentCharacterType = false;
 
     // single character interactions
     if (!otherCharacter) {
@@ -159,7 +175,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
                 success = true;
                 break;
             case FaceType::mana:
-                gameState->addMana(face->getValue());
+                battleScene->addMana(face->getValue());
                 success = true;
                 break;
             case FaceType::dodge:
@@ -171,7 +187,7 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
         }
     } else {
         // interaction with another character of the same type or not
-        bool differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
+        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
 
         face = otherCharacter->getDice()->getCurrentFace();
         type = face->getFaceType();
@@ -180,20 +196,26 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
             case FaceType::damage:
                 if (differentCharacterType) {
                     if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        applyFaceTypeDamage(face, gameState);
+                        applyFaceTypeDamage(face, battleScene);
                         success = true;
                     }
                 }
                 break;
             case FaceType::heal:
                 if (!differentCharacterType) {
-                    applyFaceTypeHeal(face, gameState);
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::shield:
                 if (!differentCharacterType) {
-                    applyFaceTypeShield(face, gameState);
+                    applyFaceTypeShield(face, battleScene);
+                    success = true;
+                }
+                break;
+            case FaceType::bonus_health:
+                if (!differentCharacterType) {
+                    applyFaceTypeBonusHealth(face, battleScene);
                     success = true;
                 }
                 break;
@@ -202,38 +224,38 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
                 return false;
             case FaceType::heal_and_shield:
                 if (!differentCharacterType) {
-                    applyFaceTypeShield(face, gameState);
-                    applyFaceTypeHeal(face, gameState);
+                    applyFaceTypeShield(face, battleScene);
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::heal_and_mana:
                 if (!differentCharacterType) {
-                    gameState->addMana(face->getValue());
-                    applyFaceTypeHeal(face, gameState);
+                    battleScene->addMana(face->getValue());
+                    applyFaceTypeHeal(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::shield_and_mana:
                 if (!differentCharacterType) {
-                    gameState->addMana(face->getValue());
-                    applyFaceTypeShield(face, gameState);
+                    battleScene->addMana(face->getValue());
+                    applyFaceTypeShield(face, battleScene);
                     success = true;
                 }
                 break;
             case FaceType::damage_and_mana:
                 if (differentCharacterType) {
                     if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        gameState->addMana(face->getValue());
-                        applyFaceTypeDamage(face, gameState);
+                        battleScene->addMana(face->getValue());
+                        applyFaceTypeDamage(face, battleScene);
                         success = true;
                     }
                 }
                 break;
             case FaceType::damage_and_self_shield:
                 if (differentCharacterType) {
-                    otherCharacter->applyFaceTypeShield(face, gameState);
-                    applyFaceTypeDamage(face, gameState);
+                    otherCharacter->applyFaceTypeShield(face, battleScene);
+                    applyFaceTypeDamage(face, battleScene);
                     success = true;
                 }
                 break;
@@ -256,14 +278,24 @@ bool Character::interact(Character* otherCharacter, GameStateManager* gameState)
         }
     }
 
-    if (success) {
-        gameState->getAttackOrder()->addAttack(this, otherCharacter);
+    if (success && storeAction) {
+        battleScene->getAttackOrder()->addAttack(this, otherCharacter);
     }
 
+    if (!success && otherCharacter) {
+        if ((differentCharacterType && getCharacterType() == "enemy") ||
+            (!differentCharacterType && getCharacterType() == "hero")) {
+
+            std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
+            battleScene->getGameStateManager()->addOnScreenMessage(message);
+        }
+    }
     return success;
 }
 
-void Character::setCopyParameters(Character* copy) const {
+Character* Character::makeCopy(bool copyUniqueID) const {
+    auto* copy = new Character(name, getCharacterType());
+
     copy->setSize(size);
     copy->setPosition(position);
 
@@ -271,6 +303,9 @@ void Character::setCopyParameters(Character* copy) const {
     copy->setHP(hp);
 
     copy->setIncomingDamage(incomingDamage);
+    copy->setIncomingPoison(incomingPoison);
+    copy->setIncomingRegen(incomingRegen);
+
     copy->setShield(shield);
     copy->setPoison(poison);
     copy->setRegen(regen);
@@ -279,8 +314,15 @@ void Character::setCopyParameters(Character* copy) const {
     copy->setUndying(isUndying);
 
     copy->setSpell(spell->makeCopy());
+    copy->getSpell()->setCharacter(copy);
+
     copy->setDice(dice->makeCopy());
     copy->getDice()->setCharacter(copy);
+
+    if (copyUniqueID) {
+        copy->setUniqueID(getUniqueID());
+    }
+    return copy;
 }
 
 void Character::setShield(int shield_) {
@@ -294,13 +336,23 @@ void Character::roll() {
 }
 
 void Character::applyDamageStep() {
+    if (isDead()) {
+        return;
+    }
 
     if (!isDodging) {
         incomingDamage -= shield;
         if (incomingDamage > 0) {
             hp -= incomingDamage;
         }
+        if (incomingPoison > 0) {
+            poison += incomingPoison;
+        }
     }
+    if (incomingRegen > 0) {
+        regen += incomingRegen;
+    }
+
     hp -= poison;
     hp += regen;
     hp = std::min(hp, maxHP);
@@ -308,18 +360,30 @@ void Character::applyDamageStep() {
 
     shield = 0;
     incomingDamage = 0;
+    incomingPoison = 0;
+    incomingRegen = 0;
     isDodging = false;
     isUndying = false;
 }
 
-void Character::applySpellTypeDamage(Spell* spell_, GameStateManager* gameState) {
-    (void) gameState;
+void Character::applySpellTypeDamage(Spell* spell_, BattleScene* battleScene) {
+    (void) battleScene;
 
     int value = spell_->getValue();
     incomingDamage += value;
 }
 
-void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
+
+void Character::applySpellTypeCleanse(Spell* spell_, BattleScene* battleScene) {
+    (void) spell_, (void) battleScene;
+
+    poison = 0;
+    incomingPoison = 0;
+}
+
+
+
+void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -331,63 +395,85 @@ void Character::applyFaceTypeDamage(Face* face, GameStateManager* gameState) {
 
     incomingDamage += value;
     if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
-        poison += value;
+        incomingPoison += value;
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::damage, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
     }
-
 }
 
-void Character::applyFaceTypeHeal(Face* face, GameStateManager* gameState) {
+void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
     hp += value;
     hp = std::min(hp, maxHP);
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, gameState);
+        applyFaceModifierCleanse(face, battleScene);
+    }
+
+    if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
+        incomingRegen += value;
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::heal, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::heal, face, battleScene);
     }
 }
 
-void Character::applyFaceTypeShield(Face* face, GameStateManager* gameState) {
+void Character::applyFaceTypeShield(Face* face, BattleScene* battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
     shield += value;
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, gameState);
+        applyFaceModifierCleanse(face, battleScene);
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
-        applyFaceModifierSweepingEdge(FaceType::shield, face, gameState);
+        applyFaceModifierSweepingEdge(FaceType::shield, face, battleScene);
     }
 }
 
-void Character::applyFaceModifierCleanse(Face* face, GameStateManager* gameState) {
-    (void) face, (void) gameState;
-    poison = 0;
+void Character::applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene) {
+    int value = face->getValue();
+    FaceModifier modifiers = face->getModifiers();
+
+    maxHP += value;
+    hp += value;
+    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
+        applyFaceModifierCleanse(face, battleScene);
+    }
+
+    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+        applyFaceModifierSweepingEdge(FaceType::bonus_health, face, battleScene);
+    }
 }
 
-void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, GameStateManager* gameState) {
+void Character::applyFaceModifierCleanse(Face* face, BattleScene* battleScene) {
+    (void) face, (void) battleScene;
+    poison = 0;
+    incomingPoison = 0;
+}
+
+void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene) {
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
-    auto neighbours = gameState->getNeighbours(this);
+    auto neighbours = battleScene->getNeighbours(this);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
             switch (type) {
                 case FaceType::damage:
-                    neighbour->applyFaceTypeDamage(face, gameState);
+                    neighbour->applyFaceTypeDamage(face, battleScene);
                     break;
                 case FaceType::heal:
-                    neighbour->applyFaceTypeHeal(face, gameState);
+                    neighbour->applyFaceTypeHeal(face, battleScene);
                     break;
                 case FaceType::shield:
-                    neighbour->applyFaceTypeShield(face, gameState);
+                    neighbour->applyFaceTypeShield(face, battleScene);
+                    break;
+                case FaceType::bonus_health:
+                    neighbour->applyFaceTypeBonusHealth(face, battleScene);
                     break;
                 case FaceType::undying:
                     //TODO:
@@ -400,7 +486,7 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
-void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
     glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
     std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
@@ -411,55 +497,55 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
 
     float textDRight = 2;
     float textDUp = 4;
-
+    float dPosRight, dPosUp;
+    glm::vec2 position_, textPosition_, size_;
     if (shield > 0) {
-        float shieldPosRight = -size.x * 6.0f / 16.0f;
-        float shieldPosUp = -6;
-        glm::vec2 shieldPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight, shieldPosUp);
-        glm::vec2 shieldTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + shieldPosRight + textDRight, shieldPosUp + textDUp);
+        dPosRight = hpBarSize.x * 12.0f / 16.0f - 2.0f;
+        dPosUp = -6;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
 
-        glm::vec2 shieldSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_shield", 0.7, shieldPosition, shieldSize,
+        spriteRenderer->drawSprite("hero_shield", 0.7, position_, size_,
                                    0.0f, glm::vec3(0.1f), 0.5f);
-
-        textRenderer->drawText(std::to_string(shield), 0.5, shieldTextPosition, shieldSize);
+        textRenderer->drawText(std::to_string(shield), 0.5, textPosition_, size_);
     }
-    if (incomingDamage > 0) {
-        float incDamagePosRight = -size.x * 6.0f / 16.0f;
-        float incDamagePosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight, incDamagePosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + incDamagePosRight + textDRight, incDamagePosUp + textDUp);
 
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_damage", 0.7, incomingDamagePosition, incomingDamageSize,
+    if (incomingDamage > 0) {
+        dPosRight = hpBarSize.x * 12.0f / 16.0f - 2.0f;
+        dPosUp = 8;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
+        spriteRenderer->drawSprite("hero_damage", 0.7, position_, size_,
                                    90.0f, glm::vec3(0.1f), 0.5f);
 
         textRenderer->drawText("^" + std::to_string(incomingDamage) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+                               textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 
-    if (poison > 0) {
-        float poisonPosRight = -size.x * 22.0f / 16.0f;
-        float poisonPosUp = 6;
-        glm::vec2 incomingDamagePosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight, poisonPosUp);
-        glm::vec2 incomingDamageTextPosition =
-              hpBarPosition + glm::vec2(hpBarSize.x + poisonPosRight + textDRight, poisonPosUp + textDUp);
+    int totalPoison = poison + incomingPoison;
+    int totalRegen = regen + incomingRegen;
+    if (totalPoison != totalRegen) {
+        bool morePoisonThanRegen = totalPoison > totalRegen;
+        glm::vec3 color = (morePoisonThanRegen ? FaceModifier(FaceModifier::modifier::poison).toColor()
+                                               : FaceModifier(FaceModifier::modifier::regen).toColor()) * 1.5f;
 
-        glm::vec2 incomingDamageSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_mana", 0.7, incomingDamagePosition, incomingDamageSize,
-                                   90.0f, glm::vec3(0.0f, 1.0f, 0.0f), 0.5f);
+        dPosRight = hpBarSize.x * 8.0f / 16.0f - 10.0f;
+        dPosUp = 8;
+        position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
+        textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
+        size_ = glm::vec2(11, 14);
 
-        textRenderer->drawText("^" + std::to_string(poison) + "^", 0.5,
-                               incomingDamageTextPosition, incomingDamageSize, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
+        spriteRenderer->drawSprite("hero_mana", 0.7, position_, size_,
+                                   morePoisonThanRegen ? 90.0f : 0.0f, color, 0.5f);
+
+        textRenderer->drawText("^" + std::to_string(std::abs(totalPoison - totalRegen)) + "^", 0.5,
+                               textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
     }
 }
 
-void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 
     drawHealthBar(spriteRenderer, textRenderer);
@@ -468,9 +554,9 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
     dice->draw(spriteRenderer, textRenderer);
 }
 
-void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
     if (hover) {
-#if DEBUG
+#if DGR_DEBUG
         std::cout << "hover: " << getName() << " -- x: " << getPosition().x
                   << " -- y: " << getPosition().y << std::endl;
 #endif
@@ -482,7 +568,7 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
     }
 }
 
-void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) {
+void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
 

@@ -25,32 +25,35 @@ private:
 
     GLFWwindow* glfwWindow = nullptr;
 
-    GameController* gameController = nullptr;
-    InputHandler* inputHandler = nullptr;
+    GameStateManager* gameState = nullptr;
+
+    void swapBuffers();
 public:
     Window(int width, int height);
 
     ~Window();
 
+    /// getters
     [[nodiscard]] int getWidth() const;
 
     [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] bool shouldClose() const;
 
-    [[nodiscard]] std::vector<Button*> getButtons() const;
+    /// setters
+    void setGameStateManager(GameStateManager* gameState_);
 
-    void setGameController(GameController* gameController);
-
+    /// functions
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
 
     void setWindowSize(int width, int height);
 
-    void swapBuffers();
-
+    /// render
     void render();
+
+    void handleScrollWheel(double xOffset, double yOffset);
 };
 
 }

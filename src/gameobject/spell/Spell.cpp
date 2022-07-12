@@ -20,7 +20,7 @@ Spell* Spell::makeCopy() const {
 glm::vec2 Spell::getPosition() const {
 
     glm::vec2 characterPosition = character->getPosition();
-    glm::vec2 dPos = glm::vec2(-6, character->getSize().y + 44);
+    glm::vec2 dPos = glm::vec2(-6, character->getSize().y + 48);
     return characterPosition + dPos;
 }
 
@@ -57,7 +57,7 @@ int Spell::getCost() const {
 glm::vec2 Spell::getSize() const {
     glm::vec2 characterSize = character->getSize();
 
-    return glm::vec2(characterSize.x + 12, 12);
+    return glm::vec2(characterSize.x + 12, 20);
 }
 
 void Spell::setHover(bool hover_) {
@@ -94,7 +94,6 @@ void Spell::drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textR
 }
 
 void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    (void)textRenderer;
 
     if (type == SpellType::empty) {
         return;
@@ -102,8 +101,33 @@ void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 
     auto position = getPosition();
     auto size = getSize();
+    spriteRenderer->drawSprite("box", 0.1f, position, size,
+                               1.0f, glm::vec3(0.8f), 0.2f);
 
-    spriteRenderer->drawSprite(name, 0.0f, position, size);
+    auto textPosition = getPosition();
+    auto textSize = glm::vec2(getSize().x, 8);
+    spriteRenderer->drawSprite("box", 0.0f, textPosition, textSize,
+                               0.0f, glm::vec3(0.8f), 0.2f);
+    textRenderer->drawText(name, 0.00f, textPosition, textSize);
+
+    float manaCostWidth = 11.0f;
+    float spriteHeight = 12.0f;
+
+    auto texturePosition = glm::vec2(getPosition().x - 1, getPosition().y + 8);
+    auto textureSize = glm::vec2(getSize().x + 1 - manaCostWidth, spriteHeight);
+    spriteRenderer->drawSprite(name, 0.00f, texturePosition, textureSize);
+
+    auto manaCostPosition = glm::vec2(getPosition().x + getSize().x - manaCostWidth, getPosition().y + 8);
+    auto manaCostTextPosition =
+          glm::vec2(getPosition().x + getSize().x - manaCostWidth - 1, getPosition().y + 12);
+
+    auto manaCostSize = glm::vec2(manaCostWidth, spriteHeight);
+    spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize, 0.0f,
+          glm::vec3{1.0f}, 0.6f);
+
+    textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, textSize,
+          Utilities::color2Vec3("0xd4a5fa"));
+
 }
 
 void Spell::drawBox(SpriteRenderer* spriteRenderer, glm::highp_vec3 color) {

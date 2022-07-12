@@ -17,6 +17,10 @@ public:
     static bool checkBit(unsigned int value, unsigned int pos);
 
     static bool isPositionInBox(double xPos, double yPos, glm::vec2 boxPosition, glm::vec2 boxSize);
+
+    static glm::vec3 color2Vec3(const std::string& color_);
+
+    static float colorHex2Float(const std::string &color_);
 };
 
 }

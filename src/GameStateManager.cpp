@@ -2,267 +2,207 @@
 // Created by thijs on 07-06-22.
 //
 
+#include <glm/gtc/matrix_transform.hpp>
+#include <iofilemanager/YamlReader.h>
+#include <scene/MainMenuScene.h>
+#include <scene/SettingsScene.h>
+#include <scene/BattleVictoryScene.h>
+#include <scene/BattleDefeatScene.h>
+#include <scene/CharacterSelectScene.h>
 #include "GameStateManager.h"
-#include "utilities/Button.h"
+#include "ui/Button.h"
+#include "scene/BattleScene.h"
+
 namespace DGR {
 
-GameStateManager::gameState GameStateManager::getGameState() const {
-    return state;
-}
+GameStateManager::GameStateManager(Window* window) : window(window) {
+    auto* shader = new Shader();
+    shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
-Character* GameStateManager::getClickedCharacter() const {
-    return clickedCharacter;
-}
+    glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(), (float) window->getHeight(),
+                                      0.0f, -1.0f, 1.0f);
 
-Spell* GameStateManager::getClickedSpell() const {
-    return clickedSpell;
-}
+    textRenderer = new TextRenderer(shader, projection);
+    spriteRenderer = new SpriteRenderer(shader, projection);
+    spriteRenderer->addAllTexturesInDir("textures");
 
-int GameStateManager::getRerolls() const {
-    return rerolls;
-}
+    YamlReader yamlReaderHeroes;
+    yamlReaderHeroes.readFile("heroes");
+    allHeroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
 
-int GameStateManager::getMana() const {
-    return mana;
-}
-
-AttackOrder* GameStateManager::getAttackOrder() const {
-    return attackOrder;
-}
-
-void GameStateManager::setAttackOrder(AttackOrder* attackOrder_) {
-    attackOrder = attackOrder_;
-}
-
-void GameStateManager::setClickedCharacter(Character* clickedCharacter_) {
-    clickedCharacter = clickedCharacter_;
-}
-
-void GameStateManager::setClickedSpell(Spell* clickedSpell_) {
-    clickedSpell = clickedSpell_;
-}
-
-int GameStateManager::reroll() {
-
-    if (rerolls > 0) {
-        rerolls--;
-
-        if (areHeroesRolling()) {
-            for (auto &hero : heroes) {
-                hero->roll();
-            }
-        } else if (areEnemiesRolling()) {
-            for (auto &enemy : enemies) {
-                enemy->roll();
-            }
-        }
-        else {
-            std::cerr << "GameStateManager::reroll: error, not in a rolling phase!" << std::endl;
-        }
+    int size = (int) allHeroes.size();
+    for (int i = 0; i < size; i++) {
+        allHeroes.push_back(allHeroes[i]->makeCopy(false));
     }
-#ifdef DEBUG
-    else {
-    std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
-    }
-#endif
-    return rerolls;
-}
-
-const std::vector<Hero*> &GameStateManager::getHeroes() const {
-    return heroes;
-}
-
-const std::vector<Enemy*> &GameStateManager::getEnemies() const {
-    return enemies;
-}
-
-void GameStateManager::setHeroes(const std::vector<Hero*> &heroes_) {
-    heroes = heroes_;
-}
-
-void GameStateManager::setEnemies(const std::vector<Enemy*> &enemies_) {
-    enemies = enemies_;
-}
-
-void GameStateManager::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
-    if (clickedCharacter) {
-        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
+    for (int i = 0; i < size; i++) {
+        allHeroes.push_back(allHeroes[i]->makeCopy(false));
     }
 
-    if (clickedSpell) {
-        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
+    YamlReader yamlReaderEnemies;
+    yamlReaderEnemies.readFile("enemies");
+    allEnemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
 
-    glm::vec2 manaPosition = glm::vec2(288, 216);
-    glm::vec2 manaSize = glm::vec2(16, 16);
-    glm::vec2 manaTextPosition = manaPosition + glm::vec2(6, 4);
-    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize);
-    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
-}
+    auto battleScene = new BattleScene(this);
+    allScenes.push_back(battleScene);
 
+    auto mainMenuScene = new MainMenuScene(this);
+    allScenes.push_back(mainMenuScene);
 
-void GameStateManager::addMana(int mana_) {
-    mana += mana_;
-}
+    auto settingsScene = new SettingsScene(this);
+    allScenes.push_back(settingsScene);
 
-bool GameStateManager::areHeroesRolling() const {
-    return state == rolling_heroes;
-}
+    auto battleVictoryScene = new BattleVictoryScene(this);
+    allScenes.push_back(battleVictoryScene);
 
-bool GameStateManager::areEnemiesRolling() const {
-    return state == rolling_enemies;
-}
+    auto battleDefeatScene = new BattleDefeatScene(this);
+    allScenes.push_back(battleDefeatScene);
 
-bool GameStateManager::areHeroesAttacking() const {
-    return state == attack_block_heroes;
-}
-
-bool GameStateManager::areEnemiesAttacking() const {
-    return state == attack_block_enemies;
-}
-
-void GameStateManager::setNextGameState() {
-    switch (state) {
-        case rolling_heroes:
-            for (auto &hero : heroes) {
-                hero->setDiceLock(false);
-            }
-            rerolls = rerollsMax;
-            attackOrder->setCharacters(heroes, enemies);
-            attackOrder->setCharacters(heroes, enemies);
-
-            state = attack_block_heroes;
-            updateButtons();
-            break;
-        case attack_block_heroes:
-            for (auto &hero : heroes) {
-                hero->setUsedDice(false);
-                hero->applyDamageStep();
-            }
-            state = rolling_enemies;
-            reroll();
-            updateButtons();
-            break;
-        case rolling_enemies:
-            for (auto &enemy : enemies) {
-                enemy->setDiceLock(false);
-            }
-            rerolls = rerollsMax;
-            state = attack_block_enemies;
-            updateButtons();
-            break;
-        case attack_block_enemies:
-            for (auto &enemy : enemies) {
-                enemy->setUsedDice(false);
-                enemy->applyDamageStep();
-            }
-            state = rolling_heroes;
-            reroll();
-            updateButtons();
-            break;
-    }
-}
-
-void GameStateManager::updateButtons() {
-    auto buttons = window->getButtons();
-    switch (state) {
-        case rolling_heroes:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText(std::to_string(getRerolls()) + " rerolls left");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("done rolling");
-                }
-            }
-            break;
-
-        case attack_block_heroes:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("undo");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("done attacking");
-                }
-            }
-            break;
-
-        case rolling_enemies:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("enemy turn...");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("enemy turn...");
-                }
-            }
-            break;
-
-        case attack_block_enemies:
-            for (auto &button : buttons) {
-                if (button->getName() == "leftMainButton") {
-                    button->setText("enemy turn...");
-                } else if (button->getName() == "rightMainButton") {
-                    button->setText("enemy turn...");
-                }
-            }
-            break;
-    }
+    auto characterSelectScene = new CharacterSelectScene(this);
+    allScenes.push_back(characterSelectScene);
 }
 
 Window* GameStateManager::getWindow() const {
     return window;
 }
 
-std::pair<Character*, Character*> GameStateManager::getNeighbours(Character* character) {
-    std::pair<Character*, Character*> neighbours(nullptr, nullptr);
-    int nHeroes = heroes.size();
-    for (int i = 0; i < nHeroes; i++) {
-        if (character == heroes[i]) {
-            int j = i - 1;
-            while (j >= 0) {
-                if (!heroes[j]->isDead()) {
-                    std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
-
-                    neighbours.first = heroes[j];
-                    break;
-                }
-                j--;
+void GameStateManager::update() {
+    if (sceneStack.empty()) {
+        for (auto &scene : allScenes) {
+            if (scene->getName() == "MainMenuScene") {
+                scene->setIsEnabled(true);
+                sceneStack.push_back(scene);
+                break;
             }
-            j = i + 1;
-            while (j < nHeroes) {
-                if (!heroes[j]->isDead()) {
-                    std::cout << "sweep" << character->getName() << heroes[j]->getName() << std::endl;
-
-                    neighbours.second = heroes[j];
-                    break;
-                }
-                j++;
-            }
-            return neighbours;
         }
     }
-    int nEnemies = enemies.size();
-    for (int i = 0; i < nEnemies; i++) {
-        if (character == enemies[i]) {
-            int j = i - 1;
-            while (j >= 0) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.first = enemies[j];
-                    break;
-                }
-                j--;
-            }
-            j = i + 1;
-            while (j < nHeroes) {
-                if (!enemies[j]->isDead()) {
-                    neighbours.second = enemies[j];
-                    break;
-                }
-                j++;
-            }
-            return neighbours;
+
+    glfwPollEvents();
+
+    t = glfwGetTime();
+    dt = t - tPrev;
+    tPrev = t;
+
+    for (auto &scene : sceneStack) {
+        if (scene->isEnabled()) {
+            scene->update(dt);
         }
     }
-    return neighbours;
+
+    for (auto &onScreenMessage : onScreenMessages) {
+        onScreenMessage->update(dt);
+    }
+
+    onScreenMessages.erase(std::remove_if(onScreenMessages.begin(), onScreenMessages.end(),
+                                          [](OnScreenMessage*&message) {
+                                              return message->getDuration() < 0.0;
+                                          }), onScreenMessages.end());
+
+}
+
+void GameStateManager::handleMouseButton(double xPos, double yPos) {
+    for (auto &scene : sceneStack) {
+        if (scene->isEnabled()) {
+            auto scenePos = scene->getPosition();
+            double sceneXPos = xPos - scenePos.x;
+            double sceneYPos = yPos - scenePos.y;
+            scene->handleMouseButton(sceneXPos, sceneYPos);
+        }
+    }
+}
+
+void GameStateManager::handleMousePosition(double xPos, double yPos) {
+    for (auto &scene : sceneStack) {
+        if (scene->isEnabled()) {
+            auto scenePos = scene->getPosition();
+            double sceneXPos = xPos - scenePos.x;
+            double sceneYPos = yPos - scenePos.y;
+            scene->handleMousePosition(sceneXPos, sceneYPos);
+        }
+    }
+}
+
+const std::vector<Scene*> &GameStateManager::getAllScenes() const {
+    return allScenes;
+}
+
+const std::vector<Scene*> &GameStateManager::getSceneStack() const {
+    return sceneStack;
+}
+
+bool GameStateManager::addSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
+    bool sceneFound = false;
+    for (auto &scene : allScenes) {
+        if (scene->getName() == sceneName) {
+            sceneFound = true;
+            sceneStack.push_back(scene);
+            scene->setIsEnabled(true);
+            break;
+        }
+    }
+    if (disableOtherScenes && sceneFound) {
+        for (auto &scene : sceneStack) {
+            scene->setIsEnabled(scene->getName() == sceneName);
+        }
+    }
+
+    return sceneFound;
+}
+
+bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
+    if (sceneStack.empty()) {
+        return false;
+    }
+    sceneStack.pop_back();
+    if (!sceneStack.empty() && enableLastSceneInStack) {
+        sceneStack.back()->setIsEnabled(true);
+    }
+
+    return true;
+}
+
+Scene* GameStateManager::getScene(const std::string &sceneName, bool onlySceneStack) const {
+    auto scenes = onlySceneStack ? sceneStack : allScenes;
+    for (auto &scene : scenes) {
+        if (scene->getName() == sceneName) {
+            return scene;
+        }
+    }
+    return nullptr;
+}
+
+const std::vector<Character*> &GameStateManager::getAllHeroes() const {
+    return allHeroes;
+}
+
+const std::vector<Character*> &GameStateManager::getAllEnemies() const {
+    return allEnemies;
+}
+
+void GameStateManager::addOnScreenMessage(OnScreenMessage* message) {
+    onScreenMessages.push_back(message);
+}
+
+void GameStateManager::addOnScreenMessage(const std::string& message) {
+    auto onScreenMessage = new OnScreenMessage(message);
+    onScreenMessages.push_back(onScreenMessage);
+}
+
+void GameStateManager::render() {
+    for (auto &scene : sceneStack) {
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        spriteRenderer->setBaseUI(scene);
+        textRenderer->setBaseUI(scene);
+        scene->render(spriteRenderer, textRenderer);
+    }
+
+    spriteRenderer->setBaseUI(nullptr);
+    textRenderer->setBaseUI(nullptr);
+
+    for (auto &message : onScreenMessages) {
+        glClear(GL_DEPTH_BUFFER_BIT);
+        message->draw(spriteRenderer, textRenderer);
+    }
 }
 
 }

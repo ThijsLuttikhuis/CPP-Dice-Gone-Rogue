@@ -1,5 +1,6 @@
 characters:
   rat:
+    size: 16;
     hp: 6;
     dice:
       face0:
@@ -15,57 +16,68 @@ characters:
         damage: 2;
       ;
       face4:
+        damage: 2;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  skeleton:
+    size: 24;
+    hp: 8;
+    dice:
+      face0:
+        damage: 5;
+        mod: "decay";
+      ;
+      face1:
+        damage: 3;
+        mod: "decay";
+      ;
+      face2:
+        damage: 5;
+        mod: "decay";
+      ;
+      face3:
+        damage: 3;
+        mod: "decay";
+      ;
+      face4:
+        empty: 0;
+      ;
+      face5:
+        empty: 0;
+      ;
+    ;
+  ;
+
+  slime:
+    size: 48;
+    hp: 20;
+    dice:
+      face0:
+        damage: 4;
+        mod: "sweeping edge";
+      ;
+      face1:
         damage: 1;
         mod: "poison";
-      ;
-      face5:
-        empty: 0;
-      ;
-    ;
-  ;
-
-  rat:
-    hp: 6;
-    dice:
-      face0:
-        damage: 4;
-      ;
-      face1:
-        damage: 2;
+        mod1: "sweeping edge";
       ;
       face2:
-        damage: 3;
-      ;
-      face3:
-        damage: 2;
-      ;
-      face4:
-        damage: 2;
-      ;
-      face5:
-        empty: 0;
-      ;
-    ;
-  ;
-
-
-  rat:
-    hp: 6;
-    dice:
-      face0:
         damage: 4;
-      ;
-      face1:
-        damage: 2;
-      ;
-      face2:
-        damage: 3;
+        mod: "sweeping edge";
       ;
       face3:
-        damage: 2;
+        damage: 1;
+        mod: "poison";
+        mod1: "sweeping edge";
       ;
       face4:
-        damage: 2;
+        heal: 2;
+        mod: "sweeping edge";
       ;
       face5:
         empty: 0;
@@ -73,51 +85,4 @@ characters:
     ;
   ;
 
-  rat:
-    hp: 6;
-    dice:
-      face0:
-        damage: 4;
-      ;
-      face1:
-        damage: 2;
-      ;
-      face2:
-        damage: 3;
-      ;
-      face3:
-        damage: 2;
-      ;
-      face4:
-        damage: 2;
-      ;
-      face5:
-        empty: 0;
-      ;
-    ;
-  ;
-
-  rat:
-    hp: 6;
-    dice:
-      face0:
-        damage: 4;
-      ;
-      face1:
-        damage: 2;
-      ;
-      face2:
-        damage: 3;
-      ;
-      face3:
-        damage: 2;
-      ;
-      face4:
-        damage: 2;
-      ;
-      face5:
-        empty: 0;
-      ;
-    ;
-  ;
   ;
