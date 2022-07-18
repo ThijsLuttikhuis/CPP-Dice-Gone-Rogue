@@ -1,0 +1,366 @@
+.dgr.version=0.2
+
+id: 11, name: wizard;
+id: 12, name: druid;
+id: 13, name: priest;
+id: 21, name: rat;
+id: 22, name: skeleton;
+id: 23, name: slime;
+
+enemy turn 1;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 13, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 5;
+id: 23, faceid: 2;
+
+type: character, dst: 11, src: 21;
+type: character, dst: 22, src: -1;
+type: character, dst: 12, src: 23;
+
+hero turn 1;
+id: 11, faceid: 1;
+id: 12, faceid: 3;
+id: 13, faceid: 2;
+id: 21, faceid: 2;
+id: 22, faceid: 5;
+id: 23, faceid: 2;
+
+type: character, dst: 11, src: 13;
+type: character, dst: 11, src: 12;
+type: character, dst: 11, src: -1;
+type: spell, dst: 21, src: 11;
+
+enemy turn 2;
+id: 11, faceid: 1;
+id: 12, faceid: 3;
+id: 13, faceid: 2;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 0;
+
+type: character, dst: 13, src: 21;
+type: character, dst: 22, src: -1;
+type: character, dst: 13, src: 23;
+
+hero turn 2;
+id: 11, faceid: 3;
+id: 12, faceid: 4;
+id: 13, faceid: 2;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 12;
+type: character, dst: 13, src: 13;
+type: character, dst: 11, src: -1;
+
+enemy turn 3;
+id: 11, faceid: 3;
+id: 12, faceid: 4;
+id: 13, faceid: 2;
+id: 21, faceid: 3;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 22;
+type: character, dst: 11, src: 23;
+
+hero turn 3;
+id: 11, faceid: 3;
+id: 12, faceid: 0;
+id: 13, faceid: 0;
+id: 21, faceid: 3;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 22, src: 12;
+type: spell, dst: 22, src: 11;
+type: character, dst: 12, src: 13;
+
+enemy turn 4;
+id: 11, faceid: 3;
+id: 12, faceid: 0;
+id: 13, faceid: 0;
+id: 21, faceid: 5;
+id: 22, faceid: 1;
+id: 23, faceid: 1;
+
+type: character, dst: 12, src: 22;
+type: character, dst: 12, src: 23;
+
+hero turn 4;
+id: 11, faceid: 0;
+id: 12, faceid: 3;
+id: 13, faceid: 0;
+id: 21, faceid: 5;
+id: 22, faceid: 1;
+id: 23, faceid: 1;
+
+type: character, dst: 13, src: 12;
+type: character, dst: 12, src: 13;
+
+enemy turn 5;
+id: 11, faceid: 0;
+id: 12, faceid: 3;
+id: 13, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 3;
+
+type: character, dst: 11, src: 23;
+
+hero turn 5;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 3;
+
+type: character, dst: 12, src: 13;
+type: spell, dst: 12, src: 13;
+type: character, dst: 13, src: 12;
+
+enemy turn 6;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 23;
+
+hero turn 6;
+id: 11, faceid: 2;
+id: 12, faceid: 5;
+id: 13, faceid: 2;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 12;
+type: character, dst: 12, src: 13;
+
+enemy turn 7;
+id: 11, faceid: 2;
+id: 12, faceid: 5;
+id: 13, faceid: 2;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 4;
+
+type: character, dst: 23, src: 23;
+
+hero turn 7;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 1;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 4;
+
+type: character, dst: 12, src: 13;
+type: spell, dst: 13, src: 13;
+type: character, dst: 12, src: 12;
+
+enemy turn 8;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 1;
+id: 21, faceid: 3;
+id: 22, faceid: 2;
+id: 23, faceid: 1;
+
+type: character, dst: 12, src: 23;
+
+hero turn 8;
+id: 11, faceid: 1;
+id: 12, faceid: 2;
+id: 13, faceid: 0;
+id: 21, faceid: 3;
+id: 22, faceid: 2;
+id: 23, faceid: 1;
+
+type: character, dst: 13, src: 13;
+type: character, dst: 23, src: 12;
+
+enemy turn 9;
+id: 11, faceid: 1;
+id: 12, faceid: 2;
+id: 13, faceid: 0;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 3;
+
+type: character, dst: 11, src: 23;
+
+hero turn 9;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 2;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 3;
+
+type: character, dst: 12, src: 12;
+type: character, dst: 12, src: 13;
+
+enemy turn 10;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 2;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 5;
+
+type: character, dst: 23, src: -1;
+
+hero turn 10;
+id: 11, faceid: 2;
+id: 12, faceid: 0;
+id: 13, faceid: 1;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 5;
+
+type: character, dst: 23, src: 12;
+
+enemy turn 11;
+id: 11, faceid: 2;
+id: 12, faceid: 0;
+id: 13, faceid: 1;
+id: 21, faceid: 4;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 23;
+
+hero turn 11;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 0;
+id: 21, faceid: 4;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 13;
+type: character, dst: 12, src: 12;
+
+enemy turn 12;
+id: 11, faceid: 4;
+id: 12, faceid: 3;
+id: 13, faceid: 0;
+id: 21, faceid: 3;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 23;
+
+hero turn 12;
+id: 11, faceid: 1;
+id: 12, faceid: 0;
+id: 13, faceid: 0;
+id: 21, faceid: 3;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 23, src: 12;
+type: character, dst: 13, src: 13;
+
+enemy turn 13;
+id: 11, faceid: 1;
+id: 12, faceid: 0;
+id: 13, faceid: 0;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 3;
+
+type: character, dst: 12, src: 23;
+
+hero turn 13;
+id: 11, faceid: 4;
+id: 12, faceid: 2;
+id: 13, faceid: 4;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 3;
+
+type: character, dst: 13, src: 13;
+type: character, dst: 23, src: 12;
+
+enemy turn 14;
+id: 11, faceid: 4;
+id: 12, faceid: 2;
+id: 13, faceid: 4;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 1;
+
+type: character, dst: 11, src: 23;
+
+hero turn 14;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 13, faceid: 4;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 1;
+
+type: character, dst: 13, src: 13;
+type: character, dst: 23, src: 12;
+
+enemy turn 15;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 13, faceid: 4;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 23;
+
+hero turn 15;
+id: 11, faceid: 0;
+id: 12, faceid: 5;
+id: 13, faceid: 2;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 12;
+type: character, dst: 13, src: 13;
+
+enemy turn 16;
+id: 11, faceid: 0;
+id: 12, faceid: 5;
+id: 13, faceid: 2;
+id: 21, faceid: 1;
+id: 22, faceid: 1;
+id: 23, faceid: 5;
+
+type: character, dst: 23, src: -1;
+
+hero turn 16;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 13, faceid: 2;
+id: 21, faceid: 1;
+id: 22, faceid: 1;
+id: 23, faceid: 5;
+
+type: character, dst: 23, src: 12;
+type: character, dst: 13, src: 13;
+
+enemy turn 17;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 13, faceid: 2;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 23;
+

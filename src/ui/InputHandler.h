@@ -28,6 +28,8 @@ protected:
 public:
     explicit InputHandler(std::weak_ptr<GameStateManager> gameState);
 
+    std::shared_ptr<Button> getButton(const std::string &name);
+
     virtual void handleMouseButton(double xPos, double yPos) {
         (void) xPos, (void) yPos;
     };

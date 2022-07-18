@@ -18,4 +18,13 @@ void InputHandler::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
+std::shared_ptr<Button> InputHandler::getButton(const std::string &name) {
+    for (auto &button : buttons) {
+        if (button->getName() == name) {
+            return button;
+        }
+    }
+    return nullptr;
+}
+
 }

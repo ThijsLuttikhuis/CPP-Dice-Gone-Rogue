@@ -58,7 +58,7 @@ characters:
     ;
   ;
 
-  hunter:
+  ranger:
     size: 32;
     hp: 10;
     dice:

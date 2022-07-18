@@ -136,6 +136,10 @@ public:
 
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                    const std::shared_ptr<TextRenderer> &textRenderer) const;
+
+    void
+    drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+               const std::shared_ptr<TextRenderer> &textRenderer) const;
 };
 
 }

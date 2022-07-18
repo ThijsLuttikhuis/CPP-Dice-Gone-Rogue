@@ -55,9 +55,18 @@ SpriteRenderer::~SpriteRenderer() {
     glDeleteVertexArrays(1, &quadVAO);
 }
 
-void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
+void SpriteRenderer::drawSprite(const std::string &textureName_, float zIndex,
                                 const glm::vec2 &position, const glm::vec2 &size,
                                 float rotate, const glm::vec3 &color, float alpha) const {
+
+    std::string textureName;
+    bool shadow = false;
+    if (textureName_.length() > 8 && textureName_.substr(0, 8) == "shadow: ") {
+        textureName = textureName_.substr(8, textureName_.length() - 8);
+        shadow = true;
+    } else {
+        textureName = textureName_;
+    }
 
     for (auto &specialSprite : specialSpritesToFunction) {
         if (textureName == specialSprite.first) {
@@ -66,6 +75,7 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
             return;
         }
     }
+
 
     glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0, 0);
     glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
@@ -76,7 +86,25 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
     }
 
     glm::mat4 model = glm::mat4(1.0f);
+
+
     model = glm::translate(model, glm::vec3(screenPos, 0.0f));
+
+    if (shadow) {
+        float shadowAngle = glm::radians(155.0f);
+
+        /// magic... the rotate/scale/rotate/scale in the center is a skew matrix
+        model = glm::translate(model, glm::vec3(0.0f, size.y, 0.0f));
+
+        model = glm::rotate(model, shadowAngle / 2.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, glm::vec3(cosf(shadowAngle / 2.0f), sinf(shadowAngle / 2.0f), 1.0f));
+        model = glm::rotate(model, -glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, glm::vec3(std::sqrt(2.0), std::sqrt(2.0) / cosf(shadowAngle), 1.0f));
+
+        model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));
+        model = glm::translate(model, glm::vec3(0.0f, -size.y, 0.0f));
+    }
+
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
@@ -84,8 +112,8 @@ void SpriteRenderer::drawSprite(const std::string &textureName, float zIndex,
 
     shader->use();
     shader->setMatrix4("model", model);
-    shader->setVector3f("spriteColor", color);
-    shader->setFloat("spriteAlpha", alpha);
+    shader->setVector3f("spriteColor", shadow ? glm::vec3(0.0f) : color);
+    shader->setFloat("spriteAlpha", shadow ? 0.35f : alpha);
     shader->setFloat("zIndex", zIndex);
 
     glActiveTexture(GL_TEXTURE0);

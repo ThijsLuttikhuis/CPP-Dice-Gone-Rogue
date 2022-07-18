@@ -67,13 +67,11 @@ void AreYouSureScene::pressButton(std::shared_ptr<Button> button) {
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     if (buttonName == "Yes") {
-        gameStatePtr->getScene("LoadGameScene")->message("yes: " + messageData);
+        gameStatePtr->getScene(messageSource)->message("yes: " + messageData);
         gameStatePtr->popSceneFromStack();
-
     } else if (buttonName == "No") {
-        gameStatePtr->getScene("LoadGameScene")->message("no: " + messageData);
+        gameStatePtr->getScene(messageSource)->message("no: " + messageData);
         gameStatePtr->popSceneFromStack();
-
     }
 }
 
