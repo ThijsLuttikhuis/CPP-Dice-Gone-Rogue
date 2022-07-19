@@ -25,7 +25,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
 
     auto button1 = std::make_shared<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
                                             glm::vec2(buttonWidth * 2, buttonHeight / 2));
-    button1->setText("Select three characters");
+    button1->setText("Select " + Utilities::num2OneTwoThreeString(maxSelect) + " characters");
     buttons.push_back(button1);
 
     auto button2 = std::make_shared<Button>("Ready",
@@ -297,28 +297,11 @@ void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
             exit(404);
         }
 
-        std::vector<std::shared_ptr<Character>> battleHeroes;
-        std::vector<std::shared_ptr<Character>> battleEnemies;
-
-        for (auto &hero : selectedHeroes) {
-            auto copy = hero->makeCopy(true);
-            copy->setPosition(0, 0);
-            battleHeroes.push_back(copy);
-        }
-
-        auto allEnemies = gameStatePtr->getAllEnemies();
-        for (auto &enemy : allEnemies) {
-            auto copy = enemy->makeCopy(true);
-            battleEnemies.push_back(copy);
-        }
-
-        battleScene->getBattleLog()->clearAutoSave();
-
-        battleScene->setHeroes(battleHeroes);
-        battleScene->setEnemies(battleEnemies);
+        auto inventory = gameStatePtr->getInventory();
+        inventory->setCharacters(selectedHeroes);
 
         gameStatePtr->popSceneFromStack();
-        gameStatePtr->pushSceneToStack("BattleScene");
+        gameStatePtr->pushSceneToStack("LevelSelectScene");
 
     }
 }

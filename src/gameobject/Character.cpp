@@ -576,7 +576,9 @@ void Character::drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRende
 void Character::drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer) const {
 
-    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size*glm::vec2(1.0f, 1.0f));
+    (void) textRenderer;
+
+    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size * glm::vec2(1.0f, 1.0f));
 
 }
 
@@ -584,7 +586,7 @@ void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                      const std::shared_ptr<TextRenderer> &textRenderer) const {
 
 
-    spriteRenderer->drawSprite(name, 1.0f, position, size*glm::vec2(1.0f, 1.0f));
+    spriteRenderer->drawSprite(name, 1.0f, position, size * glm::vec2(1.0f, 1.0f));
 
     drawHealthBar(spriteRenderer, textRenderer);
 

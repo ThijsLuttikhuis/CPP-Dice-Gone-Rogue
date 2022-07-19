@@ -13,6 +13,7 @@
 #include <scene/CharacterSelectScene.h>
 #include <scene/LoadGameScene.h>
 #include <scene/AreYouSureScene.h>
+#include <scene/LevelSelectScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
@@ -35,18 +36,12 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
     allHeroes = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
           yamlReaderHeroes.getData()->getFeature()).get();
 
-    int size = (int) allHeroes.size();
-    for (int i = 0; i < size; i++) {
-        allHeroes.push_back(allHeroes[i]->makeCopy(false));
-    }
-    for (int i = 0; i < size; i++) {
-        allHeroes.push_back(allHeroes[i]->makeCopy(false));
-    }
-
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
     allEnemies = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
           yamlReaderEnemies.getData()->getFeature()).get();
+
+    inventory = std::make_shared<Inventory>();
 }
 
 std::shared_ptr<Window> GameStateManager::getWindow() const {
@@ -201,6 +196,10 @@ void GameStateManager::initializeScenes() {
     battleScene->initialize();
     allScenes.push_back(battleScene);
 
+    auto levelSelectScene = std::make_shared<LevelSelectScene>(sharedFromThis);
+    levelSelectScene->initialize();
+    allScenes.push_back(levelSelectScene);
+
     auto areYouSureScene = std::make_shared<AreYouSureScene>(sharedFromThis);
     areYouSureScene->initialize();
     allScenes.push_back(areYouSureScene);
@@ -250,6 +249,10 @@ void GameStateManager::render() {
 
 std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
     return shared_from_this();
+}
+
+const std::shared_ptr<Inventory> &GameStateManager::getInventory() const {
+    return inventory;
 }
 
 }
