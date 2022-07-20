@@ -286,7 +286,9 @@ void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
 
     } else if (buttonName == "Ready") {
         if ((int) selectedHeroes.size() != maxSelect) {
-            gameStatePtr->addOnScreenMessage("Please select three characters!");
+            gameStatePtr->addOnScreenMessage("Please select " +
+                                             Utilities::num2OneTwoThreeString(maxSelect) +
+                                             " characters!");
             return;
         }
 
@@ -298,11 +300,10 @@ void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
         }
 
         auto inventory = gameStatePtr->getInventory();
-        inventory->setCharacters(selectedHeroes);
+        inventory->setHeroes(selectedHeroes);
 
         gameStatePtr->popSceneFromStack();
         gameStatePtr->pushSceneToStack("LevelSelectScene");
-
     }
 }
 

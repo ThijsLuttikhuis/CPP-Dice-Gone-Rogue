@@ -58,6 +58,8 @@ YamlReader::YamlReader() {
     keyToFunc["shield and heal"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_shield);
     keyToFunc["heal and mana"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_mana);
     keyToFunc["mana and heal"] = std::make_shared<YamlHandleInt>(stringCode::heal_and_mana);
+    keyToFunc["damage and mana"] = std::make_shared<YamlHandleInt>(stringCode::damage_and_mana);
+    keyToFunc["mana and damage"] = std::make_shared<YamlHandleInt>(stringCode::damage_and_mana);
     keyToFunc["empty"] = std::make_shared<YamlHandleInt>(stringCode::empty);
     keyToFunc["cleanse"] = std::make_shared<YamlHandleInt>(stringCode::cleanse);
 

@@ -4,13 +4,21 @@
 
 #include "Inventory.h"
 
-void DGR::Inventory::addCharacter(const std::shared_ptr<Character> &character) {
-    characters.push_back(character->makeCopy(true));
+namespace DGR {
+
+void Inventory::addHero(const std::shared_ptr<Character> &character) {
+    heroes.push_back(character->makeCopy(true));
 }
 
-void DGR::Inventory::setCharacters(const std::vector<std::shared_ptr<Character>> &characters_) {
-    characters = {};
+void Inventory::setHeroes(const std::vector<std::shared_ptr<Character>> &characters_) {
+    heroes = {};
     for (auto &character : characters_) {
-        addCharacter(character);
+        addHero(character);
     }
+}
+
+const std::vector<std::shared_ptr<Character>> &Inventory::getHeroes() {
+    return heroes;
+}
+
 }

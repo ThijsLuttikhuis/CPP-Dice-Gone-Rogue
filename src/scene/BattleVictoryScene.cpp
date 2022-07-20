@@ -34,6 +34,7 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
     if (!isMouseHovering(xPos, yPos)) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         while (gameStatePtr->popSceneFromStack());
+        gameStatePtr->pushSceneToStack("LevelSelectScene");
     }
 
     for (auto &button : buttons) {

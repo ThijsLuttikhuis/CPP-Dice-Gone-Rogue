@@ -13,10 +13,8 @@ namespace DGR {
 class LevelSelectScene : public Scene {
 private:
     int selectedLevel = 0;
-    int unlockedLevel = 1;
-    int numberOfLevels = 20;
     int levelsPerRow = 4;
-    std::vector<bool> completedLevels = std::vector<bool>(20, false);
+    int levelsPerPage = 20;
 
 public:
     explicit LevelSelectScene(std::weak_ptr<GameStateManager> gameState);

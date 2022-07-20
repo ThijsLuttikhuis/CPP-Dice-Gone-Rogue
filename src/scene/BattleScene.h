@@ -24,6 +24,7 @@ public:
         attack_block_enemies
     };
 private:
+    int level = 0;
     const int rerollsMax = 3;
     int rerolls = rerollsMax;
     int mana = 0;
@@ -106,6 +107,8 @@ public:
     void setMana(int mana_);
 
     void setEnemies(const std::vector<std::shared_ptr<Character>> &enemies_);
+
+    void setEnemiesFromLevel(int selectedLevel);
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 

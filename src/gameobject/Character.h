@@ -28,6 +28,13 @@ private:
     std::shared_ptr<Dice> dice = nullptr;
     std::shared_ptr<Spell> spell = nullptr;
 
+    /// xp stats
+    const int xpPerLevel = 128;
+    int characterLevel = 0;
+    int xp = 0;
+
+    /// battle stats
+    int defaultMaxHP = 0;
     int hp = 0;
     int maxHP = 0;
     int shield = 0;
@@ -82,12 +89,18 @@ public:
 
     [[nodiscard]] std::shared_ptr<Character> makeCopy(bool copyUniqueID = false) const;
 
+    [[nodiscard]] bool canLevelUp() const;
+
     /// setters
     void setDice(const std::shared_ptr<Dice> &dice);
 
     void setDiceLock(bool diceLock_);
 
     void setHP(int hp);
+
+    void setXP(int xp);
+
+    void setLevel(int level);
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
@@ -113,8 +126,12 @@ public:
 
     void setIncomingPoison(int incomingPoison_);
 
+    void addXP(int xp_);
+
     /// functions
     void roll();
+
+    void fullRest();
 
     void toggleDiceLock();
 
@@ -137,9 +154,8 @@ public:
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                    const std::shared_ptr<TextRenderer> &textRenderer) const;
 
-    void
-    drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-               const std::shared_ptr<TextRenderer> &textRenderer) const;
+    void drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                    const std::shared_ptr<TextRenderer> &textRenderer) const;
 };
 
 }

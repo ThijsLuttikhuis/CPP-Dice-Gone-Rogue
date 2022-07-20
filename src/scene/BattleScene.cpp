@@ -8,6 +8,7 @@
 #include "BattleScene.h"
 #include "ui/Button.h"
 #include "GameStateManager.h"
+#include "LevelSelectScene.h"
 
 namespace DGR {
 
@@ -467,7 +468,7 @@ void BattleScene::alignCharacterPositions(double dt) {
 
         startLeft = isHeroes ? (int) (center * 0.6) - totalWidth / 2 : (int) (center * 1.4) - totalWidth / 2;
         left = startLeft;
-        up = isHeroes ? 13.5 * 16 : 8.5 * 16;
+        up = isHeroes ? 13 * 16 : 8.5 * 16;
 
         for (auto &character : characters) {
             if (!character->isDead()) {
@@ -646,7 +647,7 @@ std::string BattleScene::message(const std::string &data) {
 void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                          const std::shared_ptr<TextRenderer> &textRenderer) {
 
-    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0,0), size,
+    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
                                0.0f, glm::vec3(1.0f), 0.8f);
 
     for (auto &hero : heroes) {
@@ -699,6 +700,11 @@ bool BattleScene::checkVictory() {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
         updateRerunBattle(true);
+
+        gameStatePtr->getGameProgress()->completeLevel(level, gameStatePtr->getInventory());
+
+
+
         return true;
     }
 
@@ -785,6 +791,24 @@ std::vector<std::shared_ptr<Character>> BattleScene::getAliveCharacters(bool ali
         }
     }
     return aliveCharacters;
+}
+
+void BattleScene::setEnemiesFromLevel(int selectedLevel) {
+    level = selectedLevel;
+    enemies = {};
+    int strengthBudget = GameProgress::levelToEnemyStrength(selectedLevel);
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    auto allEnemies = gameStatePtr->getAllEnemies();
+
+    while (strengthBudget > 0) {
+        int rng = Random::randInt(0, (int)allEnemies.size() - 1);
+        auto enemy = allEnemies[rng];
+        int enemyStrength = GameProgress::enemyNameToStrength(enemy->getName());
+        if (enemyStrength <= strengthBudget) {
+            enemies.push_back(enemy->makeCopy(false));
+            strengthBudget -= enemyStrength;
+        }
+    }
 }
 
 }

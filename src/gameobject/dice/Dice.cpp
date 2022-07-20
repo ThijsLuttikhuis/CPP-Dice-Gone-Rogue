@@ -49,10 +49,10 @@ glm::vec2 Dice::getPosition(dicePos dicePos) const {
     glm::vec2 dPos(0, 0);
     switch (dicePos) {
         case backgroundPos:
-            dPos = glm::vec2(-8, -95.99 + std::max(characterPtr->getSize().y, 32.0f));
+            dPos = glm::vec2(-8, -111.99 + std::max(characterPtr->getSize().y, 48.0f));
             break;
         case diceLayoutPos:
-            dPos = glm::vec2(0, -84 + std::max(characterPtr->getSize().y, 32.0f));
+            dPos = glm::vec2(0, -100 + std::max(characterPtr->getSize().y, 48.0f));
             break;
         case currentFacePos:
             dPos = glm::vec2(characterPtr->getSize().x / 2 - 8, characterPtr->getSize().y + 4);

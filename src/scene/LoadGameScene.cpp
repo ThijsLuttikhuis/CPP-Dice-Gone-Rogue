@@ -223,7 +223,7 @@ void LoadGameScene::pressButton(const std::shared_ptr<Button> &button) {
             std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
             exit(404);
         }
-
+        battleScene->reset();
         battleScene->setBattleLog(battle);
         battleScene->rerunBattleFromStart();
 

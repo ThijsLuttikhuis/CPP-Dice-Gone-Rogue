@@ -43,9 +43,9 @@ LevelSelectScene::LevelSelectScene(std::weak_ptr<GameStateManager> gameState)
     buttons.push_back(button3);
 
     auto button4 = std::make_shared<Button>("Return",
-                                             glm::vec2(width / 2 - buttonWidth / 2 - buttonWidth * 1.1,
-                                                       i * buttonDistance),
-                                             glm::vec2(buttonWidth, buttonHeight));
+                                            glm::vec2(width / 2 - buttonWidth / 2 - buttonWidth * 1.1,
+                                                      i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button4->setText("Return to main menu");
     buttons.push_back(button4);
 
@@ -62,12 +62,12 @@ LevelSelectScene::LevelSelectScene(std::weak_ptr<GameStateManager> gameState)
     int nMidButtonX = levelsPerRow;
     float midButtonStartX = leftButtonX + leftRightButtonWidth;
     float midButtonEndX = rightButtonX;
-    float midButtonSizeX = (midButtonEndX - midButtonStartX) / (float)nMidButtonX;
+    float midButtonSizeX = (midButtonEndX - midButtonStartX) / (float) nMidButtonX;
 
-    int nMidButtonY = numberOfLevels / levelsPerRow;
+    int nMidButtonY = levelsPerPage / levelsPerRow;
     float midButtonStartY = leftRightButtonY;
     float midButtonEndY = leftRightButtonY + leftRightButtonHeight;
-    float midButtonSizeY = (midButtonEndY - midButtonStartY) / (float)nMidButtonY;
+    float midButtonSizeY = (midButtonEndY - midButtonStartY) / (float) nMidButtonY;
 
     auto button5 = std::make_shared<Button>("ScrollLeft",
                                             glm::vec2(leftButtonX, leftRightButtonY),
@@ -85,18 +85,20 @@ LevelSelectScene::LevelSelectScene(std::weak_ptr<GameStateManager> gameState)
     button6->setText(" >>");
     buttons.push_back(button6);
 
-    for (int index = 0; index < numberOfLevels; index++) {
-        std::string istr = std::to_string(index+1);
+    for (int index = 0; index < levelsPerPage; index++) {
+        std::string istr = std::to_string(index + 1);
 
         int xi = index % levelsPerRow;
         int yi = index / levelsPerRow;
-        float xPos = midButtonStartX + midButtonSizeX * (float)xi;
-        float yPos = midButtonStartY + midButtonSizeY * (float)yi;
+        float xPos = midButtonStartX + midButtonSizeX * (float) xi;
+        float yPos = midButtonStartY + midButtonSizeY * (float) yi;
+
+        glm::vec3 color = (index == 0) ? glm::vec3(0.8f) : glm::vec3(0.4f);
 
         auto button_ = std::make_shared<Button>("Level" + istr,
-                                                glm::vec2(xPos + dSizeX/2, yPos + dSizeY/2),
+                                                glm::vec2(xPos + dSizeX / 2, yPos + dSizeY / 2),
                                                 glm::vec2(midButtonSizeX - dSizeX, midButtonSizeY - dSizeY),
-                                                glm::vec3(0.4f),
+                                                color,
                                                 0.0f, false, false);
         button_->setText(istr);
         buttons.push_back(button_);
@@ -113,7 +115,7 @@ void LevelSelectScene::handleMouseButton(double xPos, double yPos) {
 }
 
 void LevelSelectScene::handleMousePosition(double xPos, double yPos) {
-    (void)xPos, (void)yPos;
+    (void) xPos, (void) yPos;
 }
 
 void LevelSelectScene::update(double dt) {
@@ -127,7 +129,7 @@ void LevelSelectScene::update(double dt) {
 }
 
 void LevelSelectScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                  const std::shared_ptr<TextRenderer> &textRenderer) {
+                              const std::shared_ptr<TextRenderer> &textRenderer) {
 
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
@@ -143,6 +145,7 @@ void LevelSelectScene::pressButton(std::shared_ptr<Button> button) {
     auto &buttonName = button->getName();
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    auto gameProgress = gameStatePtr->getGameProgress();
 
     if (buttonName == "ScrollRight") {
 
@@ -153,19 +156,52 @@ void LevelSelectScene::pressButton(std::shared_ptr<Button> button) {
     } else if (buttonName == "Return") {
         gameStatePtr->popSceneFromStack();
     } else if (buttonName == "Ready") {
+        if (!(selectedLevel > 0 &&
+              selectedLevel <= gameProgress->getUnlockedLevel())) {
+
+            gameStatePtr->addOnScreenMessage("Please select a level!");
+            return;
+        }
+
+        auto inventory = gameStatePtr->getInventory();
+        auto heroes = inventory->getHeroes();
+        std::vector<std::shared_ptr<Character>> heroesCopy = {};
+        for (auto &hero : heroes) {
+            heroesCopy.push_back(hero->makeCopy(true));
+        }
+
+        std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(
+              gameStatePtr->getScene("BattleScene"));
+        if (!battleScene) {
+            std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
+            exit(404);
+        }
+
+        battleScene->reset();
+        battleScene->setHeroes(heroesCopy);
+        battleScene->setEnemiesFromLevel(selectedLevel);
+
+        gameStatePtr->popSceneFromStack();
+        gameStatePtr->pushSceneToStack("BattleScene");
 
     } else if (buttonName.substr(0, 5) == "Level") {
         char** temp = nullptr;
-        auto level = (int)strtol(buttonName.substr(5, buttonName.length() - 5).c_str(), temp, 10);
+        auto clickedLevel = (int) strtol(buttonName.substr(5, buttonName.length() - 5).c_str(), temp, 10);
 
         /// set / reset color
+        if (gameProgress->getUnlockedLevel() < clickedLevel) {
+            gameStatePtr->addOnScreenMessage("You have not unlocked that level yet!");
+            return;
+        }
         auto previouslySelectedButton = getButton("Level" + std::to_string(selectedLevel));
         if (previouslySelectedButton) {
-            previouslySelectedButton->setColor(glm::vec3(0.4));
+            glm::vec3 color = gameProgress->getUnlockedLevel() >= selectedLevel ? glm::vec3(0.8f)
+                                                                                : glm::vec3(0.4f);
+            previouslySelectedButton->setColor(color);
         }
         button->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
-        selectedLevel = level;
+        selectedLevel = clickedLevel;
     }
 }
 

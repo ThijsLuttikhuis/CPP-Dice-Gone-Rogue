@@ -24,6 +24,8 @@ std::shared_ptr<Character> Character::makeCopy(bool copyUniqueID) const {
     copy->setSize(size);
     copy->setPosition(position);
 
+    copy->setXP(xp);
+    copy->setLevel(characterLevel);
     copy->setMaxHP(maxHP, false);
     copy->setHP(hp);
 
@@ -109,6 +111,7 @@ void Character::setHP(int hp_) {
 }
 
 void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
+    defaultMaxHP = maxHP_;
     maxHP = maxHP_;
     if (setHPToMaxHP) {
         hp = maxHP_;
@@ -513,6 +516,21 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
+void Character::fullRest() {
+
+    maxHP = defaultMaxHP;
+    hp = isDead() ? (maxHP+1)/2 : maxHP;
+
+    shield = 0;
+    incomingDamage = 0;
+    incomingPoison = 0;
+    incomingRegen = 0;
+    poison = 0;
+    regen = 0;
+    isDodging = false;
+    isUndying = false;
+}
+
 void Character::drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                               const std::shared_ptr<TextRenderer> &textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
@@ -578,7 +596,7 @@ void Character::drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer
 
     (void) textRenderer;
 
-    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size * glm::vec2(1.0f, 1.0f));
+    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size);
 
 }
 
@@ -586,7 +604,7 @@ void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                      const std::shared_ptr<TextRenderer> &textRenderer) const {
 
 
-    spriteRenderer->drawSprite(name, 1.0f, position, size * glm::vec2(1.0f, 1.0f));
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
 
     drawHealthBar(spriteRenderer, textRenderer);
 
@@ -619,6 +637,22 @@ void GameObject::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRende
 
 std::shared_ptr<Character> Character::getSharedFromThis() {
     return shared_from_this();
+}
+
+void Character::addXP(int xp_) {
+    xp += xp_;
+}
+
+bool Character::canLevelUp() const {
+    return xp >= xpPerLevel * characterLevel;
+}
+
+void Character::setXP(int xp_) {
+    xp = xp_;
+}
+
+void Character::setLevel(int level) {
+    characterLevel = level;
 }
 
 }

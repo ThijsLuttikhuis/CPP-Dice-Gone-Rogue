@@ -14,17 +14,17 @@ namespace DGR {
 
 class Inventory {
 private:
-    std::vector<std::shared_ptr<Character>> characters = {};
+    std::vector<std::shared_ptr<Character>> heroes = {};
 
     //std::vector<std::shared_ptr<Item>> items;
-
-
 public:
     Inventory() = default;
 
-    void addCharacter(const std::shared_ptr<Character> &character);
+    void addHero(const std::shared_ptr<Character> &character);
 
-    void setCharacters(const std::vector<std::shared_ptr<Character>> &characters);
+    void setHeroes(const std::vector<std::shared_ptr<Character>> &characters_);
+
+    const std::vector<std::shared_ptr<Character>> &getHeroes();
 
 };
 

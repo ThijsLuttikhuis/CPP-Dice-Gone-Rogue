@@ -42,6 +42,7 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
           yamlReaderEnemies.getData()->getFeature()).get();
 
     inventory = std::make_shared<Inventory>();
+    gameProgress = std::make_shared<GameProgress>();
 }
 
 std::shared_ptr<Window> GameStateManager::getWindow() const {
@@ -253,6 +254,10 @@ std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
 
 const std::shared_ptr<Inventory> &GameStateManager::getInventory() const {
     return inventory;
+}
+
+const std::shared_ptr<GameProgress> &GameStateManager::getGameProgress() const {
+    return gameProgress;
 }
 
 }
