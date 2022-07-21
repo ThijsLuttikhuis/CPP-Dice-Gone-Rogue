@@ -18,12 +18,12 @@ class UIElement;
 
 class SpriteRenderer {
 private:
-    Shader* shader;
+     std::shared_ptr<Shader> shader;
     unsigned int quadVAO{};
 
-    UIElement* baseUI;
+     std::shared_ptr<UIElement> baseUI;
 
-    std::map<std::string, Texture2D*> textures;
+    std::map<std::string,  std::shared_ptr<Texture2D>> textures;
 
     std::vector<std::pair<std::string,
           void (*)(const SpriteRenderer* spriteRenderer, const std::string &texture,
@@ -35,7 +35,7 @@ private:
                               const glm::vec3 &color = glm::vec3(1.0f), float alpha = 1.0f);
 
 public:
-    SpriteRenderer(Shader* shader, glm::mat4 projection);
+    SpriteRenderer( std::shared_ptr<Shader> shader, glm::mat4 projection);
 
     ~SpriteRenderer();
 
@@ -51,7 +51,7 @@ public:
 
     bool hasTexture(const std::string &textureName);
 
-    void setBaseUI(DGR::UIElement* baseUI_);
+    void setBaseUI( std::shared_ptr<DGR::UIElement> baseUI_);
 };
 
 }

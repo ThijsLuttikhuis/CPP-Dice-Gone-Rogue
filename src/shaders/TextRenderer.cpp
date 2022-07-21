@@ -29,7 +29,7 @@ const std::vector<int> TextRenderer::letterWidths = {
 };
 
 
-TextRenderer::TextRenderer(Shader* shader, glm::mat4 projection)
+TextRenderer::TextRenderer( std::shared_ptr<Shader> shader, glm::mat4 projection)
       : shader(shader) {
 
 
@@ -40,7 +40,7 @@ TextRenderer::TextRenderer(Shader* shader, glm::mat4 projection)
         std::cout << entry.path() << std::endl;
 #endif
         if (entry.path().extension() == ".png" || entry.path().extension() == ".jpg") {
-            texture = new Texture2D(entry.path().string());
+            texture = std::make_shared<Texture2D>(entry.path().string());
         }
     }
 
@@ -196,7 +196,7 @@ glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::
     return currentTextPos;
 }
 
-void TextRenderer::setBaseUI(DGR::UIElement* baseUI_) {
+void TextRenderer::setBaseUI( std::shared_ptr<DGR::UIElement> baseUI_) {
     baseUI = baseUI_;
 }
 

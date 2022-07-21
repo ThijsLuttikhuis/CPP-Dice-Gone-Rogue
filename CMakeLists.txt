@@ -8,7 +8,7 @@ project(DiceGoneRogue)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wnone")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
+set(CMAKE_CXX_FLAGS "-lstdc++fs")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
@@ -51,8 +51,8 @@ set(INCLUDE_GAMEOBJECT
         )
 
 set(INCLUDE_IOFILEMANAGER
-        src/iofilemanager/YamlReader.cpp
-        src/iofilemanager/YamlReader.h
+        src/io/YamlReader.cpp
+        src/io/YamlReader.h
         )
 
 set(INCLUDE_SCENE
@@ -97,14 +97,14 @@ set(INCLUDE_UI
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
-        src/utilities/AttackOrder.cpp
-        src/utilities/AttackOrder.h
+        src/io/BattleLog.cpp
+        src/io/BattleLog.h
         src/utilities/Random.cpp
         src/utilities/Random.h
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        )
+        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h src/scene/AreYouSureScene.cpp src/scene/AreYouSureScene.h)
 
 
 add_executable(DiceGoneRogue main.cpp

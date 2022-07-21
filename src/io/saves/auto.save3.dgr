@@ -1,0 +1,342 @@
+.dgr.version=0.2
+
+id: 1, name: rogue;
+id: 3, name: paladin;
+id: 5, name: druid;
+id: 21, name: rat;
+id: 22, name: skeleton;
+id: 23, name: slime;
+
+enemy turn 1;
+id: 1, faceid: 0;
+id: 3, faceid: 0;
+id: 5, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 21;
+type: character, dst: 1, src: 22;
+type: character, dst: 3, src: 23;
+
+hero turn 1;
+id: 1, faceid: 2;
+id: 3, faceid: 4;
+id: 5, faceid: 4;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 1, src: -1;
+type: character, dst: 5, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 2;
+id: 1, faceid: 2;
+id: 3, faceid: 4;
+id: 5, faceid: 4;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 4;
+
+type: character, dst: 5, src: 21;
+type: character, dst: 1, src: 22;
+type: character, dst: 21, src: 23;
+
+hero turn 2;
+id: 1, faceid: 0;
+id: 3, faceid: 4;
+id: 5, faceid: 2;
+id: 21, faceid: 1;
+id: 22, faceid: 0;
+id: 23, faceid: 4;
+
+type: character, dst: 22, src: 5;
+type: character, dst: 22, src: 1;
+type: character, dst: 5, src: 3;
+
+enemy turn 3;
+id: 1, faceid: 0;
+id: 3, faceid: 4;
+id: 5, faceid: 2;
+id: 21, faceid: 0;
+id: 22, faceid: 2;
+id: 23, faceid: 2;
+
+type: character, dst: 1, src: 21;
+type: character, dst: 5, src: 22;
+type: character, dst: 1, src: 23;
+
+hero turn 3;
+id: 1, faceid: 1;
+id: 3, faceid: 0;
+id: 5, faceid: 5;
+id: 21, faceid: 0;
+id: 22, faceid: 2;
+id: 23, faceid: 2;
+
+type: character, dst: 21, src: 1;
+type: character, dst: 21, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 4;
+id: 1, faceid: 1;
+id: 3, faceid: 0;
+id: 5, faceid: 5;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 2;
+
+type: character, dst: 3, src: 21;
+type: character, dst: 5, src: 23;
+
+hero turn 4;
+id: 1, faceid: 0;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 2;
+
+type: character, dst: 23, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 5;
+id: 1, faceid: 0;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 2;
+id: 22, faceid: 3;
+id: 23, faceid: 2;
+
+type: character, dst: 3, src: 23;
+
+hero turn 5;
+id: 1, faceid: 0;
+id: 3, faceid: 4;
+id: 5, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 3;
+id: 23, faceid: 2;
+
+type: character, dst: 5, src: 3;
+type: character, dst: 3, src: 5;
+
+enemy turn 6;
+id: 1, faceid: 0;
+id: 3, faceid: 4;
+id: 5, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 5, src: 23;
+
+hero turn 6;
+id: 1, faceid: 2;
+id: 3, faceid: 4;
+id: 5, faceid: 5;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 3, src: 5;
+type: character, dst: 5, src: 3;
+
+enemy turn 7;
+id: 1, faceid: 2;
+id: 3, faceid: 4;
+id: 5, faceid: 5;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 23;
+
+hero turn 7;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 0;
+
+type: character, dst: 23, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 8;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 2;
+id: 22, faceid: 1;
+id: 23, faceid: 0;
+
+type: character, dst: 3, src: 23;
+
+hero turn 8;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 1;
+id: 21, faceid: 2;
+id: 22, faceid: 1;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 5;
+type: character, dst: 23, src: 3;
+
+enemy turn 9;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 1;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 5, src: 23;
+
+hero turn 9;
+id: 1, faceid: 1;
+id: 3, faceid: 4;
+id: 5, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 3, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 10;
+id: 1, faceid: 1;
+id: 3, faceid: 4;
+id: 5, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 23;
+
+hero turn 10;
+id: 1, faceid: 4;
+id: 3, faceid: 3;
+id: 5, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 3, src: 3;
+type: character, dst: 23, src: 5;
+
+enemy turn 11;
+id: 1, faceid: 4;
+id: 3, faceid: 3;
+id: 5, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 23;
+
+hero turn 11;
+id: 1, faceid: 2;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 2;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 23, src: 3;
+type: character, dst: 5, src: 5;
+
+enemy turn 12;
+id: 1, faceid: 2;
+id: 3, faceid: 0;
+id: 5, faceid: 4;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 4;
+
+type: character, dst: 23, src: 23;
+
+hero turn 12;
+id: 1, faceid: 1;
+id: 3, faceid: 5;
+id: 5, faceid: 0;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 4;
+
+type: character, dst: 23, src: 5;
+
+enemy turn 13;
+id: 1, faceid: 1;
+id: 3, faceid: 5;
+id: 5, faceid: 0;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 3, src: 23;
+
+hero turn 13;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 1;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 5;
+type: character, dst: 23, src: 3;
+
+enemy turn 14;
+id: 1, faceid: 3;
+id: 3, faceid: 0;
+id: 5, faceid: 1;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 2;
+
+type: character, dst: 5, src: 23;
+
+hero turn 14;
+id: 1, faceid: 1;
+id: 3, faceid: 1;
+id: 5, faceid: 1;
+id: 21, faceid: 0;
+id: 22, faceid: 4;
+id: 23, faceid: 2;
+
+type: character, dst: 3, src: 3;
+type: character, dst: 3, src: 5;
+
+enemy turn 15;
+id: 1, faceid: 1;
+id: 3, faceid: 1;
+id: 5, faceid: 1;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 5, src: 23;
+
+hero turn 15;
+id: 1, faceid: 0;
+id: 3, faceid: 2;
+id: 5, faceid: 5;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 3, src: 5;
+type: character, dst: 23, src: 3;
+
+enemy turn 16;
+id: 1, faceid: 0;
+id: 3, faceid: 2;
+id: 5, faceid: 5;
+id: 21, faceid: 1;
+id: 22, faceid: 2;
+id: 23, faceid: 5;
+
+type: character, dst: 23, src: -1;

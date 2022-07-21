@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "Scene.h"
-#include "utilities/AttackOrder.h"
+#include "io/BattleLog.h"
 #include "ui/Window.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
-class BattleScene : public Scene {
+class BattleScene : public std::enable_shared_from_this<BattleScene>, public Scene {
 public:
     enum battleGameState {
         rolling_heroes,
@@ -30,40 +30,48 @@ private:
     battleGameState state = rolling_enemies;
 
     int animationCounter = 0;
+    bool rerunBattle = false;
+    bool allowButtonPress = true;
 
-    Character* clickedCharacter = nullptr;
-    Spell* clickedSpell = nullptr;
+    std::shared_ptr<Character> clickedCharacter = nullptr;
+    std::shared_ptr<Spell> clickedSpell = nullptr;
 
-    std::vector<Character*> heroes;
-    std::vector<Character*> enemies;
+    std::vector<std::shared_ptr<Character>> heroes;
+    std::vector<std::shared_ptr<Character>> enemies;
 
-    AttackOrder* attackOrder = nullptr;
+    std::shared_ptr<BattleLog> battleLog = nullptr;
+
 
     void alignCharacterPositions(double dt);
 
-    void checkVictory();
+    bool checkVictory();
 
-    void pressButton(Button* button);
+    void pressButton(std::shared_ptr<Button> button);
 
-    void handleMousePosition(Character* character, double xPos, double yPos);
+    void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
     void updateButtons();
 
-    void clickCharacter(Character* character);
+    void clickCharacter(const std::shared_ptr<Character> &character);
 
-    void clickSpell(Spell* spell);
+    void clickSpell(const std::shared_ptr<Spell> &spell);
 
     void enemyAttack(int index);
 
     int reroll();
 
-    void setClickedCharacter(Character* clickedCharacter_);
+    void setClickedCharacter(std::shared_ptr<Character> clickedCharacter_);
 
-    void setClickedSpell(Spell* clickedSpell_);
+    void setClickedSpell(std::shared_ptr<Spell> clickedSpell_);
+
+    void updateRerunBattle(bool reset = false);
+
 public:
-    explicit BattleScene(GameStateManager* gameState);
+    explicit BattleScene(std::weak_ptr<GameStateManager> gameState);
 
     /// getters
+    [[nodiscard]] std::shared_ptr<BattleScene> getSharedFromThis();
+
     [[nodiscard]] bool areHeroesRolling() const;
 
     [[nodiscard]] bool areEnemiesRolling() const;
@@ -74,42 +82,53 @@ public:
 
     [[nodiscard]] battleGameState getState() const;
 
-    [[nodiscard]] Character* getClickedCharacter() const;
+    [[nodiscard]]  std::shared_ptr<Character> getClickedCharacter() const;
 
-    [[nodiscard]] Spell* getClickedSpell() const;
+    [[nodiscard]]  std::shared_ptr<Spell> getClickedSpell() const;
 
-    [[nodiscard]] AttackOrder* getAttackOrder() const;
+    [[nodiscard]]  std::shared_ptr<BattleLog> getBattleLog() const;
 
     [[nodiscard]] int getMana() const;
 
     [[nodiscard]] int getRerolls() const;
 
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>>
+    getNeighbours(const std::shared_ptr<Character>& character) const;
+
     /// setters
-    void setNextGameState();
+    void setNextGameState(bool doSaveTurn = true);
 
     void addMana(int mana_);
 
     void setMana(int mana_);
 
-    void setEnemies(const std::vector<Character*> &enemies_);
+    void setEnemies(const std::vector<std::shared_ptr<Character>> &enemies_);
 
-    void setHeroes(const std::vector<Character*> &heroes_);
+    void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
-    void setAttackOrder(AttackOrder* attackOrder_);
+    void setCharactersFromBattleLog();
+
+    void setBattleLog(const std::shared_ptr<BattleLog> &battleLog_);
 
     /// functions
-    std::pair<Character*, Character*> getNeighbours(Character* character);
-
     void handleMouseButton(double xPos, double yPos) override;
 
     void handleMousePosition(double xPos, double yPos) override;
+
+    void rerunBattleFromStart();
+
+    void initialize() override;
+
+    void onPopFromStack() override;
 
     void reset() override;
 
     void update(double dt) override;
 
     /// render
-    void render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) override;
+    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                const std::shared_ptr<TextRenderer> &textRenderer) override;
+
 
 };
 

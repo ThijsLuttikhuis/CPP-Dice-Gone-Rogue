@@ -1,3 +1,5 @@
+.dgr.version=0.2
+
 characters:
   rat:
     size: 16;

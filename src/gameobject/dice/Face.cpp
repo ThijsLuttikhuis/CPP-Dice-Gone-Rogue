@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <utility>
 #include <utilities/Utilities.h>
 
 #include "Face.h"
@@ -29,12 +30,12 @@ const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
                                                               glm::vec2(11, 2)}};
 
 
-Face::Face(std::string name, Dice* dice, int face_, int value, FaceType type, FaceModifier modifiers)
-      : name(std::move(name)), dice(dice), face_(face_), value(value), type(type), modifiers(modifiers) {
+Face::Face(std::string name, std::weak_ptr<Dice> dice, int face_, int value, FaceType type, FaceModifier modifiers)
+      : name(std::move(name)), dice(std::move(dice)), face_(face_), value(value), type(type), modifiers(modifiers) {
 }
 
-Face* Face::makeCopy() const {
-    auto copy = new Face(name, dice, face_, value, type, modifiers);
+std::shared_ptr<Face> Face::makeCopy() const {
+    auto copy = std::make_shared<Face>(name, dice, face_, value, type, modifiers);
     return copy;
 }
 
@@ -54,12 +55,9 @@ FaceModifier Face::getModifiers() const {
     return modifiers;
 }
 
-Dice* Face::getDice() const {
-    return dice;
-}
-
 glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
-    glm::vec2 dicePosition = dice->getPosition(dicePos);
+    auto dicePtr = std::shared_ptr<Dice>(dice);
+    glm::vec2 dicePosition = dicePtr->getPosition(dicePos);
     switch (dicePos) {
         case Dice::backgroundPos:
             std::cerr << "Face::getPosition: dicePos backgroundPos should not be used" << std::endl;
@@ -107,7 +105,7 @@ void Face::setHover(bool hover_) {
     hover = hover_;
 }
 
-void Face::setDice(Dice* dice_) {
+void Face::setDice(const std::weak_ptr<Dice> &dice_) {
     dice = dice_;
 }
 
@@ -127,11 +125,12 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
     modifiers.removeModifier(modifier);
 }
 
-void Face::draw(SpriteRenderer* spriteRenderer) {
+void Face::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) {
     drawFace(spriteRenderer, Dice::currentFacePos);
 }
 
-void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer, const std::shared_ptr<TextRenderer> &textRenderer,
+                     Dice::dicePos dicePos) {
     drawFace(spriteRenderer, dicePos);
 
     if (hover) {
@@ -139,7 +138,7 @@ void Face::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer,
     }
 }
 
-void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
+void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) {
     auto position = getPosition(dicePos);
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
@@ -223,7 +222,9 @@ void Face::drawFace(SpriteRenderer* spriteRenderer, Dice::dicePos dicePos) {
     }
 }
 
-void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer, Dice::dicePos dicePos) {
+void Face::drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::shared_ptr<TextRenderer> &textRenderer,
+                           Dice::dicePos dicePos) {
     auto position = getPosition(dicePos);
 
     int tooltipWidth = 96;
@@ -234,6 +235,22 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
     spriteRenderer->drawSprite("box", 0.0f,
                                position + tooltipDPos, backgroundSize, 0.0f, glm::vec3(0.1f), 0.9f);
 
+
+    std::string toolTipString = getToolTipString();
+    glm::vec3 color = modifiers.toColor();
+    textRenderer->drawText(toolTipString, 0.0f, position + tooltipDPos, tooltipSize, color);
+
+#if DGR_DEBUG
+    std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
+              << type.toString() << " -- modifiers: " << modifiers.toString() << std::endl;
+#endif
+}
+
+std::shared_ptr<Face> Face::getSharedFromThis() {
+    return shared_from_this();
+}
+
+std::string Face::getToolTipString() {
     std::ostringstream tooltipOSS;
     if (value >= 0 && type != FaceType::empty) {
         tooltipOSS << value << " ";
@@ -244,14 +261,8 @@ void Face::drawFaceToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRen
     if (!modStr.empty()) {
         tooltipOSS << " (^" << modStr << "^)";
     }
-
-    glm::vec3 color = modifiers.toColor();
-    textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize, color);
-
-#if DGR_DEBUG
-    std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
-              << type.toString() << " -- modifiers: " << modifiers.toString() << std::endl;
-#endif
+    std::string toolTipString = tooltipOSS.str();
+    return toolTipString;
 }
 
 }

@@ -7,13 +7,50 @@
 
 #include "Character.h"
 #include "dice/Face.h"
+#include "dice/Dice.h"
 #include "spell/Spell.h"
 #include "GameStateManager.h"
 #include "scene/BattleScene.h"
 
 namespace DGR {
 
-Dice* Character::getDice() const {
+
+Character::Character(std::string name, std::string characterType)
+      : GameObject(std::move(name)), characterType(std::move(characterType)) {}
+
+std::shared_ptr<Character> Character::makeCopy(bool copyUniqueID) const {
+    auto copy = std::make_shared<Character>(name, getCharacterType());
+
+    copy->setSize(size);
+    copy->setPosition(position);
+
+    copy->setMaxHP(maxHP, false);
+    copy->setHP(hp);
+
+    copy->setIncomingDamage(incomingDamage);
+    copy->setIncomingPoison(incomingPoison);
+    copy->setIncomingRegen(incomingRegen);
+
+    copy->setShield(shield);
+    copy->setPoison(poison);
+    copy->setRegen(regen);
+    copy->setBackRow(backRow);
+    copy->setDodging(isDodging);
+    copy->setUndying(isUndying);
+
+    copy->setSpell(spell->makeCopy());
+    copy->getSpell()->setCharacter(copy->getSharedFromThis());
+
+    copy->setDice(dice->makeCopy());
+    copy->getDice()->setCharacter(copy->getSharedFromThis());
+
+    if (copyUniqueID) {
+        copy->setUniqueID(getUniqueID());
+    }
+    return copy;
+}
+
+std::shared_ptr<Dice> Character::getDice() const {
     return dice;
 }
 
@@ -43,11 +80,11 @@ std::string Character::getCharacterType() const {
     return characterType;
 }
 
-Spell* Character::getSpell() const {
+std::shared_ptr<Spell> Character::getSpell() const {
     return spell;
 }
 
-void Character::setSpell(Spell* spell_) {
+void Character::setSpell(const std::shared_ptr<Spell> &spell_) {
     spell = spell_;
 }
 
@@ -63,7 +100,7 @@ void Character::setRegen(int regen_) {
     regen = regen_;
 }
 
-void Character::setDice(Dice* dice_) {
+void Character::setDice(const std::shared_ptr<Dice> &dice_) {
     dice = dice_;
 }
 
@@ -110,12 +147,16 @@ void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
 }
 
-bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool storeAction) {
+bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
+                         const std::shared_ptr<BattleScene> &battleScene,
+                         bool storeAction) {
+
     bool success = false;
 
     SpellType type = clickedSpell->getType();
 
-    bool differentCharacterType = (getCharacterType() != clickedSpell->getCharacter()->getCharacterType());
+    bool differentCharacterType =
+          (getCharacterType() != std::shared_ptr<Character>(clickedSpell->getCharacter())->getCharacterType());
 
     switch (type.getType()) {
         case SpellType::empty:
@@ -147,21 +188,27 @@ bool Character::interact(Spell* clickedSpell, BattleScene* battleScene, bool sto
     }
 
     if (success && storeAction) {
-        battleScene->getAttackOrder()->addAttack(clickedSpell, this);
+        battleScene->getBattleLog()->addAttack(clickedSpell.get(), this);
     }
 
     if (!success) {
         std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
-        battleScene->getGameStateManager()->addOnScreenMessage(message);
+
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(battleScene->getGameStateManager());
+        gameStatePtr->addOnScreenMessage(message);
     }
 
     return success;
 }
 
 
-bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction) {
+bool
+Character::interact(const std::shared_ptr<Character> &otherCharacter,
+                    const std::shared_ptr<BattleScene> &battleScene,
+                    bool storeAction) {
+
     bool success = false;
-    Face* face;
+    std::shared_ptr<Face> face;
     FaceType type;
     bool differentCharacterType = false;
 
@@ -279,7 +326,7 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
     }
 
     if (success && storeAction) {
-        battleScene->getAttackOrder()->addAttack(this, otherCharacter);
+        battleScene->getBattleLog()->addAttack(this, otherCharacter.get());
     }
 
     if (!success && otherCharacter) {
@@ -287,42 +334,12 @@ bool Character::interact(Character* otherCharacter, BattleScene* battleScene, bo
             (!differentCharacterType && getCharacterType() == "hero")) {
 
             std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
-            battleScene->getGameStateManager()->addOnScreenMessage(message);
+
+            auto gameStatePtr = std::shared_ptr<GameStateManager>(battleScene->getGameStateManager());
+            gameStatePtr->addOnScreenMessage(message);
         }
     }
     return success;
-}
-
-Character* Character::makeCopy(bool copyUniqueID) const {
-    auto* copy = new Character(name, getCharacterType());
-
-    copy->setSize(size);
-    copy->setPosition(position);
-
-    copy->setMaxHP(maxHP, false);
-    copy->setHP(hp);
-
-    copy->setIncomingDamage(incomingDamage);
-    copy->setIncomingPoison(incomingPoison);
-    copy->setIncomingRegen(incomingRegen);
-
-    copy->setShield(shield);
-    copy->setPoison(poison);
-    copy->setRegen(regen);
-    copy->setBackRow(backRow);
-    copy->setDodging(isDodging);
-    copy->setUndying(isUndying);
-
-    copy->setSpell(spell->makeCopy());
-    copy->getSpell()->setCharacter(copy);
-
-    copy->setDice(dice->makeCopy());
-    copy->getDice()->setCharacter(copy);
-
-    if (copyUniqueID) {
-        copy->setUniqueID(getUniqueID());
-    }
-    return copy;
 }
 
 void Character::setShield(int shield_) {
@@ -366,7 +383,7 @@ void Character::applyDamageStep() {
     isUndying = false;
 }
 
-void Character::applySpellTypeDamage(Spell* spell_, BattleScene* battleScene) {
+void Character::applySpellTypeDamage(const std::shared_ptr<Spell> &spell_, const std::shared_ptr<BattleScene> &battleScene) {
     (void) battleScene;
 
     int value = spell_->getValue();
@@ -374,7 +391,7 @@ void Character::applySpellTypeDamage(Spell* spell_, BattleScene* battleScene) {
 }
 
 
-void Character::applySpellTypeCleanse(Spell* spell_, BattleScene* battleScene) {
+void Character::applySpellTypeCleanse(const std::shared_ptr<Spell> &spell_, const std::shared_ptr<BattleScene> &battleScene) {
     (void) spell_, (void) battleScene;
 
     poison = 0;
@@ -382,8 +399,7 @@ void Character::applySpellTypeCleanse(Spell* spell_, BattleScene* battleScene) {
 }
 
 
-
-void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
+void Character::applyFaceTypeDamage(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -403,7 +419,7 @@ void Character::applyFaceTypeDamage(Face* face, BattleScene* battleScene) {
     }
 }
 
-void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
+void Character::applyFaceTypeHeal(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -422,7 +438,7 @@ void Character::applyFaceTypeHeal(Face* face, BattleScene* battleScene) {
     }
 }
 
-void Character::applyFaceTypeShield(Face* face, BattleScene* battleScene) {
+void Character::applyFaceTypeShield(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -436,7 +452,7 @@ void Character::applyFaceTypeShield(Face* face, BattleScene* battleScene) {
     }
 }
 
-void Character::applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene) {
+void Character::applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene) {
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
@@ -451,15 +467,17 @@ void Character::applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene) {
     }
 }
 
-void Character::applyFaceModifierCleanse(Face* face, BattleScene* battleScene) {
+void Character::applyFaceModifierCleanse(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene) {
     (void) face, (void) battleScene;
     poison = 0;
     incomingPoison = 0;
 }
 
-void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene) {
+void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
+                                              const std::shared_ptr<BattleScene> &battleScene) {
+
     face->removeModifier(FaceModifier::modifier::sweeping_edge);
-    auto neighbours = battleScene->getNeighbours(this);
+    auto neighbours = battleScene->getNeighbours(shared_from_this());
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
             switch (type) {
@@ -486,7 +504,8 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, Face* fac
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
-void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
+void Character::drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                              const std::shared_ptr<TextRenderer> &textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
     glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
     std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
@@ -545,7 +564,8 @@ void Character::drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* text
     }
 }
 
-void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
+void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 
     drawHealthBar(spriteRenderer, textRenderer);
@@ -554,7 +574,9 @@ void Character::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer)
     dice->draw(spriteRenderer, textRenderer);
 }
 
-void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const {
+void
+Character::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer) const {
     if (hover) {
 #if DGR_DEBUG
         std::cout << "hover: " << getName() << " -- x: " << getPosition().x
@@ -568,8 +590,16 @@ void Character::drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRend
     }
 }
 
-void Character::drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const {
+void Character::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
+}
+
+void GameObject::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
+    spriteRenderer->drawSprite(name, 1.0f, position, size);
+}
+
+std::shared_ptr<Character> Character::getSharedFromThis() {
+    return shared_from_this();
 }
 
 }

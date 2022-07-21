@@ -25,10 +25,10 @@ private:
 
 public:
     explicit OnScreenMessage(const std::string &name,
-                    const glm::vec2 &pos = glm::vec2(DGR_WIDTH / 2 - 100, DGR_HEIGHT * 0.7),
-                    const glm::vec2 &size = glm::vec2(200, 8),
-                    const glm::vec3 &color = glm::vec3(0.9f, 0.2f, 0.4f),
-                    float alpha = 0.5f)
+                             const glm::vec2 &pos = glm::vec2(DGR_WIDTH / 2 - 100, DGR_HEIGHT * 0.7),
+                             const glm::vec2 &size = glm::vec2(200, 8),
+                             const glm::vec3 &color = glm::vec3(0.9f, 0.2f, 0.4f),
+                             float alpha = 0.5f)
           : UIElement(name, pos, size, color, alpha), text(name) {}
 
     [[nodiscard]] double getDuration() const;
@@ -41,7 +41,8 @@ public:
 
     void update(double dt);
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer) const override;
 
 };
 

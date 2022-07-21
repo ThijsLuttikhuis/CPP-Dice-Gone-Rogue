@@ -8,11 +8,12 @@
 #include "GameStateManager.h"
 #include "BattleScene.h"
 #include <set>
+#include <utility>
 
 namespace DGR {
 
-CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
-      : Scene("CharacterSelectScene", gameState) {
+CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameState)
+      : Scene("CharacterSelectScene", std::move(gameState)) {
 
     double width = DGR_WIDTH;
     double height = DGR_HEIGHT;
@@ -22,23 +23,28 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     double buttonDistance = height * 0.1;
     float i = 8;
 
-    auto* button1 = new Button("Text", {width / 2 - buttonWidth, buttonDistance / 2},
-                               {buttonWidth * 2, buttonHeight / 2});
+    auto button1 = std::make_shared<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
+                                            glm::vec2(buttonWidth * 2, buttonHeight / 2));
     button1->setText("Select three characters");
     buttons.push_back(button1);
 
-    auto* button2 = new Button("Ready", {width / 2 - buttonWidth / 2, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button2 = std::make_shared<Button>("Ready",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Ready");
     buttons.push_back(button2);
 
-    auto* button9 = new Button("Randomize", {width / 2 - buttonWidth / 2 + buttonWidth * 1.1, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button9 = std::make_shared<Button>("Randomize",
+                                            glm::vec2(width / 2 - buttonWidth / 2 + buttonWidth * 1.1,
+                                                      i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button9->setText("Randomize");
     buttons.push_back(button9);
 
-    auto* button10 = new Button("Return", {width / 2 - buttonWidth / 2 - buttonWidth * 1.1, i * buttonDistance},
-                                {buttonWidth, buttonHeight});
+    auto button10 = std::make_shared<Button>("Return",
+                                             glm::vec2(width / 2 - buttonWidth / 2 - buttonWidth * 1.1,
+                                                       i * buttonDistance),
+                                             glm::vec2(buttonWidth, buttonHeight));
     button10->setText("Return to main menu");
     buttons.push_back(button10);
 
@@ -55,40 +61,50 @@ CharacterSelectScene::CharacterSelectScene(GameStateManager* gameState)
     float midButtonWidth = (midButtonEnd - midButtonStart) / nMidButton;
     i = 0;
 
-    auto* button3 = new Button("ScrollLeft", {leftButtonX, leftRightButtonY},
-                               {leftRightButtonWidth, leftRightButtonHeight});
+    auto button3 = std::make_shared<Button>("ScrollLeft",
+                                            glm::vec2(leftButtonX, leftRightButtonY),
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
+                                            glm::vec3(0.4f),
+                                            0.0f, true, true);
     button3->setText(" <<");
     buttons.push_back(button3);
 
-    auto* button4 = new Button("ScrollRight", {rightButtonX, leftRightButtonY},
-                               {leftRightButtonWidth, leftRightButtonHeight});
+    auto button4 = std::make_shared<Button>("ScrollRight",
+                                            glm::vec2(rightButtonX, leftRightButtonY),
+                                            glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
+                                            glm::vec3(0.4f),
+                                            0.0f, true, true);
     button4->setText(" >>");
     buttons.push_back(button4);
 
-    auto* button5 = new Button("SelectHero0", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button5 = std::make_shared<Button>("SelectHero0",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button5->setText("");
     buttons.push_back(button5);
 
-    auto* button6 = new Button("SelectHero1", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button6 = std::make_shared<Button>("SelectHero1",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button6->setText("");
     buttons.push_back(button6);
 
-    auto* button7 = new Button("SelectHero2", {midButtonStart + i++ * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button7 = std::make_shared<Button>("SelectHero2",
+                                            glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button7->setText("");
     buttons.push_back(button7);
 
-    auto* button8 = new Button("SelectHero3", {midButtonStart + i * midButtonWidth, leftRightButtonY},
-                               {midButtonWidth, leftRightButtonHeight}, false);
+    auto button8 = std::make_shared<Button>("SelectHero3",
+                                            glm::vec2(midButtonStart + i * midButtonWidth, leftRightButtonY),
+                                            glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button8->setText("");
     buttons.push_back(button8);
 
 
 }
 
-void CharacterSelectScene::handleMousePosition(Character* character, double xPos, double yPos) {
+void CharacterSelectScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
 
@@ -116,7 +132,8 @@ void CharacterSelectScene::handleMouseButton(double xPos, double yPos) {
 }
 
 void CharacterSelectScene::handleMousePosition(double xPos, double yPos) {
-    for (auto &hero : gameState->getAllHeroes()) {
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    for (auto &hero : gameStatePtr->getAllHeroes()) {
         handleMousePosition(hero, xPos, yPos);
 
         auto spell = hero->getSpell();
@@ -127,7 +144,9 @@ void CharacterSelectScene::handleMousePosition(double xPos, double yPos) {
 }
 
 void CharacterSelectScene::alignCharacterPositions() {
-    const int width = gameState->getWindow()->getWidth();
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    const int width = gameStatePtr->getWindow()->getWidth();
     const int center = width / 2;
     const int dWidth = 48;
     const int maxTotalWidth = maxCharactersOnRow * (dWidth + 32);
@@ -137,7 +156,7 @@ void CharacterSelectScene::alignCharacterPositions() {
     int left, up;
     totalWidth = 0;
 
-    auto allHeroes = gameState->getAllHeroes();
+    auto allHeroes = gameStatePtr->getAllHeroes();
     int allHeroesSize = allHeroes.size();
     for (int i = currentLeftCharacterIndex; i < allHeroesSize; i++) {
         totalWidth += dWidth + (int) allHeroes[i]->getSize().x;
@@ -168,25 +187,28 @@ void CharacterSelectScene::alignCharacterPositions() {
     }
 }
 
-void CharacterSelectScene::reset() {
-    Scene::reset();
-}
-
 void CharacterSelectScene::update(double dt) {
-    auto allHeroes = gameState->getAllHeroes();
-    if (allHeroes.empty()) {
-        auto allHeroes_ = gameState->getAllHeroes();
-        for (auto &hero : allHeroes_) {
-            auto copy = hero->makeCopy(true);
-            allHeroes.push_back(copy);
+    t += dt;
+
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    for (auto &button : buttons) {
+        if (button->getName() == "ScrollRight") {
+            button->setDoBlink((int) gameStatePtr->getAllHeroes().size() >
+                               currentLeftCharacterIndex + maxCharactersOnRow);
+        } else if (button->getName() == "ScrollLeft") {
+            button->setDoBlink(currentLeftCharacterIndex > 0);
         }
+
+        button->update(t);
     }
 
     alignCharacterPositions();
-
 }
 
-void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void CharacterSelectScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                                  const std::shared_ptr<TextRenderer> &textRenderer) {
+
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 
@@ -194,11 +216,13 @@ void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* 
         button->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &hero : gameState->getAllHeroes()) {
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    for (auto &hero : gameStatePtr->getAllHeroes()) {
         hero->draw(spriteRenderer, textRenderer);
     }
 
-    for (auto &hero : gameState->getAllHeroes()) {
+    for (auto &hero : gameStatePtr->getAllHeroes()) {
         hero->setHoverMouse(true);
         hero->drawHover(spriteRenderer, textRenderer);
     }
@@ -207,10 +231,9 @@ void CharacterSelectScene::render(SpriteRenderer* spriteRenderer, TextRenderer* 
         hero->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
     }
 
-
 }
 
-void CharacterSelectScene::pressButton(Button* button) {
+void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
     std::cout << "pressed a button!" << std::endl;
 
     float heroYPos = 128;
@@ -219,15 +242,17 @@ void CharacterSelectScene::pressButton(Button* button) {
 
     auto &buttonName = button->getName();
 
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
     if (buttonName == "ScrollRight") {
         currentLeftCharacterIndex++;
         currentLeftCharacterIndex = std::min(currentLeftCharacterIndex,
-                                             (int) gameState->getAllHeroes().size() - maxCharactersOnRow);
+                                             (int) gameStatePtr->getAllHeroes().size() - maxCharactersOnRow);
     } else if (buttonName == "ScrollLeft") {
         currentLeftCharacterIndex--;
         currentLeftCharacterIndex = std::max(currentLeftCharacterIndex, 0);
     } else if (buttonName == "Randomize") {
-        auto allHeroes = gameState->getAllHeroes();
+        auto allHeroes = gameStatePtr->getAllHeroes();
         std::set<int> rngs;
         while ((int) rngs.size() < maxSelect) {
             int rng = Random::randInt(0, (int) allHeroes.size() - 1);
@@ -242,10 +267,10 @@ void CharacterSelectScene::pressButton(Button* button) {
             selectedHeroes.push_back(hero);
         }
 
-        gameState->addOnScreenMessage(message);
+        gameStatePtr->addOnScreenMessage(message);
 
     } else if (buttonName == "Return") {
-        gameState->popSceneFromStack();
+        gameStatePtr->popSceneFromStack();
 
     } else if (buttonName == "SelectHero0") {
         handleHeroesMouseButton(heroXPos, heroYPos);
@@ -260,42 +285,48 @@ void CharacterSelectScene::pressButton(Button* button) {
         handleHeroesMouseButton(heroXPos + heroDXPos * 3, heroYPos);
 
     } else if (buttonName == "Ready") {
-        if ((int) selectedHeroes.size() == maxSelect) {
-            BattleScene* battleScene = dynamic_cast<BattleScene*>(gameState->getScene("BattleScene"));
-            if (!battleScene) {
-                std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
-                exit(404);
-            }
-
-            std::vector<Character*> battleHeroes;
-            std::vector<Character*> battleEnemies;
-
-            for (auto &hero : selectedHeroes) {
-                auto copy = hero->makeCopy(true);
-                copy->setPosition(0, 0);
-                battleHeroes.push_back(copy);
-            }
-
-            auto allEnemies = gameState->getAllEnemies();
-            for (auto & enemy : allEnemies) {
-                auto copy = enemy->makeCopy(true);
-                battleEnemies.push_back(copy);
-            }
-
-            battleScene->reset();
-            battleScene->setHeroes(battleHeroes);
-            battleScene->setEnemies(battleEnemies);
-
-            gameState->popSceneFromStack();
-            gameState->addSceneToStack("BattleScene");
-        } else {
-            gameState->addOnScreenMessage("Please select three characters!");
+        if ((int) selectedHeroes.size() != maxSelect) {
+            gameStatePtr->addOnScreenMessage("Please select three characters!");
+            return;
         }
+
+        std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(
+              gameStatePtr->getScene("BattleScene"));
+        if (!battleScene) {
+            std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
+            exit(404);
+        }
+
+        std::vector<std::shared_ptr<Character>> battleHeroes;
+        std::vector<std::shared_ptr<Character>> battleEnemies;
+
+        for (auto &hero : selectedHeroes) {
+            auto copy = hero->makeCopy(true);
+            copy->setPosition(0, 0);
+            battleHeroes.push_back(copy);
+        }
+
+        auto allEnemies = gameStatePtr->getAllEnemies();
+        for (auto &enemy : allEnemies) {
+            auto copy = enemy->makeCopy(true);
+            battleEnemies.push_back(copy);
+        }
+
+        battleScene->getBattleLog()->clearAutoSave();
+
+        battleScene->setHeroes(battleHeroes);
+        battleScene->setEnemies(battleEnemies);
+
+        gameStatePtr->popSceneFromStack();
+        gameStatePtr->pushSceneToStack("BattleScene");
+
     }
 }
 
 bool CharacterSelectScene::handleHeroesMouseButton(double xPos, double yPos) {
-    for (auto &hero : gameState->getAllHeroes()) {
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    for (auto &hero : gameStatePtr->getAllHeroes()) {
         if (hero->isMouseHovering(xPos, yPos, true)) {
 
             bool removedCharacter = false;

@@ -21,7 +21,8 @@ public:
               const glm::vec3 &color = glm::vec3(0.0f), float alpha = 1.0f)
           : GameObject(std::move(name), pos, size), color(color), alpha(alpha) {}
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer) const override;
 
 };
 

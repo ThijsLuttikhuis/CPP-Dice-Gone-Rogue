@@ -17,10 +17,11 @@ class GameStateManager;
 class Scene : public InputHandler, public UIElement {
 protected:
     bool enabled = true;
+    double t = 0.0;
 public:
-    Scene(std::string name, GameStateManager* gameState);
+    Scene(std::string name, std::weak_ptr<GameStateManager> gameState);
 
-    Scene(std::string name, GameStateManager* gameState, glm::vec2 position,
+    Scene(std::string name, std::weak_ptr<GameStateManager> gameState, glm::vec2 position,
           glm::vec2 size = glm::vec2(DGR_WIDTH, DGR_HEIGHT), glm::vec3 color = glm::vec3(1.0f));
 
     /// getters
@@ -28,13 +29,21 @@ public:
 
     [[nodiscard]] bool isMouseHovering(double xPos, double yPos) const override;
 
-    [[nodiscard]] GameStateManager* getGameStateManager() const;
+    [[nodiscard]]  std::weak_ptr<GameStateManager> getGameStateManager() const;
 
     /// setters
     void setIsEnabled(bool enabled_);
 
     /// functions
+    virtual void initialize();
+
+    virtual void onPushToStack();
+
+    virtual void onPopFromStack();
+
     virtual void reset();
+
+    virtual std::string message(const std::string &data);
 
     virtual void update(double dt);
 };

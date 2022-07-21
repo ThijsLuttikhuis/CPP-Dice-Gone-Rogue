@@ -10,9 +10,8 @@
 
 namespace DGR {
 
-Shader* Shader::use() {
+void Shader::use() {
     glUseProgram(id);
-    return this;
 }
 
 void Shader::compile(const std::string &vertexFile, const std::string &fragmentFile, const std::string &geometryFile) {

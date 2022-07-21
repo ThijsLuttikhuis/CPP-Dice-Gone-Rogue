@@ -5,6 +5,7 @@
 #ifndef DICEGONEROGUE_CHARACTER_H
 #define DICEGONEROGUE_CHARACTER_H
 
+#include <memory>
 #include <utility>
 
 #include "dice/Dice.h"
@@ -20,12 +21,12 @@ class GameStateManager;
 
 class BattleScene;
 
-class Character : public GameObject {
+class Character : public std::enable_shared_from_this<Character>, public GameObject {
 private:
     std::string characterType;
 
-    Dice* dice = nullptr;
-    Spell* spell = nullptr;
+    std::shared_ptr<Dice> dice = nullptr;
+    std::shared_ptr<Spell> spell = nullptr;
 
     int hp = 0;
     int maxHP = 0;
@@ -39,32 +40,33 @@ private:
     bool isUndying = false;
     bool backRow = false;
 
-    void applySpellTypeDamage(Spell* spell, BattleScene* battleScene);
+    void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceTypeDamage(Face* face, BattleScene* battleScene);
+    void applySpellTypeCleanse(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceTypeHeal(Face* face, BattleScene* battleScene);
+    void applyFaceTypeDamage(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceTypeShield(Face* face, BattleScene* battleScene);
+    void applyFaceTypeHeal(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceTypeBonusHealth(Face* face, BattleScene* battleScene);
+    void applyFaceTypeShield(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceModifierCleanse(Face* face, BattleScene* battleScene);
+    void applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applyFaceModifierSweepingEdge(FaceType::faceType type, Face* face, BattleScene* battleScene);
+    void applyFaceModifierCleanse(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
 
-    void drawHealthBar(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
+    void applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
+                                       const std::shared_ptr<BattleScene> &battleScene);
+
+    void drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                       const std::shared_ptr<TextRenderer> &textRenderer) const;
 
 public:
-    Character(std::string name, std::string characterType)
-          : GameObject(std::move(name)), characterType(std::move(characterType)) {};
-
-    Character(const std::string &name, std::string characterType, glm::vec2 position, glm::vec2 size)
-          : GameObject(name, position, size), characterType(std::move(characterType)),
-            dice(new Dice(name, this)) {};
+    Character(std::string name, std::string characterType);
 
     /// getters
-    [[nodiscard]] Dice* getDice() const;
+    [[nodiscard]] std::shared_ptr<Character> getSharedFromThis();
+
+    [[nodiscard]]  std::shared_ptr<Dice> getDice() const;
 
     [[nodiscard]] bool isDead() const;
 
@@ -76,12 +78,12 @@ public:
 
     [[nodiscard]] std::string getCharacterType() const;
 
-    [[nodiscard]] Spell* getSpell() const;
+    [[nodiscard]] std::shared_ptr<Spell> getSpell() const;
 
-    [[nodiscard]] Character* makeCopy(bool copyUniqueID = false) const;
+    [[nodiscard]] std::shared_ptr<Character> makeCopy(bool copyUniqueID = false) const;
 
     /// setters
-    void setDice(Dice* dice);
+    void setDice(const std::shared_ptr<Dice> &dice);
 
     void setDiceLock(bool diceLock_);
 
@@ -101,7 +103,7 @@ public:
 
     void setUsedDice(bool usedDice);
 
-    void setSpell(Spell* spell_);
+    void setSpell(const std::shared_ptr<Spell> &spell_);
 
     void setDodging(bool isDodging_);
 
@@ -116,20 +118,24 @@ public:
 
     void toggleDiceLock();
 
-    bool interact(Character* otherCharacter, BattleScene* battleScene, bool storeAction = true);
+    bool interact(const std::shared_ptr<Character> &otherCharacter,
+                  const std::shared_ptr<BattleScene> &battleScene,
+                  bool storeAction = true);
 
-    bool interact(Spell* clickedSpell, BattleScene* battleScene, bool storeAction = true);
+    bool interact(const std::shared_ptr<Spell> &clickedSpell,
+                  const std::shared_ptr<BattleScene> &battleScene,
+                  bool storeAction = true);
 
     void applyDamageStep();
 
     /// render
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const override;
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer) const override;
 
-    void drawBox(SpriteRenderer* spriteRenderer, glm::vec3 color) const;
+    void drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const;
 
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) const;
-
-    void applySpellTypeCleanse(Spell* spell, BattleScene* battleScene);
+    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::shared_ptr<TextRenderer> &textRenderer) const;
 };
 
 }

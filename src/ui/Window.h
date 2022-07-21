@@ -10,12 +10,13 @@
 
 #include "InputHandler.h"
 #include "gameobject/Character.h"
+#include "utilities/Constants.h"
 
 namespace DGR {
 
 class GameController;
 
-class Window {
+class Window : public std::enable_shared_from_this<Window> {
 private:
     int width;
     int height;
@@ -25,15 +26,19 @@ private:
 
     GLFWwindow* glfwWindow = nullptr;
 
-    GameStateManager* gameState = nullptr;
+     std::weak_ptr<GameStateManager> gameState{};
 
     void swapBuffers();
 public:
     Window(int width, int height);
 
+    Window() : Window(DGR_WIDTH, DGR_HEIGHT) {}
+
     ~Window();
 
     /// getters
+    [[nodiscard]] std::shared_ptr<Window> getSharedFromThis();
+
     [[nodiscard]] int getWidth() const;
 
     [[nodiscard]] int getHeight() const;
@@ -41,9 +46,11 @@ public:
     [[nodiscard]] bool shouldClose() const;
 
     /// setters
-    void setGameStateManager(GameStateManager* gameState_);
+    void setGameStateManager(const std::weak_ptr<GameStateManager> &gameState_);
 
     /// functions
+    void initialize();
+
     void handleMouseButton(double xPos, double yPos);
 
     void handleMousePosition(double xPos, double yPos);
@@ -52,8 +59,6 @@ public:
 
     /// render
     void render();
-
-    void handleScrollWheel(double xOffset, double yOffset);
 };
 
 }

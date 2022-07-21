@@ -2,33 +2,38 @@
 // Created by thijs on 07-06-22.
 //
 
+#include <experimental/vector>
+#include <vector>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iofilemanager/YamlReader.h>
+#include <io/YamlReader.h>
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
 #include <scene/BattleDefeatScene.h>
 #include <scene/CharacterSelectScene.h>
+#include <scene/LoadGameScene.h>
+#include <scene/AreYouSureScene.h>
 #include "GameStateManager.h"
 #include "ui/Button.h"
 #include "scene/BattleScene.h"
 
 namespace DGR {
 
-GameStateManager::GameStateManager(Window* window) : window(window) {
-    auto* shader = new Shader();
+GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : window(window) {
+    auto shader = std::make_shared<Shader>();
     shader->compile("../src/shaders/sprite.vs", "../src/shaders/sprite.fs");
 
     glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(), (float) window->getHeight(),
                                       0.0f, -1.0f, 1.0f);
 
-    textRenderer = new TextRenderer(shader, projection);
-    spriteRenderer = new SpriteRenderer(shader, projection);
+    textRenderer = std::make_shared<TextRenderer>(shader, projection);
+    spriteRenderer = std::make_shared<SpriteRenderer>(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
 
     YamlReader yamlReaderHeroes;
     yamlReaderHeroes.readFile("heroes");
-    allHeroes = *(std::vector<Character*>*) yamlReaderHeroes.getData()->getFeature();
+    allHeroes = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
+          yamlReaderHeroes.getData()->getFeature()).get();
 
     int size = (int) allHeroes.size();
     for (int i = 0; i < size; i++) {
@@ -40,28 +45,11 @@ GameStateManager::GameStateManager(Window* window) : window(window) {
 
     YamlReader yamlReaderEnemies;
     yamlReaderEnemies.readFile("enemies");
-    allEnemies = *(std::vector<Character*>*) yamlReaderEnemies.getData()->getFeature();
-
-    auto battleScene = new BattleScene(this);
-    allScenes.push_back(battleScene);
-
-    auto mainMenuScene = new MainMenuScene(this);
-    allScenes.push_back(mainMenuScene);
-
-    auto settingsScene = new SettingsScene(this);
-    allScenes.push_back(settingsScene);
-
-    auto battleVictoryScene = new BattleVictoryScene(this);
-    allScenes.push_back(battleVictoryScene);
-
-    auto battleDefeatScene = new BattleDefeatScene(this);
-    allScenes.push_back(battleDefeatScene);
-
-    auto characterSelectScene = new CharacterSelectScene(this);
-    allScenes.push_back(characterSelectScene);
+    allEnemies = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
+          yamlReaderEnemies.getData()->getFeature()).get();
 }
 
-Window* GameStateManager::getWindow() const {
+std::shared_ptr<Window> GameStateManager::getWindow() const {
     return window;
 }
 
@@ -93,7 +81,7 @@ void GameStateManager::update() {
     }
 
     onScreenMessages.erase(std::remove_if(onScreenMessages.begin(), onScreenMessages.end(),
-                                          [](OnScreenMessage*&message) {
+                                          [](std::shared_ptr<OnScreenMessage> &message) {
                                               return message->getDuration() < 0.0;
                                           }), onScreenMessages.end());
 
@@ -121,21 +109,22 @@ void GameStateManager::handleMousePosition(double xPos, double yPos) {
     }
 }
 
-const std::vector<Scene*> &GameStateManager::getAllScenes() const {
+const std::vector<std::shared_ptr<Scene>> &GameStateManager::getAllScenes() const {
     return allScenes;
 }
 
-const std::vector<Scene*> &GameStateManager::getSceneStack() const {
+const std::vector<std::shared_ptr<Scene>> &GameStateManager::getSceneStack() const {
     return sceneStack;
 }
 
-bool GameStateManager::addSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
+bool GameStateManager::pushSceneToStack(const std::string &sceneName, bool disableOtherScenes) {
     bool sceneFound = false;
     for (auto &scene : allScenes) {
         if (scene->getName() == sceneName) {
             sceneFound = true;
             sceneStack.push_back(scene);
             scene->setIsEnabled(true);
+            scene->onPushToStack();
             break;
         }
     }
@@ -152,6 +141,7 @@ bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
     if (sceneStack.empty()) {
         return false;
     }
+    sceneStack.back()->onPopFromStack();
     sceneStack.pop_back();
     if (!sceneStack.empty() && enableLastSceneInStack) {
         sceneStack.back()->setIsEnabled(true);
@@ -160,7 +150,7 @@ bool GameStateManager::popSceneFromStack(bool enableLastSceneInStack) {
     return true;
 }
 
-Scene* GameStateManager::getScene(const std::string &sceneName, bool onlySceneStack) const {
+std::shared_ptr<Scene> GameStateManager::getScene(const std::string &sceneName, bool onlySceneStack) const {
     auto scenes = onlySceneStack ? sceneStack : allScenes;
     for (auto &scene : scenes) {
         if (scene->getName() == sceneName) {
@@ -170,21 +160,74 @@ Scene* GameStateManager::getScene(const std::string &sceneName, bool onlySceneSt
     return nullptr;
 }
 
-const std::vector<Character*> &GameStateManager::getAllHeroes() const {
+const std::vector<std::shared_ptr<Character>> &GameStateManager::getAllHeroes() const {
     return allHeroes;
 }
 
-const std::vector<Character*> &GameStateManager::getAllEnemies() const {
+const std::shared_ptr<Character> &GameStateManager::getCharacterByID(int id) const {
+    for (const auto &hero : allHeroes) {
+        if (hero->getUniqueID() == id) {
+            return hero;
+        }
+    }
+    for (const auto &enemy : allEnemies) {
+        if (enemy->getUniqueID() == id) {
+            return enemy;
+        }
+    }
+    return nullCharacter;
+}
+
+
+const std::vector<std::shared_ptr<Character>> &GameStateManager::getAllEnemies() const {
     return allEnemies;
 }
 
-void GameStateManager::addOnScreenMessage(OnScreenMessage* message) {
+void GameStateManager::addOnScreenMessage(std::shared_ptr<OnScreenMessage> message) {
     onScreenMessages.push_back(message);
 }
 
-void GameStateManager::addOnScreenMessage(const std::string& message) {
-    auto onScreenMessage = new OnScreenMessage(message);
+void GameStateManager::addOnScreenMessage(const std::string &message) {
+    auto onScreenMessage = std::make_shared<OnScreenMessage>(message);
     onScreenMessages.push_back(onScreenMessage);
+}
+
+void GameStateManager::initializeScenes() {
+    allScenes = {};
+
+    auto sharedFromThis = getSharedFromThis();
+
+    auto battleScene = std::make_shared<BattleScene>(sharedFromThis);
+    battleScene->initialize();
+    allScenes.push_back(battleScene);
+
+    auto areYouSureScene = std::make_shared<AreYouSureScene>(sharedFromThis);
+    areYouSureScene->initialize();
+    allScenes.push_back(areYouSureScene);
+
+    auto mainMenuScene = std::make_shared<MainMenuScene>(sharedFromThis);
+    mainMenuScene->initialize();
+    allScenes.push_back(mainMenuScene);
+
+    auto settingsScene = std::make_shared<SettingsScene>(sharedFromThis);
+    settingsScene->initialize();
+    allScenes.push_back(settingsScene);
+
+    auto battleVictoryScene = std::make_shared<BattleVictoryScene>(sharedFromThis);
+    battleVictoryScene->initialize();
+    allScenes.push_back(battleVictoryScene);
+
+    auto battleDefeatScene = std::make_shared<BattleDefeatScene>(sharedFromThis);
+    battleDefeatScene->initialize();
+    allScenes.push_back(battleDefeatScene);
+
+    auto characterSelectScene = std::make_shared<CharacterSelectScene>(sharedFromThis);
+    characterSelectScene->initialize();
+    allScenes.push_back(characterSelectScene);
+
+    auto loadGameScene = std::make_shared<LoadGameScene>(sharedFromThis);
+    loadGameScene->initialize();
+    allScenes.push_back(loadGameScene);
 }
 
 void GameStateManager::render() {
@@ -203,6 +246,10 @@ void GameStateManager::render() {
         glClear(GL_DEPTH_BUFFER_BIT);
         message->draw(spriteRenderer, textRenderer);
     }
+}
+
+std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
+    return shared_from_this();
 }
 
 }

@@ -6,6 +6,7 @@
 #define DICEGONEROGUE_SPELL_H
 
 #include <string>
+#include <utility>
 #include <glm/vec2.hpp>
 #include "SpellType.h"
 
@@ -13,11 +14,11 @@ namespace DGR {
 
 class Character;
 
-class Spell {
+class Spell : public std::enable_shared_from_this<Spell> {
 private:
     std::string name;
 
-    Character* character = nullptr;
+    std::weak_ptr<Character> character{};
 
     int cost{};
     int value{};
@@ -26,10 +27,11 @@ private:
     bool hover = false;
 
 public:
-    Spell(std::string name, Character* character) : name(std::move(name)), character(character) {}
+    Spell(std::string name, std::weak_ptr<Character> character)
+          : name(std::move(name)), character(std::move(character)) {}
 
     Spell(std::string name, int cost, int value, SpellType type)
-    : name(std::move(name)), cost(cost), value(value), type(type) {}
+          : name(std::move(name)), cost(cost), value(value), type(type) {}
 
     Spell() = default;
 
@@ -44,25 +46,27 @@ public:
 
     [[nodiscard]] int getCost() const;
 
-    [[nodiscard]] Character* getCharacter() const;
+    [[nodiscard]]  std::weak_ptr<Character> getCharacter() const;
 
     [[nodiscard]] SpellType getType() const;
 
     [[nodiscard]] int getValue() const;
 
-    [[nodiscard]] Spell* makeCopy() const;
+    [[nodiscard]] std::shared_ptr<Spell> makeCopy() const;
 
     /// setters
-    void setCharacter(Character* character_);
+    void setCharacter(const std::weak_ptr<Character> &character_);
 
     void setHover(bool hover_);
 
     /// render
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer);
 
-    void drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawSpellToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::shared_ptr<TextRenderer> &textRenderer);
 
-    void drawBox(SpriteRenderer* spriteRenderer, glm::highp_vec3 color);
+    void drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color);
 
 };
 

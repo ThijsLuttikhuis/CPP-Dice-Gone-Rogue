@@ -1,0 +1,81 @@
+.dgr.version=0.2
+
+id: 9, name: hunter;
+id: 12, name: druid;
+id: 11, name: wizard;
+id: 21, name: rat;
+id: 22, name: skeleton;
+id: 23, name: slime;
+
+enemy turn 1;
+id: 9, faceid: 0;
+id: 11, faceid: 0;
+id: 12, faceid: 0;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 21;
+type: character, dst: 9, src: 22;
+type: character, dst: 12, src: 23;
+
+hero turn 1;
+id: 9, faceid: 1;
+id: 11, faceid: 2;
+id: 12, faceid: 3;
+id: 21, faceid: 2;
+id: 22, faceid: 2;
+id: 23, faceid: 0;
+
+type: character, dst: 12, src: 11;
+type: character, dst: 11, src: 12;
+type: character, dst: 21, src: 9;
+
+enemy turn 2;
+id: 9, faceid: 1;
+id: 11, faceid: 2;
+id: 12, faceid: 3;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: 21;
+type: character, dst: 22, src: -1;
+type: character, dst: 11, src: 23;
+
+hero turn 2;
+id: 9, faceid: 1;
+id: 11, faceid: 4;
+id: 12, faceid: 0;
+id: 21, faceid: 3;
+id: 22, faceid: 5;
+id: 23, faceid: 0;
+
+type: character, dst: 11, src: -1;
+type: spell, dst: 22, src: 11;
+type: character, dst: 22, src: 12;
+type: character, dst: 21, src: 9;
+
+enemy turn 3;
+id: 9, faceid: 1;
+id: 11, faceid: 4;
+id: 12, faceid: 0;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 12, src: 21;
+type: character, dst: 12, src: 22;
+type: character, dst: 9, src: 23;
+
+hero turn 3;
+id: 9, faceid: 5;
+id: 11, faceid: 0;
+id: 12, faceid: 1;
+id: 21, faceid: 0;
+id: 22, faceid: 0;
+id: 23, faceid: 2;
+
+type: character, dst: 21, src: 9;
+type: character, dst: 9, src: 12;
+

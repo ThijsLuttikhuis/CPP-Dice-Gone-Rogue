@@ -2,11 +2,9 @@
 // Created by thijs on 09-06-22.
 //
 
-#include <algorithm>
-#include <glm/vec2.hpp>
-#include <iostream>
 
 #include "Utilities.h"
+#include "Constants.h"
 
 namespace DGR {
 
@@ -40,6 +38,49 @@ glm::vec3 Utilities::color2Vec3(const std::string &color_) {
         }
     }
     return color;
+}
+
+
+std::string Utilities::trim(const std::string &str, const std::string &whitespace) {
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+        return ""; // no content
+
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
+std::string Utilities::checkAndRemoveDGRFileVersion(const std::string &fileContents, const std::string &fileName) {
+    if (fileContents.substr(0, 13) == ".dgr.version=") {
+        if (fileContents.substr(13, DGR_FILE_VERSION.size()) != DGR_FILE_VERSION) {
+            std::cerr << "[Utilities::checkAndRemoveDGRFileVersion] file" << fileName
+                      << " does not have the correct version (version "
+                      << fileContents.substr(13, DGR_FILE_VERSION.size())
+                      << ", should be " << DGR_FILE_VERSION << ")" << std::endl;
+            return "";
+        }
+    } else {
+        std::cerr << "[Utilities::checkAndRemoveDGRFileVersion] file " << fileName
+                  << " does not start with \".dgr.version=\"" << std::endl;
+        return "";
+    }
+    return fileContents.substr(13 + DGR_FILE_VERSION.size(),
+                               fileContents.length() - 13 - DGR_FILE_VERSION.size());
+}
+
+std::vector<std::filesystem::path> Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &extension) {
+    std::vector<std::filesystem::path> filePaths;
+
+    auto dirIt = std::filesystem::directory_iterator(dir);
+    for (const auto &entry : dirIt) {
+        if (entry.path().extension() == extension) {
+            filePaths.push_back(entry.path());
+        }
+    }
+
+    return filePaths;
 }
 
 }

@@ -10,18 +10,21 @@
 
 int main() {
 
-    int width = DGR_WIDTH;
-    int height = DGR_HEIGHT;
+    DGR::Random::initialize(1);
+    std::shared_ptr<DGR::Window> window = std::make_shared<DGR::Window>();
+    std::shared_ptr<DGR::GameStateManager> dgrGame = std::make_shared<DGR::GameStateManager>(window);
 
-    DGR::Random::initialize(0);
-    auto* window = new DGR::Window(width, height);
-    auto* dgrGame = new DGR::GameStateManager(window);
-    window->setGameStateManager(dgrGame);
+    dgrGame->initializeScenes();
+    window->setGameStateManager(dgrGame->getSharedFromThis());
+    window->initialize();
 
     while (!window->shouldClose()) {
         dgrGame->update();
         window->render();
     }
+
+    dgrGame.reset();
+    window.reset();
 
     return 0;
 }

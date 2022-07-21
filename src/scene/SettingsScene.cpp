@@ -4,14 +4,16 @@
 
 #include "SettingsScene.h"
 #include <GameStateManager.h>
+
+#include <utility>
 #include "ui/Button.h"
 
 namespace DGR {
 
-SettingsScene::SettingsScene(GameStateManager* gameState)
-      : Scene("SettingsScene", gameState,
+SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
+      : Scene("SettingsScene", std::move(gameState),
               glm::vec2(DGR_WIDTH * 0.1, DGR_HEIGHT * 0.1),
-              glm::vec2(DGR_WIDTH * 0.8, DGR_HEIGHT*0.8)) {
+              glm::vec2(DGR_WIDTH * 0.8, DGR_HEIGHT * 0.8)) {
 
     double width = size.x;
     double height = size.y;
@@ -21,20 +23,23 @@ SettingsScene::SettingsScene(GameStateManager* gameState)
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto* button1 = new Button("Sound?", {width / 2 - buttonWidth / 2, i++ * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button1 = std::make_shared<Button>("Sound?",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Sound?");
     buttons.push_back(button1);
 
-    auto* button2 = new Button("HUDSize?", {width / 2 - buttonWidth / 2, i * buttonDistance},
-                               {buttonWidth, buttonHeight});
+    auto button2 = std::make_shared<Button>("HUDSize?",
+                                            glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
     button2->setText("HUDSize?");
     buttons.push_back(button2);
 }
 
 void SettingsScene::handleMouseButton(double xPos, double yPos) {
     if (!isMouseHovering(xPos, yPos)) {
-        gameState->popSceneFromStack();
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        gameStatePtr->popSceneFromStack();
     }
 
     for (auto &button : buttons) {
@@ -44,12 +49,14 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void SettingsScene::pressButton(Button* button) {
+void SettingsScene::pressButton(std::shared_ptr<Button> button) {
+    (void) button;
     std::cout << "pressed a button!" << std::endl;
 
 }
 
-void SettingsScene::render(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void SettingsScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::shared_ptr<TextRenderer> &textRenderer) {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 

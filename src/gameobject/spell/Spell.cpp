@@ -10,17 +10,18 @@
 
 namespace DGR {
 
-Spell* Spell::makeCopy() const {
-    auto* copy = new Spell(name, cost, value, type);
+std::shared_ptr<Spell> Spell::makeCopy() const {
+    auto copy = std::make_shared<Spell>(name, cost, value, type);
     copy->setCharacter(character);
 
     return copy;
 }
 
 glm::vec2 Spell::getPosition() const {
+    auto characterPtr = std::shared_ptr<Character>(character);
 
-    glm::vec2 characterPosition = character->getPosition();
-    glm::vec2 dPos = glm::vec2(-6, character->getSize().y + 48);
+    glm::vec2 characterPosition = characterPtr->getPosition();
+    glm::vec2 dPos = glm::vec2(-6, characterPtr->getSize().y + 48);
     return characterPosition + dPos;
 }
 
@@ -34,7 +35,7 @@ bool Spell::isMouseHovering(double xPos, double yPos) const {
     return Utilities::isPositionInBox(xPos, yPos, position, size);
 }
 
-Character* Spell::getCharacter() const {
+std::weak_ptr<Character> Spell::getCharacter() const {
     return character;
 }
 
@@ -55,7 +56,7 @@ int Spell::getCost() const {
 }
 
 glm::vec2 Spell::getSize() const {
-    glm::vec2 characterSize = character->getSize();
+    glm::vec2 characterSize = std::shared_ptr<Character>(character)->getSize();
 
     return glm::vec2(characterSize.x + 12, 20);
 }
@@ -64,11 +65,13 @@ void Spell::setHover(bool hover_) {
     hover = hover_;
 }
 
-void Spell::setCharacter(Character* character_) {
+void Spell::setCharacter(const std::weak_ptr<Character> &character_) {
     character = character_;
 }
 
-void Spell::drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void
+Spell::drawSpellToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                        const std::shared_ptr<TextRenderer> &textRenderer) {
     if (type == SpellType::empty) {
         return;
     }
@@ -93,7 +96,8 @@ void Spell::drawSpellToolTip(SpriteRenderer* spriteRenderer, TextRenderer* textR
     textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize);
 }
 
-void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
+void
+Spell::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer, const std::shared_ptr<TextRenderer> &textRenderer) {
 
     if (type == SpellType::empty) {
         return;
@@ -123,14 +127,14 @@ void Spell::draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer) {
 
     auto manaCostSize = glm::vec2(manaCostWidth, spriteHeight);
     spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize, 0.0f,
-          glm::vec3{1.0f}, 0.6f);
+                               glm::vec3{1.0f}, 0.6f);
 
     textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, textSize,
-          Utilities::color2Vec3("0xd4a5fa"));
+                           Utilities::color2Vec3("0xd4a5fa"));
 
 }
 
-void Spell::drawBox(SpriteRenderer* spriteRenderer, glm::highp_vec3 color) {
+void Spell::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color) {
     if (type == SpellType::empty) {
         return;
     }

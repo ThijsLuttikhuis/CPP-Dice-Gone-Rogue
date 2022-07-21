@@ -20,7 +20,7 @@ class Character;
 
 class Face;
 
-class Dice {
+class Dice : public std::enable_shared_from_this<Dice> {
 public:
     enum dicePos {
         backgroundPos,
@@ -31,8 +31,8 @@ public:
 private:
     std::string name;
 
-    Character* character = nullptr;
-    Face* faces[6]{};
+    std::weak_ptr<Character> character{};
+    std::shared_ptr<Face> faces[6]{};
     bool lock = false;
     bool used = false;
 
@@ -40,14 +40,14 @@ private:
     bool hoverCurrentFace = false;
 
 public:
-    Dice(std::string name, Character* character);
-
     Dice() = default;
 
     /// getters
-    [[nodiscard]] Face* getCurrentFace() const;
+    [[nodiscard]] std::shared_ptr<Dice> getSharedFromThis();
 
-    [[nodiscard]] Face* getFace(int index) const;
+    [[nodiscard]]  std::shared_ptr<Face> getCurrentFace() const;
+
+    [[nodiscard]]  std::shared_ptr<Face> getFace(int index) const;
 
     [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = backgroundPos) const;
 
@@ -61,9 +61,7 @@ public:
 
     [[nodiscard]] bool isUsed() const;
 
-    [[nodiscard]] Dice* makeCopy() const;
-
-    [[nodiscard]] Character* getCharacter() const;
+    [[nodiscard]]  std::shared_ptr<Dice> makeCopy() const;
 
     /// setters
     void setLocked(bool lock_);
@@ -74,9 +72,9 @@ public:
 
     void setCurrentFaceHover(bool hoverCurrentFace_);
 
-    void setFace(Face* face, int index);
+    void setFace(const std::shared_ptr<Face> &face, int index);
 
-    void setCharacter(Character* hero_);
+    void setCharacter(const std::weak_ptr<Character> &character_);
 
     void setName(const std::string &name_);
 
@@ -86,9 +84,11 @@ public:
     void roll();
 
     /// render
-    void drawHover(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::shared_ptr<TextRenderer> &textRenderer);
 
-    void draw(SpriteRenderer* spriteRenderer, TextRenderer* textRenderer);
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+              const std::shared_ptr<TextRenderer> &textRenderer);
 
 };
 
