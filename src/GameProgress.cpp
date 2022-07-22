@@ -40,20 +40,26 @@ int GameProgress::enemyNameToStrength(const std::string &enemyName) {
 }
 
 void GameProgress::completeLevel(int level, const std::shared_ptr<Inventory> &inventory) {
-    unlockedLevel = std::max(unlockedLevel, level + 1);
+    if (level != unlockedLevel) {
+        return;
+    }
+    unlockedLevel++;
 
-    int xpFactor = 100;
+    int xpFactor = 50;
     int xpGained = xpFactor * levelToEnemyStrength(level);
 
     auto &heroes = inventory->getHeroes();
     for (auto &hero : heroes) {
         hero->addXP(xpGained);
-        if (hero->canLevelUp()) {
-            //TODO: LEVEL UP! make level up scene? on top of other scene (levelselect?) idk.. implement this somewhere
-
-        }
     }
+}
 
+void GameProgress::reset() {
+    unlockedLevel = 1;
+}
+
+bool GameProgress::areThereItemsToGet() const {
+    return !itemsToGet.empty();
 }
 
 

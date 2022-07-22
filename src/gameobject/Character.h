@@ -30,11 +30,11 @@ private:
 
     /// xp stats
     const int xpPerLevel = 128;
-    int characterLevel = 0;
+    int characterLevel = 1;
     int xp = 0;
 
     /// battle stats
-    int defaultMaxHP = 0;
+    int level1DefaultMaxHP = 0;
     int hp = 0;
     int maxHP = 0;
     int shield = 0;
@@ -46,6 +46,13 @@ private:
     bool isDodging = false;
     bool isUndying = false;
     bool backRow = false;
+
+    /// level bonus stats
+    double hpFactorPerLevel = 1.2;
+    int getMaxHpAtLevel(int level);
+
+    bool levelingUp = false;
+
 
     void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
 
@@ -91,6 +98,8 @@ public:
 
     [[nodiscard]] bool canLevelUp() const;
 
+    [[nodiscard]] int getLevel() const;
+
     /// setters
     void setDice(const std::shared_ptr<Dice> &dice);
 
@@ -131,6 +140,8 @@ public:
     /// functions
     void roll();
 
+    void levelUp();
+
     void fullRest();
 
     void toggleDiceLock();
@@ -152,10 +163,20 @@ public:
     void drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const;
 
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer) const;
+                   const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator = false) const;
 
     void drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                     const std::shared_ptr<TextRenderer> &textRenderer) const;
+
+    void drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::shared_ptr<TextRenderer> &textRenderer, double xpPercent);
+
+    void drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
+
+    void drawLevelUp(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer);
+
+    double getXPBarFill(double percent);
 };
 
 }

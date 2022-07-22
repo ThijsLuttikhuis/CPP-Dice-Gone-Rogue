@@ -12,7 +12,7 @@ namespace DGR {
 InputHandler::InputHandler(std::weak_ptr<GameStateManager> gameState) : gameState(std::move(gameState)) {}
 
 void InputHandler::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) {
+                          const std::shared_ptr<TextRenderer> &textRenderer) const {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

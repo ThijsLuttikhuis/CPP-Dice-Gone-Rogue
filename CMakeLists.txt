@@ -97,7 +97,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h src/scene/AreYouSureScene.cpp src/scene/AreYouSureScene.h src/scene/LevelSelectScene.cpp src/scene/LevelSelectScene.h src/Inventory.cpp src/Inventory.h src/GameProgress.cpp src/GameProgress.h)
+        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h src/scene/AreYouSureScene.cpp src/scene/AreYouSureScene.h src/scene/LevelSelectScene.cpp src/scene/LevelSelectScene.h src/Inventory.cpp src/Inventory.h src/GameProgress.cpp src/GameProgress.h src/gameobject/Item.cpp src/gameobject/Item.h)
 
 
 add_executable(DiceGoneRogue main.cpp

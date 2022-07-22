@@ -26,7 +26,14 @@ private:
     std::string name;
     std::weak_ptr<Dice> dice{};
 
+    /// level up stats
+    int level = 1;
+    int bonusValuePerLevel{};
+
+    /// face stats
     int face_{};
+
+    int level1DefaultValue{};
     int value{};
     FaceType type{};
     FaceModifier modifiers{};
@@ -36,15 +43,16 @@ private:
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
 
-    void drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos);
+    void drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) const;
 
     void drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                          const std::shared_ptr<TextRenderer> &textRenderer,
-                         Dice::dicePos dicePos);
+                         Dice::dicePos dicePos) const;
 
 public:
-    Face(int face_, int value, FaceType type, FaceModifier modifiers = {})
-          : face_(face_), value(value), type(type), modifiers(modifiers) {};
+    Face(int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers = {})
+          : bonusValuePerLevel(bonusValuePerLevel), face_(face_), level1DefaultValue(value), value(value),
+            type(type), modifiers(modifiers) {};
 
     Face(std::string name, std::weak_ptr<Dice> dice, int face_,
          int value, FaceType type, FaceModifier modifiers);
@@ -68,10 +76,14 @@ public:
 
     [[nodiscard]] std::shared_ptr<Face> makeCopy() const;
 
+    [[nodiscard]] std::string getToolTipString() const;
+
     /// setters
     void setName(const std::string &name_);
 
     void setValue(int value_);
+
+    void setBonusValuePerLevel(int bonus);
 
     void setHover(bool hover_);
 
@@ -89,14 +101,20 @@ public:
 
     void setDice(const std::weak_ptr<Dice> &dice);
 
+    /// functions
+    void levelUp();
+
     /// render
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                    const std::shared_ptr<TextRenderer> &textureRenderer,
-                   Dice::dicePos dicePos = Dice::diceLayoutPos);
+                   Dice::dicePos dicePos = Dice::diceLayoutPos) const;
 
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer);
+    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
 
-    std::string getToolTipString();
+
+    void drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::shared_ptr<TextRenderer> &textRenderer,
+                         Dice::dicePos dicePos = Dice::diceLayoutPos) const;
 };
 
 }

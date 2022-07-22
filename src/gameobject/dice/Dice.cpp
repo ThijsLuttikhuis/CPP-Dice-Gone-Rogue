@@ -124,7 +124,9 @@ void Dice::setFace(const std::shared_ptr<Face> &face_, int index) {
 
 void Dice::setCurrentFaceHover(bool hoverCurrentFace_) {
     hoverCurrentFace = hoverCurrentFace_;
-    faces[currentFace]->setHover(hoverCurrentFace_);
+    if (currentFace >= 0 && currentFace < 6) {
+        faces[currentFace]->setHover(hoverCurrentFace_);
+    }
 }
 
 void Dice::setCharacter(const std::weak_ptr<Character> &character_) {
@@ -168,7 +170,10 @@ void Dice::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 }
 
 void Dice::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer) {
+                     const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
+
+    auto characterPtr = std::shared_ptr<Character>(character);
+
     glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::backgroundPos);
     glm::vec2 diceTemplateBackgroundSize = getSize(Dice::backgroundPos);
     spriteRenderer->drawSprite("box", 0.9f, diceTemplateBackgroundPosition,
@@ -177,7 +182,7 @@ void Dice::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     glm::vec2 diceTemplateTextBoxSize = glm::vec2(getSize(Dice::backgroundPos).x, 8);
     spriteRenderer->drawSprite("box", 0.8f, diceTemplateBackgroundPosition,
                                diceTemplateTextBoxSize, 1.0f, glm::vec3(0.2f), 0.5f);
-    textRenderer->drawText(name, 0.1f, diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
+    textRenderer->drawText(name + "  [Lvl " + std::to_string(characterPtr->getLevel()) + "]", 0.1f, diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
 
     glm::vec2 diceTemplatePosition = getPosition(Dice::diceLayoutPos);
     glm::vec2 diceTemplateSize = getSize(Dice::diceLayoutPos);
@@ -186,6 +191,9 @@ void Dice::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 
     for (auto &face : faces) {
         face->drawHover(spriteRenderer, textRenderer);
+    }
+    if (drawCurrentFaceIndicator && currentFace >= 0 && currentFace < 6) {
+        faces[currentFace]->drawCurrentFace(spriteRenderer, textRenderer);
     }
 }
 

@@ -48,10 +48,10 @@ public:
         return *this;
     }
 
-    bool operator ==(const faceType &t) {
+    bool operator ==(const faceType &t) const {
         return t == type;
     }
-    bool operator !=(const faceType &t) {
+    bool operator !=(const faceType &t) const {
         return (t != type);
     }
 };

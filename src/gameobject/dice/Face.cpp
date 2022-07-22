@@ -31,7 +31,8 @@ const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
 
 
 Face::Face(std::string name, std::weak_ptr<Dice> dice, int face_, int value, FaceType type, FaceModifier modifiers)
-      : name(std::move(name)), dice(std::move(dice)), face_(face_), value(value), type(type), modifiers(modifiers) {
+      : name(std::move(name)), dice(std::move(dice)), bonusValuePerLevel(1), face_(face_),
+        level1DefaultValue(value), value(value), type(type), modifiers(modifiers) {
 }
 
 std::shared_ptr<Face> Face::makeCopy() const {
@@ -98,7 +99,7 @@ void Face::setType(FaceType type_) {
 }
 
 void Face::setValue(int value_) {
-    value = value_;
+    level1DefaultValue = value = value_;
 }
 
 void Face::setHover(bool hover_) {
@@ -125,12 +126,13 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
     modifiers.removeModifier(modifier);
 }
 
-void Face::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) {
+void Face::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
     drawFace(spriteRenderer, Dice::currentFacePos);
 }
 
-void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer, const std::shared_ptr<TextRenderer> &textRenderer,
-                     Dice::dicePos dicePos) {
+void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
+
     drawFace(spriteRenderer, dicePos);
 
     if (hover) {
@@ -138,7 +140,20 @@ void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer, cons
     }
 }
 
-void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) {
+void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::shared_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
+
+    (void)textRenderer;
+
+    auto position = getPosition(dicePos) - glm::vec2(1.0f);
+    auto size = getSize();
+
+    spriteRenderer->drawSprite("box", 0.05f, position, size, 1.0f,
+                               glm::vec3(1.0f), 0.0f);
+
+}
+
+void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) const {
     auto position = getPosition(dicePos);
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
@@ -224,7 +239,7 @@ void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice:
 
 void Face::drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer,
-                           Dice::dicePos dicePos) {
+                           Dice::dicePos dicePos) const {
     auto position = getPosition(dicePos);
 
     int tooltipWidth = 96;
@@ -250,7 +265,7 @@ std::shared_ptr<Face> Face::getSharedFromThis() {
     return shared_from_this();
 }
 
-std::string Face::getToolTipString() {
+std::string Face::getToolTipString() const {
     std::ostringstream tooltipOSS;
     if (value >= 0 && type != FaceType::empty) {
         tooltipOSS << value << " ";
@@ -263,6 +278,15 @@ std::string Face::getToolTipString() {
     }
     std::string toolTipString = tooltipOSS.str();
     return toolTipString;
+}
+
+void Face::levelUp() {
+    level++;
+    value = level1DefaultValue + bonusValuePerLevel * (level - 1);
+}
+
+void Face::setBonusValuePerLevel(int bonus) {
+    bonusValuePerLevel = bonus;
 }
 
 }

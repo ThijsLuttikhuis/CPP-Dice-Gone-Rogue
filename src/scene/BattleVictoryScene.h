@@ -11,16 +11,33 @@
 namespace DGR {
 
 class BattleVictoryScene : public Scene {
+public:
+    enum victoryGameState {
+        get_item,
+        get_xp,
+        get_xp_done,
+        level_up_select
+    };
 private:
+    victoryGameState state = get_item;
+    double xpPercent = 0;
+    int heroToLevelUp = -1;
+
     void pressButton(std::shared_ptr<Button> button);
 
 public:
     explicit BattleVictoryScene(std::weak_ptr<GameStateManager> gameState);
 
+    void handleMousePosition(double xPos, double yPos) override;
+
     void handleMouseButton(double xPos, double yPos) override;
 
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) override;
+                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+
+    void onPushToStack() override;
+
+    void update(double dt) override;
 };
 
 }

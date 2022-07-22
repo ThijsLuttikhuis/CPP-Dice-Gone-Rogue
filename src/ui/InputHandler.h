@@ -39,7 +39,7 @@ public:
     };
 
     virtual void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                        const std::shared_ptr<TextRenderer> &textRenderer);
+                        const std::shared_ptr<TextRenderer> &textRenderer) const;
 };
 
 }

@@ -85,7 +85,7 @@ public:
 
     /// render
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer);
+                   const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const;
 
     void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
               const std::shared_ptr<TextRenderer> &textRenderer);

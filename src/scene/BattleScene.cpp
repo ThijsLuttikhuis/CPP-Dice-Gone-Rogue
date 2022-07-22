@@ -15,19 +15,23 @@ namespace DGR {
 BattleScene::BattleScene(std::weak_ptr<GameStateManager> gameState) :
       Scene("BattleScene", std::move(gameState)) {
 
-    auto button1 = std::make_shared<Button>("leftMainButton", glm::vec2(304, 195), glm::vec2(80, 15));
+    auto button1 = std::make_shared<Button>("leftMainButton", glm::vec2(304, 232),
+                                            glm::vec2(80, 15), glm::vec3(0.9));
     button1->setText("2 rerolls left");
     buttons.push_back(button1);
 
-    auto button2 = std::make_shared<Button>("rightMainButton", glm::vec2(400, 195), glm::vec2(80, 15));
+    auto button2 = std::make_shared<Button>("rightMainButton", glm::vec2(400, 232),
+                                            glm::vec2(80, 15), glm::vec3(0.9));
     button2->setText("done rolling");
     buttons.push_back(button2);
 
-    auto button3 = std::make_shared<Button>("settings", glm::vec2(124, 8), glm::vec2(12, 12));
+    auto button3 = std::make_shared<Button>("settings", glm::vec2(112, 8),
+                                            glm::vec2(12, 12));
     button3->setText("S");
     buttons.push_back(button3);
 
-    auto button4 = std::make_shared<Button>("help", glm::vec2(100, 8), glm::vec2(12, 12));
+    auto button4 = std::make_shared<Button>("help", glm::vec2(88, 8),
+                                            glm::vec2(12, 12));
     button4->setText("?");
     buttons.push_back(button4);
 }
@@ -645,7 +649,7 @@ std::string BattleScene::message(const std::string &data) {
 }
 
 void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                         const std::shared_ptr<TextRenderer> &textRenderer) {
+                         const std::shared_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
                                0.0f, glm::vec3(1.0f), 0.8f);
@@ -661,11 +665,11 @@ void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 
     for (auto &hero : heroes) {
-        hero->drawHover(spriteRenderer, textRenderer);
+        hero->drawHover(spriteRenderer, textRenderer, true);
     }
 
     for (auto &enemy : enemies) {
-        enemy->drawHover(spriteRenderer, textRenderer);
+        enemy->drawHover(spriteRenderer, textRenderer, true);
     }
 
     if (clickedCharacter) {
@@ -676,7 +680,7 @@ void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
         clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
     }
 
-    glm::vec2 manaPosition = glm::vec2(288, 216);
+    glm::vec2 manaPosition = glm::vec2(300, 250);
     glm::vec2 manaSize = glm::vec2(22, 24);
     glm::vec2 manaTextPosition = manaPosition + glm::vec2(8, 6);
     spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize,
@@ -702,7 +706,6 @@ bool BattleScene::checkVictory() {
         updateRerunBattle(true);
 
         gameStatePtr->getGameProgress()->completeLevel(level, gameStatePtr->getInventory());
-
 
 
         return true;
@@ -796,12 +799,15 @@ std::vector<std::shared_ptr<Character>> BattleScene::getAliveCharacters(bool ali
 void BattleScene::setEnemiesFromLevel(int selectedLevel) {
     level = selectedLevel;
     enemies = {};
+
+    return; //TODO: REMOVE!!!!
+
     int strengthBudget = GameProgress::levelToEnemyStrength(selectedLevel);
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
     auto allEnemies = gameStatePtr->getAllEnemies();
 
     while (strengthBudget > 0) {
-        int rng = Random::randInt(0, (int)allEnemies.size() - 1);
+        int rng = Random::randInt(0, (int) allEnemies.size() - 1);
         auto enemy = allEnemies[rng];
         int enemyStrength = GameProgress::enemyNameToStrength(enemy->getName());
         if (enemyStrength <= strengthBudget) {

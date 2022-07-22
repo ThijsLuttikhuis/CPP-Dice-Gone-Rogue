@@ -30,11 +30,38 @@ BattleVictoryScene::BattleVictoryScene(std::weak_ptr<GameStateManager> gameState
     buttons.push_back(button1);
 }
 
+void BattleVictoryScene::handleMousePosition(double xPos, double yPos) {
+    if (state == level_up_select) {
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
+        auto dice = hero->getDice();
+        dice->setCurrentFaceHover(false);
+        for (int i = 0; i < 6; i++) {
+            if (dice->getFace(i)->isMouseHovering(xPos, yPos)) {
+                dice->setCurrentFace(i);
+                dice->setCurrentFaceHover(true);
+            }
+        }
+    }
+}
+
 void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
-    if (!isMouseHovering(xPos, yPos)) {
+    if (!isMouseHovering(xPos, yPos) && state == get_xp_done) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         while (gameStatePtr->popSceneFromStack());
         gameStatePtr->pushSceneToStack("LevelSelectScene");
+    }
+
+    if (state == level_up_select) {
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
+        auto dice = hero->getDice();
+        for (int i = 0; i < 6; i++) {
+            auto face = dice->getFace(i);
+            if (face->isMouseHovering(xPos, yPos)) {
+                face->levelUp();
+            }
+        }
     }
 
     for (auto &button : buttons) {
@@ -48,16 +75,81 @@ void BattleVictoryScene::pressButton(std::shared_ptr<Button> button) {
     (void) button;
     std::cout << "pressed a button!" << std::endl;
 
+
 }
 
+void BattleVictoryScene::onPushToStack() {
+    xpPercent = 0.0;
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    state = gameStatePtr->getGameProgress()->areThereItemsToGet() ? victoryGameState::get_item
+                                                                  : victoryGameState::get_xp;
+
+}
+
+void BattleVictoryScene::update(double dt) {
+    double timeToShowXP = 2.0;
+    xpPercent = xpPercent < 100.0 ? xpPercent + dt * 100 / timeToShowXP : 100.0;
+
+    if (state == get_xp) {
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+        for (auto &hero : gameStatePtr->getInventory()->getHeroes()) {
+            if (hero->getXPBarFill(xpPercent) >= 1.0) {
+                state = level_up_select;
+                heroToLevelUp = hero->getUniqueID();
+                hero->levelUp();
+                hero->getDice()->setCurrentFace(-1);
+
+                auto button = getButton("Victory!");
+                button->setText("Select a face to level up");
+                return;
+            }
+        }
+        if (xpPercent == 100.0) {
+            state = get_xp_done;
+        }
+    }
+}
+
+
 void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                const std::shared_ptr<TextRenderer> &textRenderer) {
+                                const std::shared_ptr<TextRenderer> &textRenderer) const {
+
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    int i;
+
+    switch (state) {
+        case get_item:
+
+            break;
+        case get_xp:
+        case get_xp_done:
+            i = 0;
+            for (auto &hero : gameStatePtr->getInventory()->getHeroes()) {
+                hero->setPosition(48 * ++i, 144);
+
+                hero->drawHeroOnly(spriteRenderer);
+                hero->drawXPBar(spriteRenderer, textRenderer, xpPercent);
+            }
+            break;
+        case level_up_select:
+            auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
+
+            hero->setPosition((int) size.x / 2 - 16, 144);
+
+            hero->drawHeroOnly(spriteRenderer);
+            hero->drawLevelUp(spriteRenderer, textRenderer);
+
+            hero->setHoverMouse(true);
+            hero->drawHover(spriteRenderer, textRenderer, true);
+
+    }
+
 }
 
 }

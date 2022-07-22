@@ -65,7 +65,7 @@ void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
 }
 
 void MainMenuScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) {
+                           const std::shared_ptr<TextRenderer> &textRenderer) const {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

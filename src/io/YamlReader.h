@@ -52,6 +52,7 @@ enum struct stringCode : int {
     kill_if_below_threshold,
     bonus_health,
     cleanse,
+    face_bonus,
 
     empty,
 
@@ -235,6 +236,7 @@ public:
 
 class YamlHandleFace : public YamlHandle {
     int face_;
+    int faceBonus = 1;
     int value = 0;
     FaceType type = {};
     FaceModifier modifiers = FaceModifier();
@@ -243,12 +245,16 @@ public:
 
     void reset() override {
         value = 0;
+        faceBonus = 1;
         type = FaceType::empty;
         modifiers = FaceModifier();
     }
 
     void handle(std::shared_ptr<YamlHandle> yamlHandle) override {
         switch (yamlHandle->getType()) {
+            case stringCode::face_bonus:
+                faceBonus = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
+                break;
             case stringCode::damage:
                 type = FaceType::damage;
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
@@ -308,7 +314,7 @@ public:
     }
 
     std::shared_ptr<void> getFeature() override {
-        return std::make_shared<Face>(face_, value, type, modifiers);
+        return std::make_shared<Face>(face_, value, faceBonus, type, modifiers);
     };
 };
 

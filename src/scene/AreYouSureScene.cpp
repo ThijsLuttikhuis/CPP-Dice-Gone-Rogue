@@ -92,7 +92,7 @@ std::string AreYouSureScene::message(const std::string &data) {
 }
 
 void AreYouSureScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) {
+                          const std::shared_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, color, 0.9f);
 

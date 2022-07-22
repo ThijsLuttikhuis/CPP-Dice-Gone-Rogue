@@ -44,13 +44,19 @@ void BattleDefeatScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void BattleDefeatScene::pressButton(std::shared_ptr<Button> button) {
+void BattleDefeatScene::pressButton(const std::shared_ptr<Button> &button) {
     (void) button;
     std::cout << "pressed a button!" << std::endl;
 }
 
+void BattleDefeatScene::onPopFromStack() {
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    gameStatePtr->getInventory()->reset();
+    gameStatePtr->getGameProgress()->reset();
+}
+
 void BattleDefeatScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) {
+                          const std::shared_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 

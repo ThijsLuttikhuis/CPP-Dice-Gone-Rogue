@@ -129,7 +129,7 @@ void LevelSelectScene::update(double dt) {
 }
 
 void LevelSelectScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                              const std::shared_ptr<TextRenderer> &textRenderer) {
+                              const std::shared_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
@@ -202,6 +202,25 @@ void LevelSelectScene::pressButton(std::shared_ptr<Button> button) {
         button->setColor(glm::vec3(1.0f, 0.0f, 0.0f));
 
         selectedLevel = clickedLevel;
+    }
+}
+
+void LevelSelectScene::onPushToStack() {
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    auto gameProgress = gameStatePtr->getGameProgress();
+
+    for (auto &button : buttons) {
+        auto buttonName = button->getName();
+        if (buttonName.substr(0, 5) == "Level") {
+            char** temp = nullptr;
+            auto level = (int) strtol(buttonName.substr(5, buttonName.length() - 5).c_str(), temp, 10);
+
+            glm::vec3 color = gameProgress->getUnlockedLevel() >= level ? glm::vec3(0.8f)
+                                                                        : glm::vec3(0.4f);
+            button->setColor(color);
+
+        }
+
     }
 }
 

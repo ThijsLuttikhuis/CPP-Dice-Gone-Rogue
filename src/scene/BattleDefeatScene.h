@@ -12,7 +12,7 @@ namespace DGR {
 
 class BattleDefeatScene : public Scene {
 private:
-    void pressButton(std::shared_ptr<Button> button);
+    void pressButton(const std::shared_ptr<Button> &button);
 
 public:
     explicit BattleDefeatScene(std::weak_ptr<GameStateManager> gameState);
@@ -20,7 +20,9 @@ public:
     void handleMouseButton(double xPos, double yPos) override;
 
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) override;
+                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+
+    void onPopFromStack();
 };
 
 }

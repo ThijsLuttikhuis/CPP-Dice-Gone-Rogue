@@ -21,4 +21,18 @@ const std::vector<std::shared_ptr<Character>> &Inventory::getHeroes() {
     return heroes;
 }
 
+std::shared_ptr<Character> Inventory::getHeroByID(int id) {
+    for (auto &hero : heroes) {
+        if (hero->getUniqueID() == id) {
+            return hero;
+        }
+    }
+
+    return nullptr;
+}
+
+void Inventory::reset() {
+    heroes = {};
+}
+
 }

@@ -52,6 +52,10 @@ std::shared_ptr<Character> Character::makeCopy(bool copyUniqueID) const {
     return copy;
 }
 
+std::shared_ptr<Character> Character::getSharedFromThis() {
+    return shared_from_this();
+}
+
 std::shared_ptr<Dice> Character::getDice() const {
     return dice;
 }
@@ -68,6 +72,22 @@ bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) 
         currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::currentFacePos);
     }
     return heroHover || currentFaceHover;
+}
+
+void Character::addXP(int xp_) {
+    xp += xp_;
+}
+
+bool Character::canLevelUp() const {
+    return xp >= xpPerLevel * characterLevel;
+}
+
+void Character::setXP(int xp_) {
+    xp = xp_;
+}
+
+void Character::setLevel(int level) {
+    characterLevel = level;
 }
 
 int Character::getIncomingDamage() const {
@@ -111,7 +131,7 @@ void Character::setHP(int hp_) {
 }
 
 void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
-    defaultMaxHP = maxHP_;
+    level1DefaultMaxHP = maxHP_;
     maxHP = maxHP_;
     if (setHPToMaxHP) {
         hp = maxHP_;
@@ -518,8 +538,8 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std
 
 void Character::fullRest() {
 
-    maxHP = defaultMaxHP;
-    hp = isDead() ? (maxHP+1)/2 : maxHP;
+    maxHP = level1DefaultMaxHP;
+    hp = isDead() ? (maxHP + 1) / 2 : maxHP;
 
     shield = 0;
     incomingDamage = 0;
@@ -613,13 +633,9 @@ void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 }
 
 void Character::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) const {
+                          const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
     if (hover) {
-#if DGR_DEBUG
-        std::cout << "hover: " << getName() << " -- x: " << getPosition().x
-                  << " -- y: " << getPosition().y << std::endl;
-#endif
-        dice->drawHover(spriteRenderer, textRenderer);
+        dice->drawHover(spriteRenderer, textRenderer, drawCurrentFaceIndicator);
     }
 
     if (spell->getHover()) {
@@ -631,28 +647,72 @@ void Character::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, g
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
 
-void GameObject::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
+void Character::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 
-std::shared_ptr<Character> Character::getSharedFromThis() {
-    return shared_from_this();
+void Character::drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::shared_ptr<TextRenderer> &textRenderer, double xpPercent) {
+
+    int xpBarHeight = 8;
+    auto barPosition = position + glm::vec2(0, size.y + 4);
+    auto barSize = glm::vec2(size.x, xpBarHeight);
+
+    double barFill = getXPBarFill(xpPercent);
+
+    spriteRenderer->drawSprite("box", 1.0f,
+                               barPosition, barSize, 0.0f, glm::vec3(0.7));
+
+    spriteRenderer->drawSprite("box", 0.9f,
+                               barPosition, barSize * glm::vec2(barFill, 1.0),
+                               0.0f, glm::vec3(0.5f, 0.2f, 0.2f));
+
+    textRenderer->drawText("Level " + std::to_string(characterLevel), 0.1f, barPosition, barSize);
+
 }
 
-void Character::addXP(int xp_) {
-    xp += xp_;
+void Character::drawLevelUp(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                            const std::shared_ptr<TextRenderer> &textRenderer) {
+
+    drawHealthBar(spriteRenderer, textRenderer);
+
+    glm::vec2 deltaHPBarPosition = position + glm::vec2(-6, size.y + 24) + glm::vec2(size.x + 12, 0);
+    glm::vec2 deltaHPBarSize = glm::vec2(20, 8);
+    std::string deltaHPText = "^+ " +
+                              std::to_string(getMaxHpAtLevel(characterLevel) -
+                                             getMaxHpAtLevel(characterLevel - 1)) + "^";
+
+    spriteRenderer->drawSprite("box", 0.95, deltaHPBarPosition, deltaHPBarSize,
+                               1.0f, glm::vec3(0.2f), 0.5f);
+
+    textRenderer->drawText(deltaHPText, 0.1f, deltaHPBarPosition, deltaHPBarSize,
+                           glm::vec3(0.1f, 0.5f, 0.1f));
+
 }
 
-bool Character::canLevelUp() const {
-    return xp >= xpPerLevel * characterLevel;
+int Character::getMaxHpAtLevel(int level) {
+    return (int) (level1DefaultMaxHP * std::pow(hpFactorPerLevel, level - 1));
 }
 
-void Character::setXP(int xp_) {
-    xp = xp_;
+double Character::getXPBarFill(double percent) {
+    return percent * ((double) xp / (xpPerLevel * characterLevel)) / 100.0;
 }
 
-void Character::setLevel(int level) {
-    characterLevel = level;
+void Character::levelUp() {
+    if (!canLevelUp()) {
+        std::cerr << "Character::levelUp: error: not enough xp to level up!!" << std::endl;
+        return;
+    }
+
+    xp -=  xpPerLevel * characterLevel;
+    characterLevel++;
+    hp = maxHP = getMaxHpAtLevel(characterLevel);
+
 }
+
+int Character::getLevel() const {
+    return characterLevel;
+}
+
 
 }

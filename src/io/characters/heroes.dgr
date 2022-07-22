@@ -7,21 +7,27 @@ characters:
     dice:
       face0:
         damage: 5;
+        bonus: 2;
       ;
       face1:
         damage: 3;
+        bonus: 2;
       ;
       face2:
         damage: 5;
+        bonus: 2;
       ;
       face3:
         damage: 3;
+        bonus: 2;
       ;
       face4:
         shield: 5;
+        bonus: 2;
       ;
       face5:
         shield: 3;
+        bonus: 2;
       ;
     ;
   ;
@@ -37,6 +43,7 @@ characters:
       face1:
         damage: 3;
         mod: "ranged";
+        bonus: 2;
       ;
       face2:
         dodge: 0;
@@ -44,6 +51,7 @@ characters:
       face3:
         damage: 3;
         mod: "ranged";
+        bonus: 2;
       ;
       face4:
         damage: 3;
@@ -65,6 +73,7 @@ characters:
       face0:
         damage: 6;
         mod: "ranged";
+        bonus: 2;
       ;
       face1:
         damage: 1;
@@ -72,6 +81,7 @@ characters:
       ;
       face2:
         damage: 3;
+        bonus: 2;
         mod: "ranged";
       ;
       face3:
@@ -80,10 +90,12 @@ characters:
       ;
       face4:
         damage: 2;
+        bonus: 2;
         mod: "ranged";
       ;
       face5:
         damage: 1;
+        bonus: 2;
           mod: "ranged";
       ;
     ;

@@ -7,6 +7,8 @@
 
 #include <string>
 #include <memory>
+#include <gameobject/Item.h>
+#include <vector>
 
 namespace DGR {
 class Inventory;
@@ -16,6 +18,7 @@ private:
     int unlockedLevel = 1;
     int numberOfLevels = 20;
 
+    std::vector<std::shared_ptr<Item>> itemsToGet;
 public:
     GameProgress() = default;
 
@@ -23,6 +26,8 @@ public:
     [[nodiscard]] int getUnlockedLevel() const;
 
     [[nodiscard]] int getNumberOfLevels() const;
+
+    [[nodiscard]] bool areThereItemsToGet() const;
 
     /// setters
     void setUnlockedLevel(int level);
@@ -33,6 +38,8 @@ public:
     static int enemyNameToStrength(const std::string &enemyName);
 
     void completeLevel(int level, const std::shared_ptr<Inventory> &inventory);
+
+    void reset();
 };
 
 }

@@ -39,13 +39,13 @@ public:
     void pressButton(const std::shared_ptr<Button> &button);
 
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) override;
+                const std::shared_ptr<TextRenderer> &textRenderer) const override;
 
     void onPushToStack() override;
 
     void drawLoadedGame(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                         const std::shared_ptr<TextRenderer> &textRenderer, int index,
-                        glm::vec2 position, glm::vec2 size);
+                        glm::vec2 position, glm::vec2 size) const;
 
     std::string message(const std::string &data) override;
 };

@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <memory>
+#include <gameobject/Item.h>
 #include "gameobject/Character.h"
 
 namespace DGR {
@@ -16,7 +17,8 @@ class Inventory {
 private:
     std::vector<std::shared_ptr<Character>> heroes = {};
 
-    //std::vector<std::shared_ptr<Item>> items;
+    std::vector<std::shared_ptr<Item>> items;
+
 public:
     Inventory() = default;
 
@@ -26,6 +28,9 @@ public:
 
     const std::vector<std::shared_ptr<Character>> &getHeroes();
 
+    void reset();
+
+    std::shared_ptr<Character> getHeroByID(int id);
 };
 
 }

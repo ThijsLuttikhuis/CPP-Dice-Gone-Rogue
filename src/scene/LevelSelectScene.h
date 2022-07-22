@@ -24,12 +24,14 @@ public:
 
     void handleMousePosition(double xPos, double yPos) override;
 
+    void onPushToStack() override;
+
     void update(double dt) override;
 
     void pressButton(std::shared_ptr<Button> button);
 
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) override;
+                const std::shared_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }
