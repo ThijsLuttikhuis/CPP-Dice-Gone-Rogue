@@ -30,13 +30,14 @@ const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
                                                               glm::vec2(11, 2)}};
 
 
-Face::Face(std::string name, std::weak_ptr<Dice> dice, int face_, int value, FaceType type, FaceModifier modifiers)
-      : name(std::move(name)), dice(std::move(dice)), bonusValuePerLevel(1), face_(face_),
+Face::Face(std::string name, std::weak_ptr<Dice> dice,
+           int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers)
+      : name(std::move(name)), dice(std::move(dice)), bonusValuePerLevel(bonusValuePerLevel), face_(face_),
         level1DefaultValue(value), value(value), type(type), modifiers(modifiers) {
 }
 
 std::shared_ptr<Face> Face::makeCopy() const {
-    auto copy = std::make_shared<Face>(name, dice, face_, value, type, modifiers);
+    auto copy = std::make_shared<Face>(name, dice, face_, value, bonusValuePerLevel, type, modifiers);
     return copy;
 }
 
@@ -60,13 +61,13 @@ glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
     auto dicePtr = std::shared_ptr<Dice>(dice);
     glm::vec2 dicePosition = dicePtr->getPosition(dicePos);
     switch (dicePos) {
-        case Dice::backgroundPos:
+        case Dice::background_pos:
             std::cerr << "Face::getPosition: dicePos backgroundPos should not be used" << std::endl;
             return glm::vec2(0, 0);
-        case Dice::diceLayoutPos:
+        case Dice::dice_layout_pos:
             dicePosition += faceDeltaPos.at(face_);
             break;
-        case Dice::currentFacePos:
+        case Dice::current_face_pos:
             break;
         default:
             std::cerr << "Face::getPosition: dicePos unknown: " << dicePos << std::endl;
@@ -127,25 +128,39 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
 }
 
 void Face::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
-    drawFace(spriteRenderer, Dice::currentFacePos);
+    drawFace(spriteRenderer, getPosition(Dice::current_face_pos));
 }
 
 void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                      const std::shared_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
 
-    drawFace(spriteRenderer, dicePos);
+    auto position = getPosition(dicePos);
+
+    drawFace(spriteRenderer, position);
 
     if (hover) {
-        drawFaceToolTip(spriteRenderer, textRenderer, dicePos);
+        drawFaceToolTip(spriteRenderer, textRenderer, position);
     }
 }
 
+void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
+
+
+    drawFace(spriteRenderer, position);
+
+    if (hover) {
+        drawFaceToolTip(spriteRenderer, textRenderer, position);
+    }
+}
+
+
 void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
+                           const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
 
-    (void)textRenderer;
+    (void) textRenderer;
 
-    auto position = getPosition(dicePos) - glm::vec2(1.0f);
+    position -= glm::vec2(1.0f);
     auto size = getSize();
 
     spriteRenderer->drawSprite("box", 0.05f, position, size, 1.0f,
@@ -153,8 +168,7 @@ void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer
 
 }
 
-void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) const {
-    auto position = getPosition(dicePos);
+void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const {
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
 
@@ -239,8 +253,7 @@ void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice:
 
 void Face::drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer,
-                           Dice::dicePos dicePos) const {
-    auto position = getPosition(dicePos);
+                           glm::vec2 position) const {
 
     int tooltipWidth = 96;
     glm::vec2 tooltipDPos(5, -5);
@@ -282,6 +295,7 @@ std::string Face::getToolTipString() const {
 
 void Face::levelUp() {
     level++;
+    std::cout << bonusValuePerLevel << std::endl;
     value = level1DefaultValue + bonusValuePerLevel * (level - 1);
 }
 

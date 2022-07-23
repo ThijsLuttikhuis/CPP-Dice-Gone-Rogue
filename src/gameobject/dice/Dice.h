@@ -23,9 +23,9 @@ class Face;
 class Dice : public std::enable_shared_from_this<Dice> {
 public:
     enum dicePos {
-        backgroundPos,
-        diceLayoutPos,
-        currentFacePos
+        background_pos,
+        dice_layout_pos,
+        current_face_pos,
     };
 
 private:
@@ -49,11 +49,11 @@ public:
 
     [[nodiscard]]  std::shared_ptr<Face> getFace(int index) const;
 
-    [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = backgroundPos) const;
+    [[nodiscard]] glm::vec2 getPosition(dicePos dicePos = background_pos) const;
 
-    [[nodiscard]] glm::vec2 getSize(dicePos dicePos = backgroundPos) const;
+    [[nodiscard]] glm::vec2 getSize(dicePos dicePos = background_pos) const;
 
-    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, dicePos dicePos = backgroundPos) const;
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, dicePos dicePos = background_pos) const;
 
     [[nodiscard]] const std::string &getName() const;
 

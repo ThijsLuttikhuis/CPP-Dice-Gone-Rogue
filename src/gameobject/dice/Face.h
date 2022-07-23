@@ -4,7 +4,6 @@
 
 #ifndef DICEGONEROGUE_FACE_H
 #define DICEGONEROGUE_FACE_H
-
 #include <memory>
 #include <string>
 #include <map>
@@ -43,11 +42,11 @@ private:
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
 
-    void drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, Dice::dicePos dicePos) const;
+    void drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const;
 
     void drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                          const std::shared_ptr<TextRenderer> &textRenderer,
-                         Dice::dicePos dicePos) const;
+                         glm::vec2 position) const;
 
 public:
     Face(int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers = {})
@@ -55,12 +54,12 @@ public:
             type(type), modifiers(modifiers) {};
 
     Face(std::string name, std::weak_ptr<Dice> dice, int face_,
-         int value, FaceType type, FaceModifier modifiers);
+         int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers);
 
     /// getters
     [[nodiscard]] std::shared_ptr<Face> getSharedFromThis();
 
-    [[nodiscard]] glm::vec2 getPosition(Dice::dicePos dicePos = Dice::diceLayoutPos) const;
+    [[nodiscard]] glm::vec2 getPosition(Dice::dicePos dicePos = Dice::dice_layout_pos) const;
 
     [[nodiscard]] glm::vec2 getSize() const;
 
@@ -107,14 +106,18 @@ public:
     /// render
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                    const std::shared_ptr<TextRenderer> &textureRenderer,
-                   Dice::dicePos dicePos = Dice::diceLayoutPos) const;
+                   Dice::dicePos dicePos = Dice::dice_layout_pos) const;
 
     void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
 
 
     void drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                          const std::shared_ptr<TextRenderer> &textRenderer,
-                         Dice::dicePos dicePos = Dice::diceLayoutPos) const;
+                         glm::vec2 position) const;
+
+    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::shared_ptr<TextRenderer> &textRenderer,
+                   glm::vec2 position) const;
 };
 
 }

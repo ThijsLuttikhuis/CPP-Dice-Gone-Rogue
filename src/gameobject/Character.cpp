@@ -69,7 +69,7 @@ bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) 
 
     bool currentFaceHover = false;
     if (alsoCurrentFace) {
-        currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::currentFacePos);
+        currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::current_face_pos);
     }
     return heroHover || currentFaceHover;
 }

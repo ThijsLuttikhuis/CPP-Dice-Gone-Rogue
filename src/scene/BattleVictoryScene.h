@@ -16,12 +16,14 @@ public:
         get_item,
         get_xp,
         get_xp_done,
-        level_up_select
+        level_up_select,
+        level_up_prompt
     };
 private:
     victoryGameState state = get_item;
     double xpPercent = 0;
     int heroToLevelUp = -1;
+    int faceToLevelUp = -1;
 
     void pressButton(std::shared_ptr<Button> button);
 

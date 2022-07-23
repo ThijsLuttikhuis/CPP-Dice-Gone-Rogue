@@ -59,7 +59,8 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
         for (int i = 0; i < 6; i++) {
             auto face = dice->getFace(i);
             if (face->isMouseHovering(xPos, yPos)) {
-                face->levelUp();
+                faceToLevelUp = i;
+                state = level_up_prompt;
             }
         }
     }
@@ -122,7 +123,6 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
     }
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
     int i;
-
     switch (state) {
         case get_item:
 
@@ -138,6 +138,7 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
             }
             break;
         case level_up_select:
+        case level_up_prompt:
             auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
 
             hero->setPosition((int) size.x / 2 - 16, 144);
@@ -148,6 +149,11 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
             hero->setHoverMouse(true);
             hero->drawHover(spriteRenderer, textRenderer, true);
 
+            if (state == level_up_prompt) {
+                auto dice = hero->getDice();
+                auto face = dice->getFace(faceToLevelUp);
+                face->drawHover(spriteRenderer, textRenderer);
+            }
     }
 
 }

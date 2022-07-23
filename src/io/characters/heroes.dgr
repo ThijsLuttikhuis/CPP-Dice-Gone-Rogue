@@ -47,6 +47,7 @@ characters:
       ;
       face2:
         dodge: 0;
+        bonus: 0;
       ;
       face3:
         damage: 3;
@@ -126,6 +127,7 @@ characters:
       ;
       face5:
         empty: 0;
+        bonus: 0;
       ;
     ;
   ;
@@ -145,6 +147,7 @@ characters:
       face1:
         mana: 4;
         mod: "single use";
+        bonus: 2;
       ;
       face2:
         shield and mana: 2;
@@ -152,12 +155,15 @@ characters:
       face3:
         mana: 4;
         mod: "single use";
+        bonus: 2;
       ;
       face4:
         mana: 2;
+        bonus: 2;
       ;
       face5:
         empty: 0;
+        bonus: 0;
       ;
     ;
   ;
@@ -177,6 +183,7 @@ characters:
       face2:
         damage: 4;
         mod: "decay";
+        bonus: 2;
       ;
       face3:
         heal: 1;
@@ -189,6 +196,7 @@ characters:
       face5:
         heal: 4;
         mod: "decay";
+        bonus: 2;
       ;
     ;
   ;
@@ -204,6 +212,7 @@ characters:
     dice:
       face0:
         bonus health: 3;
+        bonus: 2;
       ;
       face1:
         heal and mana: 2;
@@ -211,6 +220,7 @@ characters:
       ;
       face2:
         bonus health: 3;
+        bonus: 2;
       ;
       face3:
         heal and mana: 2;

@@ -110,7 +110,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
 
 void CharacterSelectScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
     auto dice = character->getDice();
-    dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::currentFacePos));
+    dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::current_face_pos));
 
     if (character->isMouseHovering(xPos, yPos)) {
         character->setHoverMouse(true);
