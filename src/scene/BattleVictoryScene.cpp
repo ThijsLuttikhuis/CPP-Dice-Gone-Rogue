@@ -36,10 +36,12 @@ void BattleVictoryScene::handleMousePosition(double xPos, double yPos) {
         auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
         auto dice = hero->getDice();
         dice->setCurrentFaceHover(false);
+        dice->setCurrentFace(-1);
         for (int i = 0; i < 6; i++) {
             if (dice->getFace(i)->isMouseHovering(xPos, yPos)) {
                 dice->setCurrentFace(i);
                 dice->setCurrentFaceHover(true);
+                break;
             }
         }
     }
@@ -59,8 +61,8 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
         for (int i = 0; i < 6; i++) {
             auto face = dice->getFace(i);
             if (face->isMouseHovering(xPos, yPos)) {
-                faceToLevelUp = i;
-                state = level_up_prompt;
+                face->levelUp();
+                state = get_xp;
             }
         }
     }
@@ -80,10 +82,30 @@ void BattleVictoryScene::pressButton(std::shared_ptr<Button> button) {
 }
 
 void BattleVictoryScene::onPushToStack() {
-    xpPercent = 0.0;
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    for (auto &hero : gameStatePtr->getInventory()->getHeroes()) {
+        auto dice = hero->getDice();
+        dice->setCurrentFace(-1);
+        for (int i = 0; i < 6; i++) {
+            dice->getFace(i)->setHover(false);
+        }
+    }
+
+    xpPercent = 0.0;
     state = gameStatePtr->getGameProgress()->areThereItemsToGet() ? victoryGameState::get_item
                                                                   : victoryGameState::get_xp;
+
+}
+
+
+void BattleVictoryScene::onPopFromStack(){
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+
+    for (auto &hero : gameStatePtr->getInventory()->getHeroes()) {
+        auto dice = hero->getDice();
+        dice->setCurrentFace(0);
+    }
 
 }
 
@@ -138,10 +160,9 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
             }
             break;
         case level_up_select:
-        case level_up_prompt:
             auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
 
-            hero->setPosition((int) size.x / 2 - 16, 144);
+            hero->setPosition(48*3, 144);
 
             hero->drawHeroOnly(spriteRenderer);
             hero->drawLevelUp(spriteRenderer, textRenderer);
@@ -149,11 +170,12 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
             hero->setHoverMouse(true);
             hero->drawHover(spriteRenderer, textRenderer, true);
 
-            if (state == level_up_prompt) {
-                auto dice = hero->getDice();
-                auto face = dice->getFace(faceToLevelUp);
-                face->drawHover(spriteRenderer, textRenderer);
+            auto currentFace = hero->getDice()->getCurrentFace();
+            if (currentFace) {
+                currentFace->drawLevelUpComparison(spriteRenderer, textRenderer,
+                      currentFace->getPosition(Dice::dice_layout_pos));
             }
+
     }
 
 }

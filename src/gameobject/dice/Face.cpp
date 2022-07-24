@@ -154,6 +154,29 @@ void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
+void Face::drawLevelUpComparison(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                                 const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) {
+
+
+    drawFace(spriteRenderer, position);
+
+    drawFaceToolTip(spriteRenderer, textRenderer, position);
+
+
+    int tooltipWidth = 96;
+    int arrowWidth = 16;
+    position += glm::vec2(tooltipWidth+5, -5);
+
+    spriteRenderer->drawSprite("arrow", 0.0f,
+                               position, glm::vec2(arrowWidth));
+
+    position += glm::vec2(arrowWidth-5, +5);
+
+    levelUp();
+    drawFaceToolTip(spriteRenderer, textRenderer, position);
+    level -= 2;
+    levelUp();
+}
 
 void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                            const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
@@ -295,7 +318,6 @@ std::string Face::getToolTipString() const {
 
 void Face::levelUp() {
     level++;
-    std::cout << bonusValuePerLevel << std::endl;
     value = level1DefaultValue + bonusValuePerLevel * (level - 1);
 }
 

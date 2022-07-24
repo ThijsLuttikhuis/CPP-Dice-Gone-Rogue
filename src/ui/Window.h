@@ -24,6 +24,8 @@ private:
     int displayWidth{};
     int displayHeight{};
 
+    std::unique_ptr<std::vector<bool>> keysPressed = std::make_unique<std::vector<bool>>(512, false);
+
     GLFWwindow* glfwWindow = nullptr;
 
      std::weak_ptr<GameStateManager> gameState{};
@@ -59,6 +61,8 @@ public:
 
     /// render
     void render();
+
+    void handleKeyboard(int key, int action, int scanCode);
 };
 
 }

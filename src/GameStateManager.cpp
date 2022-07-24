@@ -83,6 +83,14 @@ void GameStateManager::update() {
 
 }
 
+void GameStateManager::handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>>& keysPressed) {
+    for (auto &scene : sceneStack) {
+        if (scene->isEnabled()) {
+            scene->handleKeyboard(key, action, keysPressed);
+        }
+    }
+}
+
 void GameStateManager::handleMouseButton(double xPos, double yPos) {
     for (auto &scene : sceneStack) {
         if (scene->isEnabled()) {

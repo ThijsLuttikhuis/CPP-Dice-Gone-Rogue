@@ -30,6 +30,10 @@ public:
 
     std::shared_ptr<Button> getButton(const std::string &name);
 
+    virtual void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) {
+        (void) key, (void) action, (void) keysPressed;
+    };
+
     virtual void handleMouseButton(double xPos, double yPos) {
         (void) xPos, (void) yPos;
     };

@@ -97,6 +97,9 @@ bool Dice::isUsed() const {
 }
 
 std::shared_ptr<Face> Dice::getCurrentFace() const {
+    if (currentFace < 0 || currentFace > 5) {
+        return nullptr;
+    }
     return faces[currentFace];
 }
 

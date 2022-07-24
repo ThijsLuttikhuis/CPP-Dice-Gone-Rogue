@@ -29,7 +29,6 @@ private:
     std::shared_ptr<Spell> spell = nullptr;
 
     /// xp stats
-    const int xpPerLevel = 128;
     int characterLevel = 1;
     int xp = 0;
 
@@ -177,6 +176,8 @@ public:
                      const std::shared_ptr<TextRenderer> &textRenderer);
 
     double getXPBarFill(double percent);
+
+    int xpToLevelUp(int currentLevel) const;
 };
 
 }

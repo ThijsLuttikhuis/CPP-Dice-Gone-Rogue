@@ -79,7 +79,7 @@ void Character::addXP(int xp_) {
 }
 
 bool Character::canLevelUp() const {
-    return xp >= xpPerLevel * characterLevel;
+    return xp >= xpToLevelUp(characterLevel);
 }
 
 void Character::setXP(int xp_) {
@@ -667,7 +667,7 @@ void Character::drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                                barPosition, barSize * glm::vec2(barFill, 1.0),
                                0.0f, glm::vec3(0.5f, 0.2f, 0.2f));
 
-    textRenderer->drawText("Level " + std::to_string(characterLevel), 0.1f, barPosition, barSize);
+    textRenderer->drawText("Lvl " + std::to_string(characterLevel), 0.1f, barPosition, barSize);
 
 }
 
@@ -695,7 +695,8 @@ int Character::getMaxHpAtLevel(int level) {
 }
 
 double Character::getXPBarFill(double percent) {
-    return percent * ((double) xp / (xpPerLevel * characterLevel)) / 100.0;
+    int xpRequired = xpToLevelUp(characterLevel);
+    return (percent / 100.0) * ((double)xp / xpRequired);
 }
 
 void Character::levelUp() {
@@ -704,7 +705,7 @@ void Character::levelUp() {
         return;
     }
 
-    xp -=  xpPerLevel * characterLevel;
+    xp -=  xpToLevelUp(characterLevel);
     characterLevel++;
     hp = maxHP = getMaxHpAtLevel(characterLevel);
 
@@ -712,6 +713,11 @@ void Character::levelUp() {
 
 int Character::getLevel() const {
     return characterLevel;
+}
+
+int Character::xpToLevelUp(int currentLevel) const {
+    const int baseXP = 48;
+    return baseXP * (int) std::pow((currentLevel+1), 2.5);
 }
 
 

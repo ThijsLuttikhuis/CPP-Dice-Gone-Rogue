@@ -118,6 +118,9 @@ public:
     void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                    const std::shared_ptr<TextRenderer> &textRenderer,
                    glm::vec2 position) const;
+
+    void drawLevelUpComparison(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
+                               const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position);
 };
 
 }

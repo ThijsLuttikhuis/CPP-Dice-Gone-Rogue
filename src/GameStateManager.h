@@ -44,7 +44,7 @@ private:
     std::shared_ptr<GameProgress> gameProgress;
 
 public:
-    explicit GameStateManager(const std::shared_ptr<Window>& window);
+    explicit GameStateManager(const std::shared_ptr<Window> &window);
 
     /// getters
     [[nodiscard]] std::shared_ptr<GameStateManager> getSharedFromThis();
@@ -76,6 +76,8 @@ public:
 
     /// functions
     void initializeScenes();
+
+    void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed);
 
     void handleMouseButton(double xPos, double yPos);
 

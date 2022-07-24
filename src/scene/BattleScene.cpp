@@ -800,8 +800,6 @@ void BattleScene::setEnemiesFromLevel(int selectedLevel) {
     level = selectedLevel;
     enemies = {};
 
-    return; //TODO: REMOVE!!!!
-
     int strengthBudget = GameProgress::levelToEnemyStrength(selectedLevel);
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
     auto allEnemies = gameStatePtr->getAllEnemies();

@@ -9,6 +9,7 @@
 #include "ui/Window.h"
 
 int main() {
+
     DGR::Random::initialize(0);
     std::shared_ptr<DGR::Window> window = std::make_shared<DGR::Window>();
     std::shared_ptr<DGR::GameStateManager> dgrGame = std::make_shared<DGR::GameStateManager>(window);
@@ -16,6 +17,10 @@ int main() {
     dgrGame->initializeScenes();
     window->setGameStateManager(dgrGame->getSharedFromThis());
     window->initialize();
+
+//    for (int i = 0; i < 100; i++) {
+//        std::cout << DGR::GameProgress::levelToEnemyStrength(i) << std::endl;
+//    }
 
     while (!window->shouldClose()) {
         dgrGame->update();

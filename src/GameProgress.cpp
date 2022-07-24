@@ -23,9 +23,26 @@ void GameProgress::setUnlockedLevel(int level) {
 }
 
 int GameProgress::levelToEnemyStrength(int selectedLevel) {
-    //levelToEnemyStrength = {1,2,3,5,7,10,13,16,20,26,32,40,52,64,80};
-    return selectedLevel < 5 ? std::vector<int>{1, 2, 3, 5, 7}[selectedLevel] :
-           std::vector<int>{10, 13, 16}[(selectedLevel - 5) % 3] * (int) std::pow(2, (int) ((selectedLevel - 5) / 3));
+    //levelToEnemyStrength = {1,2,3,5,7,10,12,14,17,20,26,32,40,52,64,80,..,..,..,160,.. .., 320};
+
+    //levelToEnemyStrength = {1,2,4,6,8,11,14,17,21,25,29,34,39,44,50,56,62};
+
+    int levelStart = 5;
+    int numSum = 3;
+
+    selectedLevel += levelStart;
+    int divNum = (selectedLevel / numSum);
+    int modNum = selectedLevel % numSum;
+
+    int sum = divNum * (divNum + 1) / 2;
+
+    return sum * numSum + modNum * divNum - divNum * numSum;
+
+    const int nstart = 5;
+    const int nmult = 4;
+    return selectedLevel < nstart ? std::vector<int>{1, 2, 3, 5, 7}[selectedLevel] :
+           std::vector<int>{10, 12, 14, 17}[(selectedLevel - nstart) % nmult] *
+           (int) std::pow(2, (int) ((selectedLevel - nstart) / nmult));
 
 }
 

@@ -18,6 +18,9 @@ class Button : public UIElement {
 private:
     std::string text;
 
+    //TODO::: keys
+    int keyPress = -1;
+
     bool enabled = true;
     bool textHasAlpha = true;
     bool drawButton = true;
