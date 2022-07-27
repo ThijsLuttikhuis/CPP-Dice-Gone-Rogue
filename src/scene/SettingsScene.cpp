@@ -23,17 +23,17 @@ SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto button1 = std::make_shared<Button>("Sound?",
+    auto button1 = std::make_unique<Button>("Sound?",
                                             glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Sound?");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
-    auto button2 = std::make_shared<Button>("HUDSize?",
+    auto button2 = std::make_unique<Button>("HUDSize?",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button2->setText("HUDSize?");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 }
 
 void SettingsScene::handleMouseButton(double xPos, double yPos) {
@@ -49,14 +49,14 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void SettingsScene::pressButton(std::shared_ptr<Button> button) {
+void SettingsScene::pressButton(const std::unique_ptr<Button> &button) {
     (void) button;
     std::cout << "pressed a button!" << std::endl;
 
 }
 
-void SettingsScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) const {
+void SettingsScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 

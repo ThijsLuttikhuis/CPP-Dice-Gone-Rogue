@@ -17,11 +17,11 @@ void Inventory::setHeroes(const std::vector<std::shared_ptr<Character>> &charact
     }
 }
 
-const std::vector<std::shared_ptr<Character>> &Inventory::getHeroes() {
+const std::vector<std::shared_ptr<Character>> &Inventory::getHeroes() const {
     return heroes;
 }
 
-std::shared_ptr<Character> Inventory::getHeroByID(int id) {
+std::shared_ptr<Character> Inventory::getHeroByID(int id) const {
     for (auto &hero : heroes) {
         if (hero->getUniqueID() == id) {
             return hero;

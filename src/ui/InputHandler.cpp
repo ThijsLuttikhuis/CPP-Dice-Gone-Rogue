@@ -11,20 +11,20 @@ namespace DGR {
 
 InputHandler::InputHandler(std::weak_ptr<GameStateManager> gameState) : gameState(std::move(gameState)) {}
 
-void InputHandler::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) const {
+void InputHandler::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer) const {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }
 }
 
-std::shared_ptr<Button> InputHandler::getButton(const std::string &name) {
+const Button &InputHandler::getButton(const std::string &name) {
     for (auto &button : buttons) {
         if (button->getName() == name) {
-            return button;
+            return *button;
         }
     }
-    return nullptr;
+    return *nullButton;
 }
 
 }

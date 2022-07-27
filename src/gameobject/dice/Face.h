@@ -42,10 +42,10 @@ private:
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
 
-    void drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const;
+    void drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const;
 
-    void drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                         const std::shared_ptr<TextRenderer> &textRenderer,
+    void drawFaceToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::unique_ptr<TextRenderer> &textRenderer,
                          glm::vec2 position) const;
 
 public:
@@ -104,23 +104,23 @@ public:
     void levelUp();
 
     /// render
-    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textureRenderer,
+    void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textureRenderer,
                    Dice::dicePos dicePos = Dice::dice_layout_pos) const;
 
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
+    void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const;
 
 
-    void drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                         const std::shared_ptr<TextRenderer> &textRenderer,
+    void drawCurrentFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::unique_ptr<TextRenderer> &textRenderer,
                          glm::vec2 position) const;
 
-    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer,
+    void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textRenderer,
                    glm::vec2 position) const;
 
-    void drawLevelUpComparison(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                               const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position);
+    void drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                               const std::unique_ptr<TextRenderer> &textRenderer, glm::vec2 position);
 };
 
 }

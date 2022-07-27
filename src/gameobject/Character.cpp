@@ -551,8 +551,8 @@ void Character::fullRest() {
     isUndying = false;
 }
 
-void Character::drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                              const std::shared_ptr<TextRenderer> &textRenderer) const {
+void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                              const std::unique_ptr<TextRenderer> &textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
     glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
     std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
@@ -611,8 +611,8 @@ void Character::drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRende
     }
 }
 
-void Character::drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) const {
+void Character::drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     (void) textRenderer;
 
@@ -620,8 +620,8 @@ void Character::drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer
 
 }
 
-void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer) const {
+void Character::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::unique_ptr<TextRenderer> &textRenderer) const {
 
 
     spriteRenderer->drawSprite(name, 1.0f, position, size);
@@ -632,8 +632,8 @@ void Character::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     dice->draw(spriteRenderer, textRenderer);
 }
 
-void Character::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
+void Character::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
     if (hover) {
         dice->drawHover(spriteRenderer, textRenderer, drawCurrentFaceIndicator);
     }
@@ -643,16 +643,16 @@ void Character::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
-void Character::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const {
+void Character::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const {
     spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
 }
 
-void Character::drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
+void Character::drawHeroOnly(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const {
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }
 
-void Character::drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer, double xpPercent) {
+void Character::drawXPBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer, double xpPercent) {
 
     int xpBarHeight = 8;
     auto barPosition = position + glm::vec2(0, size.y + 4);
@@ -671,8 +671,8 @@ void Character::drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 
 }
 
-void Character::drawLevelUp(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                            const std::shared_ptr<TextRenderer> &textRenderer) {
+void Character::drawLevelUp(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                            const std::unique_ptr<TextRenderer> &textRenderer) {
 
     drawHealthBar(spriteRenderer, textRenderer);
 

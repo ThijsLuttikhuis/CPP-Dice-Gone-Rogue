@@ -2,9 +2,6 @@
 // Created by thijs on 30-05-22.
 //
 
-
-#include <utility>
-
 #include "utilities/Utilities.h"
 #include "GameObject.h"
 #include "shaders/SpriteRenderer.h"
@@ -57,8 +54,8 @@ void GameObject::setPosition(int left, int up) {
     setPosition(glm::vec2(left, up));
 }
 
-void GameObject::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                      const std::shared_ptr<TextRenderer> &textRenderer) const {
+void GameObject::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                      const std::unique_ptr<TextRenderer> &textRenderer) const {
     (void) textRenderer;
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 }

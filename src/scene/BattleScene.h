@@ -48,7 +48,7 @@ private:
 
     bool checkVictory();
 
-    void pressButton(const std::shared_ptr<Button> &button);
+    void pressButton(const std::unique_ptr<Button> &button);
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
@@ -134,8 +134,8 @@ public:
     std::string message(const std::string &data) override;
 
     /// render
-    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
 };
 

@@ -22,6 +22,8 @@ private:
     int maxSavesOnRow = 4;
     int currentLeftSaveIndex = 0;
 
+    void pressButton(const std::unique_ptr<Button> &button) override;
+
 public:
     explicit LoadGameScene(std::weak_ptr<GameStateManager> gameState);
 
@@ -34,17 +36,16 @@ public:
 
     void update(double dt) override;
 
-    void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
+    void handleMousePosition(const std::shared_ptr<Character>& character, double xPos, double yPos);
 
-    void pressButton(const std::shared_ptr<Button> &button);
 
-    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
     void onPushToStack() override;
 
-    void drawLoadedGame(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                        const std::shared_ptr<TextRenderer> &textRenderer, int index,
+    void drawLoadedGame(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                        const std::unique_ptr<TextRenderer> &textRenderer, int index,
                         glm::vec2 position, glm::vec2 size) const;
 
     std::string message(const std::string &data) override;

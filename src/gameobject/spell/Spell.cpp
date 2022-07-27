@@ -69,9 +69,8 @@ void Spell::setCharacter(const std::weak_ptr<Character> &character_) {
     character = character_;
 }
 
-void
-Spell::drawSpellToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                        const std::shared_ptr<TextRenderer> &textRenderer) {
+void Spell::drawSpellToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                             const std::unique_ptr<TextRenderer> &textRenderer) {
     if (type == SpellType::empty) {
         return;
     }
@@ -97,7 +96,8 @@ Spell::drawSpellToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 }
 
 void
-Spell::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer, const std::shared_ptr<TextRenderer> &textRenderer) {
+Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+            const std::unique_ptr<TextRenderer> &textRenderer) {
 
     if (type == SpellType::empty) {
         return;
@@ -134,7 +134,7 @@ Spell::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer, const std::sh
 
 }
 
-void Spell::drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color) {
+void Spell::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color) {
     if (type == SpellType::empty) {
         return;
     }

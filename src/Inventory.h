@@ -22,15 +22,16 @@ private:
 public:
     Inventory() = default;
 
+    [[nodiscard]] const std::vector<std::shared_ptr<Character>> &getHeroes() const;
+
+    [[nodiscard]] std::shared_ptr<Character> getHeroByID(int id) const;
+
     void addHero(const std::shared_ptr<Character> &character);
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &characters_);
 
-    const std::vector<std::shared_ptr<Character>> &getHeroes();
-
     void reset();
 
-    std::shared_ptr<Character> getHeroByID(int id);
 };
 
 }

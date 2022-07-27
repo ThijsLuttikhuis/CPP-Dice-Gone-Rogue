@@ -25,23 +25,24 @@ private:
     double t = 0.0;
     double tPrev = 0.0;
 
-    std::shared_ptr<TextRenderer> textRenderer;
-    std::shared_ptr<SpriteRenderer> spriteRenderer;
 
     std::shared_ptr<Window> window;
+    std::vector<std::shared_ptr<Scene>> allScenes;
+    std::vector<std::shared_ptr<Scene>> sceneStack;
 
-    std::vector<std::shared_ptr<OnScreenMessage>> onScreenMessages;
+    std::unique_ptr<TextRenderer> textRenderer;
+    std::unique_ptr<SpriteRenderer> spriteRenderer;
+
+    std::vector<std::unique_ptr<OnScreenMessage>> onScreenMessages;
 
     std::vector<std::shared_ptr<Character>> allHeroes;
     std::vector<std::shared_ptr<Character>> allEnemies;
 
     std::shared_ptr<Character> nullCharacter = nullptr;
 
-    std::vector<std::shared_ptr<Scene>> allScenes;
-    std::vector<std::shared_ptr<Scene>> sceneStack;
 
-    std::shared_ptr<Inventory> inventory;
-    std::shared_ptr<GameProgress> gameProgress;
+    std::unique_ptr<Inventory> inventory;
+    std::unique_ptr<GameProgress> gameProgress;
 
 public:
     explicit GameStateManager(const std::shared_ptr<Window> &window);
@@ -63,16 +64,16 @@ public:
 
     [[nodiscard]] const std::shared_ptr<Character> &getCharacterByID(int id) const;
 
-    [[nodiscard]] const std::shared_ptr<Inventory> &getInventory() const;
+    [[nodiscard]] const std::unique_ptr<Inventory> & getInventory() const;
 
-    [[nodiscard]] const std::shared_ptr<GameProgress> &getGameProgress() const;
+    [[nodiscard]] const std::unique_ptr<GameProgress> & getGameProgress() const;
 
     /// setters
     bool pushSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
 
     bool popSceneFromStack(bool enableLastSceneInStack = true);
 
-    void addOnScreenMessage(std::shared_ptr<OnScreenMessage> message);
+    void addOnScreenMessage(const OnScreenMessage &message);
 
     /// functions
     void initializeScenes();

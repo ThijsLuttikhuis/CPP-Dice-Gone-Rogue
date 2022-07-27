@@ -31,8 +31,8 @@ void OnScreenMessage::update(double dt) {
     alpha = alpha * (1.0f - (float) (dt / fadeSpeed));
 }
 
-void OnScreenMessage::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) const {
+void OnScreenMessage::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, position, size, alpha, color, alpha);
     textRenderer->drawText(text, 0.0f, position, size, color, alpha);
 }

@@ -37,9 +37,9 @@ public:
 
     static int enemyNameToStrength(const std::string &enemyName);
 
-    void completeLevel(int level, const std::shared_ptr<Inventory> &inventory);
-
     void reset();
+
+    void completeLevel(int level, const std::unique_ptr<Inventory> &inventory);
 };
 
 }

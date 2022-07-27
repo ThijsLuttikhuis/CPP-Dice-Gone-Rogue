@@ -21,6 +21,7 @@ private:
 
     void alignCharacterPositions();
 
+    void pressButton(const std::unique_ptr<Button> &button) override;
 public:
     explicit CharacterSelectScene(std::weak_ptr<GameStateManager> gameState);
 
@@ -33,12 +34,10 @@ public:
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
-    void pressButton(std::shared_ptr<Button> button);
-
     bool handleHeroesMouseButton(double xPos, double yPos);
 
-    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

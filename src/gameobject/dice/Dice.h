@@ -84,11 +84,11 @@ public:
     void roll();
 
     /// render
-    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const;
+    void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const;
 
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-              const std::shared_ptr<TextRenderer> &textRenderer);
+    void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+              const std::unique_ptr<TextRenderer> &textRenderer);
 
 };
 

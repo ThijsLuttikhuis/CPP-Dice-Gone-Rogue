@@ -24,25 +24,25 @@ AreYouSureScene::AreYouSureScene(std::weak_ptr<GameStateManager> gameState)
     int i = 1;
 
 
-    auto button1 = std::make_shared<Button>("Are you sure?",
+    auto button1 = std::make_unique<Button>("Are you sure?",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Are you sure?");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
     i+=2;
 
-    auto button2 = std::make_shared<Button>("Yes",
+    auto button2 = std::make_unique<Button>("Yes",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth/3, buttonHeight));
     button2->setText("Yes");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 
-    auto button3 = std::make_shared<Button>("No",
+    auto button3 = std::make_unique<Button>("No",
                                             glm::vec2(width / 2 + buttonWidth / 2 - buttonWidth / 3, i * buttonDistance),
                                             glm::vec2(buttonWidth/3, buttonHeight));
     button3->setText("I will think about it");
-    buttons.push_back(button3);
+    buttons.push_back(std::move(button3));
 }
 
 
@@ -59,7 +59,7 @@ void AreYouSureScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void AreYouSureScene::pressButton(std::shared_ptr<Button> button) {
+void AreYouSureScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     auto &buttonName = button->getName();
@@ -91,8 +91,8 @@ std::string AreYouSureScene::message(const std::string &data) {
     return data;
 }
 
-void AreYouSureScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) const {
+void AreYouSureScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, color, 0.9f);
 

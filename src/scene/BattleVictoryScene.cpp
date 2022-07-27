@@ -23,11 +23,11 @@ BattleVictoryScene::BattleVictoryScene(std::weak_ptr<GameStateManager> gameState
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto button1 = std::make_shared<Button>("Victory!",
+    auto button1 = std::make_unique<Button>("Victory!",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Victory!");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 }
 
 void BattleVictoryScene::handleMousePosition(double xPos, double yPos) {
@@ -74,7 +74,7 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void BattleVictoryScene::pressButton(std::shared_ptr<Button> button) {
+void BattleVictoryScene::pressButton(const std::unique_ptr<Button> &button) {
     (void) button;
     std::cout << "pressed a button!" << std::endl;
 
@@ -99,7 +99,7 @@ void BattleVictoryScene::onPushToStack() {
 }
 
 
-void BattleVictoryScene::onPopFromStack(){
+void BattleVictoryScene::onPopFromStack() {
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     for (auto &hero : gameStatePtr->getInventory()->getHeroes()) {
@@ -123,7 +123,7 @@ void BattleVictoryScene::update(double dt) {
                 hero->getDice()->setCurrentFace(-1);
 
                 auto button = getButton("Victory!");
-                button->setText("Select a face to level up");
+                button.setText("Select a face to level up");
                 return;
             }
         }
@@ -134,8 +134,8 @@ void BattleVictoryScene::update(double dt) {
 }
 
 
-void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                const std::shared_ptr<TextRenderer> &textRenderer) const {
+void BattleVictoryScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                                const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
@@ -162,7 +162,7 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
         case level_up_select:
             auto hero = gameStatePtr->getInventory()->getHeroByID(heroToLevelUp);
 
-            hero->setPosition(48*3, 144);
+            hero->setPosition(48 * 3, 144);
 
             hero->drawHeroOnly(spriteRenderer);
             hero->drawLevelUp(spriteRenderer, textRenderer);
@@ -173,7 +173,7 @@ void BattleVictoryScene::render(const std::shared_ptr<SpriteRenderer> &spriteRen
             auto currentFace = hero->getDice()->getCurrentFace();
             if (currentFace) {
                 currentFace->drawLevelUpComparison(spriteRenderer, textRenderer,
-                      currentFace->getPosition(Dice::dice_layout_pos));
+                                                   currentFace->getPosition(Dice::dice_layout_pos));
             }
 
     }

@@ -127,12 +127,12 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
     modifiers.removeModifier(modifier);
 }
 
-void Face::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const {
+void Face::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const {
     drawFace(spriteRenderer, getPosition(Dice::current_face_pos));
 }
 
-void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
+void Face::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::unique_ptr<TextRenderer> &textRenderer, Dice::dicePos dicePos) const {
 
     auto position = getPosition(dicePos);
 
@@ -143,8 +143,8 @@ void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
-void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
+void Face::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::unique_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
 
 
     drawFace(spriteRenderer, position);
@@ -154,8 +154,8 @@ void Face::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
-void Face::drawLevelUpComparison(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                 const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) {
+void Face::drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                                 const std::unique_ptr<TextRenderer> &textRenderer, glm::vec2 position) {
 
 
     drawFace(spriteRenderer, position);
@@ -178,8 +178,8 @@ void Face::drawLevelUpComparison(const std::shared_ptr<SpriteRenderer> &spriteRe
     levelUp();
 }
 
-void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
+void Face::drawCurrentFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer, glm::vec2 position) const {
 
     (void) textRenderer;
 
@@ -191,7 +191,7 @@ void Face::drawCurrentFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer
 
 }
 
-void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const {
+void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const {
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
 
@@ -274,8 +274,8 @@ void Face::drawFace(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::
     }
 }
 
-void Face::drawFaceToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer,
+void Face::drawFaceToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer,
                            glm::vec2 position) const {
 
     int tooltipWidth = 96;

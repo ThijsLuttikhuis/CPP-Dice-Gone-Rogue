@@ -32,80 +32,80 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
 
     /// -------------
 
-    auto button3 = std::make_shared<Button>("ScrollLeft",
+    auto button3 = std::make_unique<Button>("ScrollLeft",
                                             glm::vec2(leftButtonX-4, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button3->setText(" <<");
-    buttons.push_back(button3);
+    buttons.push_back(std::move(button3));
 
-    auto button4 = std::make_shared<Button>("ScrollRight",
+    auto button4 = std::make_unique<Button>("ScrollRight",
                                             glm::vec2(rightButtonX+4, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button4->setText(" >>");
-    buttons.push_back(button4);
+    buttons.push_back(std::move(button4));
 
-    auto button5 = std::make_shared<Button>("SelectHero0",
+    auto button5 = std::make_unique<Button>("SelectHero0",
                                             glm::vec2(midButtonStart + (float) i++ * midButtonWidth,
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button5->setText("");
-    buttons.push_back(button5);
+    buttons.push_back(std::move(button5));
 
-    auto button6 = std::make_shared<Button>("SelectHero1",
+    auto button6 = std::make_unique<Button>("SelectHero1",
                                             glm::vec2(midButtonStart + (float) i++ * midButtonWidth,
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button6->setText("");
-    buttons.push_back(button6);
+    buttons.push_back(std::move(button6));
 
-    auto button7 = std::make_shared<Button>("SelectHero2",
+    auto button7 = std::make_unique<Button>("SelectHero2",
                                             glm::vec2(midButtonStart + (float) i++ * midButtonWidth,
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button7->setText("");
-    buttons.push_back(button7);
+    buttons.push_back(std::move(button7));
 
-    auto button8 = std::make_shared<Button>("SelectHero3",
+    auto button8 = std::make_unique<Button>("SelectHero3",
                                             glm::vec2(midButtonStart + (float) i * midButtonWidth,
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button8->setText("");
-    buttons.push_back(button8);
+    buttons.push_back(std::move(button8));
 
     /// -------------
 
-    auto button1 = std::make_shared<Button>("Text",
+    auto button1 = std::make_unique<Button>("Text",
                                             glm::vec2(leftButtonX + leftRightButtonWidth + 1,
                                                       leftRightButtonY - topBotButtonHeight - 4),
                                             glm::vec2(rightButtonX - leftButtonX - leftRightButtonWidth,
                                                       topBotButtonHeight));
     button1->setText("Select " + Utilities::num2OneTwoThreeString(maxSelect) + " characters");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
-    auto button2 = std::make_shared<Button>("Ready",
+    auto button2 = std::make_unique<Button>("Ready",
                                             glm::vec2(leftButtonX + leftRightButtonWidth + midButtonWidth_3,
                                                       leftRightButtonHeight + leftRightButtonY + 4),
                                             glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button2->setText("Ready");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 
-    auto button9 = std::make_shared<Button>("Randomize",
+    auto button9 = std::make_unique<Button>("Randomize",
                                             glm::vec2(leftButtonX + leftRightButtonWidth + midButtonWidth_3 * 2,
                                                       leftRightButtonHeight + leftRightButtonY + 4),
                                             glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button9->setText("Randomize");
-    buttons.push_back(button9);
+    buttons.push_back(std::move(button9));
 
-    auto button10 = std::make_shared<Button>("Return",
+    auto button10 = std::make_unique<Button>("Return",
                                              glm::vec2(leftButtonX + leftRightButtonWidth,
                                                        leftRightButtonHeight + leftRightButtonY + 4),
                                              glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button10->setText("Return to main menu");
-    buttons.push_back(button10);
+    buttons.push_back(std::move(button10));
 }
 
 void CharacterSelectScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
@@ -210,8 +210,8 @@ void CharacterSelectScene::update(double dt) {
     alignCharacterPositions();
 }
 
-void CharacterSelectScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                  const std::shared_ptr<TextRenderer> &textRenderer) const {
+void CharacterSelectScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                                  const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
@@ -237,7 +237,7 @@ void CharacterSelectScene::render(const std::shared_ptr<SpriteRenderer> &spriteR
 
 }
 
-void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
+void CharacterSelectScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     float heroYPos = 128;
@@ -296,7 +296,7 @@ void CharacterSelectScene::pressButton(std::shared_ptr<Button> button) {
             return;
         }
 
-        auto inventory = gameStatePtr->getInventory();
+        auto &inventory = gameStatePtr->getInventory();
         inventory->setHeroes(selectedHeroes);
 
         gameStatePtr->popSceneFromStack();

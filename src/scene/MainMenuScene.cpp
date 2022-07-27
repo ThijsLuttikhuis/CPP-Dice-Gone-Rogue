@@ -20,24 +20,24 @@ MainMenuScene::MainMenuScene(std::weak_ptr<GameStateManager> gameState)
     double buttonDistance = height * 0.1;
     int i = 2;
 
-    auto button1 = std::make_shared<Button>("StartNewGame",
+    auto button1 = std::make_unique<Button>("StartNewGame",
                                             glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Start New Game");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
-    auto button2 = std::make_shared<Button>("LoadGame",
+    auto button2 = std::make_unique<Button>("LoadGame",
                                             glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Load Game");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 
-    auto button3 = std::make_shared<Button>("Settings",
+    auto button3 = std::make_unique<Button>("Settings",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
 
     button3->setText("Settings");
-    buttons.push_back(button3);
+    buttons.push_back(std::move(button3));
 }
 
 void MainMenuScene::handleMouseButton(double xPos, double yPos) {
@@ -48,7 +48,7 @@ void MainMenuScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
+void MainMenuScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
@@ -64,8 +64,8 @@ void MainMenuScene::pressButton(const std::shared_ptr<Button> &button) {
     }
 }
 
-void MainMenuScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) const {
+void MainMenuScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer) const {
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);
     }

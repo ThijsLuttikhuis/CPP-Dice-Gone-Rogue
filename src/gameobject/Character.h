@@ -70,8 +70,8 @@ private:
     void applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
                                        const std::shared_ptr<BattleScene> &battleScene);
 
-    void drawHealthBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                       const std::shared_ptr<TextRenderer> &textRenderer) const;
+    void drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                       const std::unique_ptr<TextRenderer> &textRenderer) const;
 
 public:
     Character(std::string name, std::string characterType);
@@ -156,24 +156,24 @@ public:
     void applyDamageStep();
 
     /// render
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-              const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+              const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
-    void drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const;
+    void drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const;
 
-    void drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator = false) const;
+    void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator = false) const;
 
-    void drawShadow(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                    const std::shared_ptr<TextRenderer> &textRenderer) const;
+    void drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                    const std::unique_ptr<TextRenderer> &textRenderer) const;
 
-    void drawXPBar(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer, double xpPercent);
+    void drawXPBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textRenderer, double xpPercent);
 
-    void drawHeroOnly(const std::shared_ptr<SpriteRenderer> &spriteRenderer) const;
+    void drawHeroOnly(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const;
 
-    void drawLevelUp(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer);
+    void drawLevelUp(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::unique_ptr<TextRenderer> &textRenderer);
 
     double getXPBarFill(double percent);
 

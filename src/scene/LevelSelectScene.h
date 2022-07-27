@@ -16,6 +16,8 @@ private:
     int levelsPerRow = 4;
     int levelsPerPage = 20;
 
+    void pressButton(const std::unique_ptr<Button> &button) override;
+
 public:
     explicit LevelSelectScene(std::weak_ptr<GameStateManager> gameState);
 
@@ -28,10 +30,9 @@ public:
 
     void update(double dt) override;
 
-    void pressButton(std::shared_ptr<Button> button);
 
-    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

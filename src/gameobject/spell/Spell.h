@@ -60,13 +60,13 @@ public:
     void setHover(bool hover_);
 
     /// render
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-              const std::shared_ptr<TextRenderer> &textRenderer);
+    void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+              const std::unique_ptr<TextRenderer> &textRenderer);
 
-    void drawSpellToolTip(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer);
+    void drawSpellToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer);
 
-    void drawBox(const std::shared_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color);
+    void drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color);
 
 };
 

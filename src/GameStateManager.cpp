@@ -2,7 +2,6 @@
 // Created by thijs on 07-06-22.
 //
 
-#include <experimental/vector>
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include <io/YamlReader.h>
@@ -27,8 +26,8 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
     glm::mat4 projection = glm::ortho(0.0f, (float) window->getWidth(), (float) window->getHeight(),
                                       0.0f, -1.0f, 1.0f);
 
-    textRenderer = std::make_shared<TextRenderer>(shader, projection);
-    spriteRenderer = std::make_shared<SpriteRenderer>(shader, projection);
+    textRenderer = std::make_unique<TextRenderer>(shader, projection);
+    spriteRenderer = std::make_unique<SpriteRenderer>(shader, projection);
     spriteRenderer->addAllTexturesInDir("textures");
 
     YamlReader yamlReaderHeroes;
@@ -41,8 +40,8 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
     allEnemies = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
           yamlReaderEnemies.getData()->getFeature()).get();
 
-    inventory = std::make_shared<Inventory>();
-    gameProgress = std::make_shared<GameProgress>();
+    inventory = std::make_unique<Inventory>();
+    gameProgress = std::make_unique<GameProgress>();
 }
 
 std::shared_ptr<Window> GameStateManager::getWindow() const {
@@ -77,7 +76,7 @@ void GameStateManager::update() {
     }
 
     onScreenMessages.erase(std::remove_if(onScreenMessages.begin(), onScreenMessages.end(),
-                                          [](std::shared_ptr<OnScreenMessage> &message) {
+                                          [](std::unique_ptr<OnScreenMessage> &message) {
                                               return message->getDuration() < 0.0;
                                           }), onScreenMessages.end());
 
@@ -187,13 +186,13 @@ const std::vector<std::shared_ptr<Character>> &GameStateManager::getAllEnemies()
     return allEnemies;
 }
 
-void GameStateManager::addOnScreenMessage(std::shared_ptr<OnScreenMessage> message) {
-    onScreenMessages.push_back(message);
+void GameStateManager::addOnScreenMessage(const OnScreenMessage &message) {
+    onScreenMessages.push_back(std::make_unique<OnScreenMessage>(message));
 }
 
 void GameStateManager::addOnScreenMessage(const std::string &message) {
-    auto onScreenMessage = std::make_shared<OnScreenMessage>(message);
-    onScreenMessages.push_back(onScreenMessage);
+    auto onScreenMessage = std::make_unique<OnScreenMessage>(message);
+    onScreenMessages.push_back(std::move(onScreenMessage));
 }
 
 void GameStateManager::initializeScenes() {
@@ -260,11 +259,11 @@ std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
     return shared_from_this();
 }
 
-const std::shared_ptr<Inventory> &GameStateManager::getInventory() const {
+const std::unique_ptr<Inventory> &GameStateManager::getInventory() const {
     return inventory;
 }
 
-const std::shared_ptr<GameProgress> &GameStateManager::getGameProgress() const {
+const std::unique_ptr<GameProgress> &GameStateManager::getGameProgress() const {
     return gameProgress;
 }
 

@@ -11,15 +11,15 @@ namespace DGR {
 
 class MainMenuScene : public Scene {
 private:
-    void pressButton(const std::shared_ptr<Button> &button);
+    void pressButton(const std::unique_ptr<Button> &button) override;
 
 public:
     explicit MainMenuScene(std::weak_ptr<GameStateManager> gameState);
 
     void handleMouseButton(double xPos, double yPos) override;
 
-    void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

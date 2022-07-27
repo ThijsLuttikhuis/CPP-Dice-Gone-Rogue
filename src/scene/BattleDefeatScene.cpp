@@ -24,11 +24,11 @@ BattleDefeatScene::BattleDefeatScene(std::weak_ptr<GameStateManager> gameState)
     int i = 2;
 
 
-    auto button1 = std::make_shared<Button>("Defeat :(",
+    auto button1 = std::make_unique<Button>("Defeat :(",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Defeat :(");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 }
 
 void BattleDefeatScene::handleMouseButton(double xPos, double yPos) {
@@ -44,7 +44,7 @@ void BattleDefeatScene::handleMouseButton(double xPos, double yPos) {
     }
 }
 
-void BattleDefeatScene::pressButton(const std::shared_ptr<Button> &button) {
+void BattleDefeatScene::pressButton(const std::unique_ptr<Button> &button) {
     (void) button;
     std::cout << "pressed a button!" << std::endl;
 }
@@ -55,8 +55,8 @@ void BattleDefeatScene::onPopFromStack() {
     gameStatePtr->getGameProgress()->reset();
 }
 
-void BattleDefeatScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::shared_ptr<TextRenderer> &textRenderer) const {
+void BattleDefeatScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                          const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 

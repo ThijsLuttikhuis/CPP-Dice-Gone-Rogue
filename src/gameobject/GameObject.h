@@ -45,6 +45,12 @@ public:
         return uniqueID == other.uniqueID;
     }
 
+//    typedef void (GameObject::*bool_type)() const;
+//    void this_type_does_not_support_comparisons() const {}
+//    operator bool_type() {
+//        return !name.empty() ? &GameObject::this_type_does_not_support_comparisons : nullptr;
+//    }
+
     /// getters
     [[nodiscard]] int getUniqueID() const;
 
@@ -70,8 +76,8 @@ public:
     void setHoverMouse(bool hover);
 
     /// render
-    virtual void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                      const std::shared_ptr<TextRenderer> &textRenderer) const;
+    virtual void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                      const std::unique_ptr<TextRenderer> &textRenderer) const;
 
 };
 

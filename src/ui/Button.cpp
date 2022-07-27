@@ -12,8 +12,8 @@ bool Button::isPressed(double xPos, double yPos) const {
     return enabled ? isMouseHovering(xPos, yPos) : false;
 }
 
-void Button::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                  const std::shared_ptr<TextRenderer> &textRenderer) const {
+void Button::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                  const std::unique_ptr<TextRenderer> &textRenderer) const {
     if (drawButton) {
         spriteRenderer->drawSprite("box", 1.0f, position, size,
                                    1.0f, color, textHasAlpha ? 0.0f : alpha);
@@ -27,8 +27,8 @@ void Button::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
 }
 
 
-void Button::drawColor(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                       const std::shared_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex) const {
+void Button::drawColor(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                       const std::unique_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex) const {
     if (drawButton) {
         spriteRenderer->drawSprite("box", zIndex, position, size,
                                    1.0f, color_, textHasAlpha ? 0.0f : alpha);

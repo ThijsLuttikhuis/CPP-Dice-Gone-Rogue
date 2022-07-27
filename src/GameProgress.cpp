@@ -56,7 +56,7 @@ int GameProgress::enemyNameToStrength(const std::string &enemyName) {
                                                                                   : 99999;
 }
 
-void GameProgress::completeLevel(int level, const std::shared_ptr<Inventory> &inventory) {
+void GameProgress::completeLevel(int level, const std::unique_ptr<Inventory> &inventory) {
     if (level != unlockedLevel) {
         return;
     }

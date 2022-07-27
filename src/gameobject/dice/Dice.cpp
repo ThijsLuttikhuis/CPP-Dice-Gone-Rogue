@@ -148,8 +148,8 @@ void Dice::roll() {
     currentFace = rng;
 }
 
-void Dice::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                const std::shared_ptr<TextRenderer> &textRenderer) {
+void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) {
 
     faces[currentFace]->draw(spriteRenderer);
 
@@ -172,8 +172,8 @@ void Dice::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
-void Dice::drawHover(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                     const std::shared_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
+void Dice::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                     const std::unique_ptr<TextRenderer> &textRenderer, bool drawCurrentFaceIndicator) const {
 
     auto characterPtr = std::shared_ptr<Character>(character);
 

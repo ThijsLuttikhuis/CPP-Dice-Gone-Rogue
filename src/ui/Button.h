@@ -47,15 +47,15 @@ public:
 
     void setEnabled(bool enabled_);
 
-    void draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-              const std::shared_ptr<TextRenderer> &textRenderer) const override;
+    void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+              const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
     void update(double t);
 
     void setText(std::string text_);
 
-    void drawColor(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                   const std::shared_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex = 0.9f) const;
+    void drawColor(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                   const std::unique_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex = 0.9f) const;
 };
 
 }

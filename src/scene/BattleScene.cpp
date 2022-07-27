@@ -15,25 +15,25 @@ namespace DGR {
 BattleScene::BattleScene(std::weak_ptr<GameStateManager> gameState) :
       Scene("BattleScene", std::move(gameState)) {
 
-    auto button1 = std::make_shared<Button>("leftMainButton", glm::vec2(304, 232),
+    auto button1 = std::make_unique<Button>("leftMainButton", glm::vec2(304, 232),
                                             glm::vec2(80, 15), glm::vec3(0.9));
     button1->setText("2 rerolls left");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
-    auto button2 = std::make_shared<Button>("rightMainButton", glm::vec2(400, 232),
+    auto button2 = std::make_unique<Button>("rightMainButton", glm::vec2(400, 232),
                                             glm::vec2(80, 15), glm::vec3(0.9));
     button2->setText("done rolling");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 
-    auto button3 = std::make_shared<Button>("settings", glm::vec2(112, 8),
+    auto button3 = std::make_unique<Button>("settings", glm::vec2(112, 8),
                                             glm::vec2(12, 12));
     button3->setText("S");
-    buttons.push_back(button3);
+    buttons.push_back(std::move(button3));
 
-    auto button4 = std::make_shared<Button>("help", glm::vec2(88, 8),
+    auto button4 = std::make_unique<Button>("help", glm::vec2(88, 8),
                                             glm::vec2(12, 12));
     button4->setText("?");
-    buttons.push_back(button4);
+    buttons.push_back(std::move(button4));
 }
 
 std::shared_ptr<BattleScene> BattleScene::getSharedFromThis() {
@@ -119,7 +119,7 @@ int BattleScene::reroll() {
     return rerolls;
 }
 
-void BattleScene::pressButton(const std::shared_ptr<Button> &button) {
+void BattleScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     if (button->getName() == "leftMainButton") {
@@ -648,8 +648,8 @@ std::string BattleScene::message(const std::string &data) {
     return data;
 }
 
-void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                         const std::shared_ptr<TextRenderer> &textRenderer) const {
+void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
                                0.0f, glm::vec3(1.0f), 0.8f);
@@ -738,9 +738,9 @@ void BattleScene::rerunBattleFromStart() {
     rerunBattle = true;
     setCharactersFromBattleLog();
     auto leftMainButton = getButton("leftMainButton");
-    leftMainButton->setText("Pause");
+    leftMainButton.setText("Pause");
     auto rightMainButton = getButton("rightMainButton");
-    rightMainButton->setText("Skip");
+    rightMainButton.setText("Skip");
 }
 
 void BattleScene::updateRerunBattle(bool reset) {

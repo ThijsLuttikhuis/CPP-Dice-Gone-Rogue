@@ -25,30 +25,30 @@ LoadGameScene::LoadGameScene(std::weak_ptr<GameStateManager> gameState)
     double buttonDistance = height * 0.1;
     float i = 8;
 
-    auto button1 = std::make_shared<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
+    auto button1 = std::make_unique<Button>("Text", glm::vec2(width / 2 - buttonWidth, buttonDistance / 2),
                                             glm::vec2(buttonWidth * 2, buttonHeight / 2));
     button1->setText("Load game");
-    buttons.push_back(button1);
+    buttons.push_back(std::move(button1));
 
-    auto button2 = std::make_shared<Button>("Ready",
+    auto button2 = std::make_unique<Button>("Ready",
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Load save file");
-    buttons.push_back(button2);
+    buttons.push_back(std::move(button2));
 
-    auto button9 = std::make_shared<Button>("DeleteSave",
+    auto button9 = std::make_unique<Button>("DeleteSave",
                                             glm::vec2(width / 2 - buttonWidth / 2 + buttonWidth * 1.1,
                                                       i * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button9->setText("Delete save file");
-    buttons.push_back(button9);
+    buttons.push_back(std::move(button9));
 
-    auto button10 = std::make_shared<Button>("Return",
+    auto button10 = std::make_unique<Button>("Return",
                                              glm::vec2(width / 2 - buttonWidth / 2 - buttonWidth * 1.1,
                                                        i * buttonDistance),
                                              glm::vec2(buttonWidth, buttonHeight));
     button10->setText("Return to main menu");
-    buttons.push_back(button10);
+    buttons.push_back(std::move(button10));
 
     float leftRightButtonWidth = 24;
     float leftRightButtonHeight = 164;
@@ -63,50 +63,50 @@ LoadGameScene::LoadGameScene(std::weak_ptr<GameStateManager> gameState)
     float midButtonWidth = (midButtonEnd - midButtonStart) / nMidButton;
     i = 0;
 
-    auto button3 = std::make_shared<Button>("ScrollLeft",
+    auto button3 = std::make_unique<Button>("ScrollLeft",
                                             glm::vec2(leftButtonX, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button3->setText(" <<");
-    buttons.push_back(button3);
+    buttons.push_back(std::move(button3));
 
-    auto button4 = std::make_shared<Button>("ScrollRight",
+    auto button4 = std::make_unique<Button>("ScrollRight",
                                             glm::vec2(rightButtonX, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button4->setText(" >>");
-    buttons.push_back(button4);
+    buttons.push_back(std::move(button4));
 
 
-    auto button5 = std::make_shared<Button>("SelectSave0",
+    auto button5 = std::make_unique<Button>("SelectSave0",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight));
     button5->setText("");
-    buttons.push_back(button5);
+    buttons.push_back(std::move(button5));
 
-    auto button6 = std::make_shared<Button>("SelectSave1",
+    auto button6 = std::make_unique<Button>("SelectSave1",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight));
     button6->setText("");
-    buttons.push_back(button6);
+    buttons.push_back(std::move(button6));
 
-    auto button7 = std::make_shared<Button>("SelectSave2",
+    auto button7 = std::make_unique<Button>("SelectSave2",
                                             glm::vec2(midButtonStart + i++ * midButtonWidth, leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight));
     button7->setText("");
-    buttons.push_back(button7);
+    buttons.push_back(std::move(button7));
 
-    auto button8 = std::make_shared<Button>("SelectSave3",
+    auto button8 = std::make_unique<Button>("SelectSave3",
                                             glm::vec2(midButtonStart + i * midButtonWidth, leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight));
     button8->setText("");
-    buttons.push_back(button8);
+    buttons.push_back(std::move(button8));
 
 }
 
-void LoadGameScene::handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos) {
+void LoadGameScene::handleMousePosition(const std::shared_ptr<Character> &character, double xPos, double yPos) {
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::current_face_pos));
 
@@ -147,7 +147,7 @@ void LoadGameScene::reset() {
 void LoadGameScene::update(double dt) {
     t += dt;
 
-    for (auto & button : buttons) {
+    for (auto &button : buttons) {
         if (button->getName() == "ScrollRight") {
             button->setDoBlink((int) loadedGameNames.size() > currentLeftSaveIndex + maxSavesOnRow);
         } else if (button->getName() == "ScrollLeft") {
@@ -158,7 +158,7 @@ void LoadGameScene::update(double dt) {
     }
 }
 
-void LoadGameScene::pressButton(const std::shared_ptr<Button> &button) {
+void LoadGameScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     auto &buttonName = button->getName();
@@ -295,8 +295,8 @@ std::string LoadGameScene::message(const std::string &data) {
 }
 
 
-void LoadGameScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::shared_ptr<TextRenderer> &textRenderer) const {
+void LoadGameScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                           const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
                                0.0f, glm::vec3(0.2f), 0.9f);
 
@@ -316,8 +316,8 @@ void LoadGameScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer
     }
 }
 
-void LoadGameScene::drawLoadedGame(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
-                                   const std::shared_ptr<TextRenderer> &textRenderer, int index,
+void LoadGameScene::drawLoadedGame(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                                   const std::unique_ptr<TextRenderer> &textRenderer, int index,
                                    glm::vec2 position, glm::vec2 size) const {
 
     if (index + currentLeftSaveIndex >= (int) loadedGames.size()) {
