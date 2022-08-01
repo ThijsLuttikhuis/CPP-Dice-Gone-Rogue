@@ -1,4 +1,4 @@
-.dgr.version=0.2
+.dgr.version=0.3
 
 characters:
   rat:
@@ -6,19 +6,19 @@ characters:
     hp: 6;
     dice:
       face0:
-        damage: 4;
+        damage: 3;
       ;
       face1:
-        damage: 2;
+        damage: 1;
       ;
       face2:
         damage: 3;
       ;
       face3:
-        damage: 2;
+        damage: 1;
       ;
       face4:
-        damage: 2;
+        damage: 1;
       ;
       face5:
         empty: 0;
@@ -87,4 +87,32 @@ characters:
     ;
   ;
 
+  dragon:
+    size: 80;
+    hp: 50;
+    dice:
+      face0:
+        damage: 8;
+        mod: "sweeping edge";
+      ;
+      face1:
+      damage: 16;
+      ;
+      face2:
+        damage: 8;
+        mod: "sweeping edge";
+      ;
+      face3:
+        damage: 16;
+      ;
+      face4:
+        damage: 8;
+        mod: "poison";
+      ;
+      face5:
+        damage: 256;
+        mod: "single use";
+      ;
+    ;
+  ;
   ;

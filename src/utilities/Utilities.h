@@ -33,6 +33,8 @@ public:
 
     static std::vector<std::filesystem::path> getAllFileNamesInDir(const std::string &dir,
                                                                    const std::string &extension = ".dgr");
+
+    static std::string num2OneTwoThreeString(int number);
 };
 
 }

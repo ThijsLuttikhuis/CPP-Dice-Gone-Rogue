@@ -177,7 +177,7 @@ public:
         }
 
         character->setMaxHP(maxHP);
-        character->setSize(glm::vec2(size));
+        character->setSize(glm::vec2(size, size * 3 / 2));
         if (spell) {
             character->setSpell(spell);
             character->getSpell()->setCharacter(character->getSharedFromThis());
@@ -283,6 +283,10 @@ public:
                 break;
             case stringCode::heal_and_mana:
                 type = FaceType::heal_and_mana;
+                value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
+                break;
+            case stringCode::damage_and_mana:
+                type = FaceType::damage_and_mana;
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::dodge:

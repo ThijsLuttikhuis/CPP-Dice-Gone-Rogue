@@ -5,6 +5,7 @@
 
 #include "Utilities.h"
 #include "Constants.h"
+#include <iostream>
 
 namespace DGR {
 
@@ -13,6 +14,91 @@ std::string &Utilities::spaceToUnderscore(std::string &str) {
     return str;
 }
 
+std::string Utilities::num2OneTwoThreeString(int number) {
+    std::string oneTwoThreeString;
+    std::string numStr = std::to_string(number);
+    if (numStr.length() > 4) {
+        return "";
+    }
+    if (numStr.length() > 3) {
+        int c = numStr[0] - '0';
+        char** temp = nullptr;
+        oneTwoThreeString += num2OneTwoThreeString(c) + "thousand" +
+                             num2OneTwoThreeString((int) strtol(numStr.substr(1, 3).c_str(), temp, 10));
+        return oneTwoThreeString;
+    }
+    if (numStr.length() > 2) {
+        int c = numStr[0] - '0';
+        char** temp = nullptr;
+        oneTwoThreeString += num2OneTwoThreeString(c) + "hundred" +
+                             num2OneTwoThreeString((int) strtol(numStr.substr(1, 2).c_str(), temp, 10));
+        return oneTwoThreeString;
+    }
+    if (numStr.length() > 1) {
+        int c = numStr[0] - '0';
+        switch (c) {
+            case 1:
+                if (number == 10) {
+                    return "ten";
+                }
+                if (number == 11) {
+                    return "eleven";
+                }
+                if (number == 12) {
+                    return "twelve";
+                }
+                if (number == 13) {
+                    return "thirteen";
+                }
+                return num2OneTwoThreeString(numStr[1] - '0') + "teen";
+            case 2:
+                oneTwoThreeString += "twenty";
+                break;
+            case 3:
+                oneTwoThreeString += "thirty";
+                break;
+            case 5:
+                oneTwoThreeString += "fifty";
+                break;
+            default:
+                oneTwoThreeString += num2OneTwoThreeString(c) + "ty";
+                break;
+        }
+        if (number % 10 == 0) {
+            return oneTwoThreeString;
+        }
+
+        oneTwoThreeString += num2OneTwoThreeString(numStr[1] - '0');
+
+        return oneTwoThreeString;
+    }
+
+    switch (numStr[0] - '0') {
+        case 0:
+            return "zero";
+        case 1:
+            return "one";
+        case 2:
+            return "two";
+        case 3:
+            return "three";
+        case 4:
+            return "four";
+        case 5:
+            return "five";
+        case 6:
+            return "six";
+        case 7:
+            return "seven";
+        case 8:
+            return "eight";
+        case 9:
+            return "nine";
+        default:
+            return "error";
+    }
+
+}
 
 bool Utilities::checkBit(unsigned int value, unsigned int pos) {
     return value & (1u << (pos));
@@ -70,7 +156,8 @@ std::string Utilities::checkAndRemoveDGRFileVersion(const std::string &fileConte
                                fileContents.length() - 13 - DGR_FILE_VERSION.size());
 }
 
-std::vector<std::filesystem::path> Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &extension) {
+std::vector<std::filesystem::path>
+Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &extension) {
     std::vector<std::filesystem::path> filePaths;
 
     auto dirIt = std::filesystem::directory_iterator(dir);

@@ -24,6 +24,7 @@ public:
         attack_block_enemies
     };
 private:
+    int level = 0;
     const int rerollsMax = 3;
     int rerolls = rerollsMax;
     int mana = 0;
@@ -31,6 +32,8 @@ private:
 
     int animationCounter = 0;
     bool rerunBattle = false;
+    bool skipRerun = false;
+    bool pauseRerun = false;
     bool allowButtonPress = true;
 
     std::shared_ptr<Character> clickedCharacter = nullptr;
@@ -41,12 +44,11 @@ private:
 
     std::shared_ptr<BattleLog> battleLog = nullptr;
 
-
     void alignCharacterPositions(double dt);
 
     bool checkVictory();
 
-    void pressButton(std::shared_ptr<Button> button);
+    void pressButton(const std::shared_ptr<Button> &button);
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 
@@ -92,8 +94,10 @@ public:
 
     [[nodiscard]] int getRerolls() const;
 
-    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>>
-    getNeighbours(const std::shared_ptr<Character>& character) const;
+    std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> getNeighbours(
+          const std::shared_ptr<Character> &character) const;
+
+    std::vector<std::shared_ptr<Character>> getAliveCharacters(bool aliveHeroes);
 
     /// setters
     void setNextGameState(bool doSaveTurn = true);
@@ -103,6 +107,8 @@ public:
     void setMana(int mana_);
 
     void setEnemies(const std::vector<std::shared_ptr<Character>> &enemies_);
+
+    void setEnemiesFromLevel(int selectedLevel);
 
     void setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_);
 
@@ -125,10 +131,11 @@ public:
 
     void update(double dt) override;
 
+    std::string message(const std::string &data) override;
+
     /// render
     void render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                 const std::shared_ptr<TextRenderer> &textRenderer) override;
-
 
 };
 

@@ -12,6 +12,8 @@
 #include "ui/Window.h"
 #include "ui/OnScreenMessage.h"
 #include "gameobject/spell/Spell.h"
+#include "Inventory.h"
+#include "GameProgress.h"
 
 namespace DGR {
 
@@ -32,11 +34,14 @@ private:
 
     std::vector<std::shared_ptr<Character>> allHeroes;
     std::vector<std::shared_ptr<Character>> allEnemies;
-    std::vector<std::shared_ptr<Character>> ownedHeroes;
+
     std::shared_ptr<Character> nullCharacter = nullptr;
 
     std::vector<std::shared_ptr<Scene>> allScenes;
     std::vector<std::shared_ptr<Scene>> sceneStack;
+
+    std::shared_ptr<Inventory> inventory;
+    std::shared_ptr<GameProgress> gameProgress;
 
 public:
     explicit GameStateManager(const std::shared_ptr<Window>& window);
@@ -57,6 +62,10 @@ public:
     [[nodiscard]] const std::vector<std::shared_ptr<Character>> &getAllEnemies() const;
 
     [[nodiscard]] const std::shared_ptr<Character> &getCharacterByID(int id) const;
+
+    [[nodiscard]] const std::shared_ptr<Inventory> &getInventory() const;
+
+    [[nodiscard]] const std::shared_ptr<GameProgress> &getGameProgress() const;
 
     /// setters
     bool pushSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);

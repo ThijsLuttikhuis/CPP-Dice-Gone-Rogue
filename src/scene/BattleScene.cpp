@@ -8,6 +8,7 @@
 #include "BattleScene.h"
 #include "ui/Button.h"
 #include "GameStateManager.h"
+#include "LevelSelectScene.h"
 
 namespace DGR {
 
@@ -74,6 +75,24 @@ void BattleScene::setClickedSpell(std::shared_ptr<Spell> clickedSpell_) {
 
 int BattleScene::reroll() {
     if (rerolls > 0) {
+
+        // do not reroll if all hero dice are locked
+        if (areHeroesRolling()) {
+            bool allDiceLocked = true;
+            for (auto &hero : getAliveCharacters(true)) {
+                if (!hero->getDice()->isLocked()) {
+                    allDiceLocked = false;
+                    break;
+                }
+            }
+
+            if (allDiceLocked) {
+                std::cerr << "GameStateManager::reroll: warning, all dice locked!" << std::endl;
+
+                return rerolls;
+            }
+        }
+
         rerolls--;
 
         if (areHeroesRolling()) {
@@ -90,16 +109,22 @@ int BattleScene::reroll() {
     }
 #ifdef DGR_DEBUG
     else {
-        std::cerr << "GameStateManager::reroll: no rerolls remaining!" << std::endl;
+        std::cerr << "GameStateManager::reroll: warning, no rerolls remaining!" << std::endl;
     }
 #endif
     return rerolls;
 }
 
-void BattleScene::pressButton(std::shared_ptr<Button> button) {
+void BattleScene::pressButton(const std::shared_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
 
     if (button->getName() == "leftMainButton") {
+        if (rerunBattle) {
+            pauseRerun = !pauseRerun;
+            button->setText(pauseRerun ? "Resume" : "Pause");
+            return;
+        }
+
         if (areHeroesRolling()) {
             int rerollsLeft = reroll();
             button->setText(std::to_string(rerollsLeft) + " rerolls left");
@@ -109,23 +134,42 @@ void BattleScene::pressButton(std::shared_ptr<Button> button) {
         } else if (areHeroesAttacking()) {
             getBattleLog()->undo();
         }
-    }
 
-    if (button->getName() == "rightMainButton") {
+    } else if (button->getName() == "rightMainButton") {
+        if (rerunBattle) {
+            skipRerun = !skipRerun;
+            button->setText(skipRerun ? "Cancel skip" : "Skip");
+            return;
+        }
+
+
         if (areHeroesRolling()) {
             setNextGameState();
         } else if (areHeroesAttacking()) {
-            setNextGameState();
-        }
-    }
+            /// check if all dice are used, otherwise ask are you sure
+            bool allDiceUsed = true;
+            for (auto &hero : getAliveCharacters(true)) {
+                if (!hero->getDice()->isUsed()) {
+                    allDiceUsed = false;
+                    break;
+                }
+            }
+            if (!allDiceUsed) {
+                auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+                gameStatePtr->getScene("AreYouSureScene")->message(
+                      "BattleScene: nextGameState");
 
-    if (button->getName() == "settings") {
+                gameStatePtr->pushSceneToStack("AreYouSureScene");
+            } else {
+                setNextGameState();
+            }
+        }
+
+    } else if (button->getName() == "settings") {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
         gameStatePtr->pushSceneToStack("SettingsScene", true);
-    }
-
-    if (button->getName() == "help") {
+    } else if (button->getName() == "help") {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
         gameStatePtr->pushSceneToStack("HelpScene", false);
@@ -217,6 +261,10 @@ void BattleScene::setNextGameState(bool doSaveTurn) {
 }
 
 void BattleScene::updateButtons() {
+    if (rerunBattle) {
+        return;
+    }
+
     for (auto &button : buttons) {
         switch (state) {
             case rolling_heroes:
@@ -298,7 +346,6 @@ void BattleScene::reset() {
     state = rolling_enemies;
     animationCounter = 0;
     rerunBattle = false;
-    allowButtonPress = true;
 
     clickedCharacter = nullptr;
     clickedSpell = nullptr;
@@ -311,17 +358,15 @@ void BattleScene::reset() {
 
 void BattleScene::update(double dt) {
     alignCharacterPositions(dt);
+
     if (checkVictory()) {
         return;
     }
 
     if (rerunBattle) {
-        allowButtonPress = false;
         updateRerunBattle();
         return;
     }
-    allowButtonPress = true;
-
 
     //TODO: add animations etc
     int slowDown = 30 / DGR_ANIMATION_SPEED;
@@ -331,6 +376,7 @@ void BattleScene::update(double dt) {
             reroll();
             for (auto &enemy : enemies) {
                 auto currentFace = enemy->getDice()->getCurrentFace()->getFace_();
+                //TODO: make better A.I :)
                 if (currentFace == 0 || currentFace == 2) {
                     enemy->setDiceLock(true);
                 }
@@ -354,9 +400,6 @@ void BattleScene::update(double dt) {
 }
 
 void BattleScene::enemyAttack(int index) {
-    int nHeroes = heroes.size();
-    int nEnemies = enemies.size();
-
     auto enemy = enemies[index];
     bool success;
 
@@ -369,32 +412,28 @@ void BattleScene::enemyAttack(int index) {
 
     // check if you can interact with an ally (=enemy from their perspective)
     if (!success) {
+        auto aliveEnemies = getAliveCharacters(false);
         int mostIncomingDamage = 0;
-        for (auto &otherEnemy : enemies) {
+        for (auto &otherEnemy : aliveEnemies) {
             mostIncomingDamage = std::max(mostIncomingDamage, otherEnemy->getIncomingDamage());
         }
         if (mostIncomingDamage > 0) {
-            for (auto &otherEnemy : enemies) {
+            for (auto &otherEnemy : aliveEnemies) {
                 if (otherEnemy->getIncomingDamage() == mostIncomingDamage) {
                     success = otherEnemy->interact(enemy, getSharedFromThis());
                 }
             }
         } else {
-            int rng = Random::randInt(0, nEnemies - 1);
-            success = enemies[rng]->interact(enemy, getSharedFromThis());
+            int rng = Random::randInt(0, (int) aliveEnemies.size() - 1);
+            success = aliveEnemies[rng]->interact(enemy, getSharedFromThis());
         }
     }
 
     // finally, check if you can interact with an enemy (=hero from their perspective)
     if (!success) {
-        int rng;
-        while (true) {
-            rng = Random::randInt(0, nHeroes - 1);
-            if (!heroes[rng]->isDead()) {
-                success = heroes[rng]->interact(enemy, getSharedFromThis());
-                break;
-            }
-        }
+        auto aliveHeroes = getAliveCharacters(true);
+        int rng = Random::randInt(0, (int) aliveHeroes.size() - 1);
+        success = aliveHeroes[rng]->interact(enemy, getSharedFromThis());
     }
 
     if (!success) {
@@ -429,7 +468,7 @@ void BattleScene::alignCharacterPositions(double dt) {
 
         startLeft = isHeroes ? (int) (center * 0.6) - totalWidth / 2 : (int) (center * 1.4) - totalWidth / 2;
         left = startLeft;
-        up = isHeroes ? 13 * 16 : 6 * 16;
+        up = isHeroes ? 13 * 16 : 8.5 * 16;
 
         for (auto &character : characters) {
             if (!character->isDead()) {
@@ -527,12 +566,6 @@ void BattleScene::clickCharacter(const std::shared_ptr<Character> &character) {
 }
 
 void BattleScene::handleMouseButton(double xPos, double yPos) {
-    if (!allowButtonPress) {
-        setClickedSpell(nullptr);
-        setClickedCharacter(nullptr);
-        return;
-    }
-
     for (auto &button : buttons) {
         if (button->isPressed(xPos, yPos)) {
             pressButton(button);
@@ -567,8 +600,8 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     setClickedCharacter(nullptr);
 }
 
-std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>>
-BattleScene::getNeighbours(const std::shared_ptr<Character> &character) const {
+std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(
+      const std::shared_ptr<Character> &character) const {
 
     std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> neighbours(nullptr, nullptr);
     auto &characters = character->getCharacterType() == "hero" ? heroes :
@@ -599,13 +632,31 @@ BattleScene::getNeighbours(const std::shared_ptr<Character> &character) const {
     return neighbours;
 }
 
+std::string BattleScene::message(const std::string &data) {
+    std::cout << data << std::endl;
+
+    if (data.substr(0, 5) != "yes: ") {
+        return data;
+    }
+    if (data == "yes: nextGameState") {
+        setNextGameState();
+    }
+    return data;
+}
+
 void BattleScene::render(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                          const std::shared_ptr<TextRenderer> &textRenderer) {
+
+    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
+                               0.0f, glm::vec3(1.0f), 0.8f);
+
     for (auto &hero : heroes) {
+        hero->drawShadow(spriteRenderer, textRenderer);
         hero->draw(spriteRenderer, textRenderer);
     }
 
     for (auto &enemy : enemies) {
+        enemy->drawShadow(spriteRenderer, textRenderer);
         enemy->draw(spriteRenderer, textRenderer);
     }
 
@@ -649,6 +700,11 @@ bool BattleScene::checkVictory() {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
         updateRerunBattle(true);
+
+        gameStatePtr->getGameProgress()->completeLevel(level, gameStatePtr->getInventory());
+
+
+
         return true;
     }
 
@@ -678,6 +734,10 @@ void BattleScene::setCharactersFromBattleLog() {
 void BattleScene::rerunBattleFromStart() {
     rerunBattle = true;
     setCharactersFromBattleLog();
+    auto leftMainButton = getButton("leftMainButton");
+    leftMainButton->setText("Pause");
+    auto rightMainButton = getButton("rightMainButton");
+    rightMainButton->setText("Skip");
 }
 
 void BattleScene::updateRerunBattle(bool reset) {
@@ -690,6 +750,8 @@ void BattleScene::updateRerunBattle(bool reset) {
         attackIndex = 0;
         initState = false;
         rerunBattle = false;
+        skipRerun = false;
+        pauseRerun = false;
         return;
     }
 
@@ -700,7 +762,7 @@ void BattleScene::updateRerunBattle(bool reset) {
 
     int slowDown = 30 / DGR_ANIMATION_SPEED;
     animationCounter++;
-    if (animationCounter % slowDown != 0) {
+    if (pauseRerun || (!skipRerun && animationCounter % slowDown != 0)) {
         return;
     }
     animationCounter = 0;
@@ -712,11 +774,41 @@ void BattleScene::updateRerunBattle(bool reset) {
         attackIndex = 0;
         initState = false;
         rerunBattle = false;
+        skipRerun = false;
+        pauseRerun = false;
     }
 }
 
 void BattleScene::onPopFromStack() {
     reset();
+}
+
+std::vector<std::shared_ptr<Character>> BattleScene::getAliveCharacters(bool aliveHeroes) {
+    std::vector<std::shared_ptr<Character>> aliveCharacters;
+    for (auto &character : (aliveHeroes ? heroes : enemies)) {
+        if (!character->isDead()) {
+            aliveCharacters.push_back(character);
+        }
+    }
+    return aliveCharacters;
+}
+
+void BattleScene::setEnemiesFromLevel(int selectedLevel) {
+    level = selectedLevel;
+    enemies = {};
+    int strengthBudget = GameProgress::levelToEnemyStrength(selectedLevel);
+    auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
+    auto allEnemies = gameStatePtr->getAllEnemies();
+
+    while (strengthBudget > 0) {
+        int rng = Random::randInt(0, (int)allEnemies.size() - 1);
+        auto enemy = allEnemies[rng];
+        int enemyStrength = GameProgress::enemyNameToStrength(enemy->getName());
+        if (enemyStrength <= strengthBudget) {
+            enemies.push_back(enemy->makeCopy(false));
+            strengthBudget -= enemyStrength;
+        }
+    }
 }
 
 }

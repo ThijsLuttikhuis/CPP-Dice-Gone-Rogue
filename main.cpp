@@ -9,8 +9,7 @@
 #include "ui/Window.h"
 
 int main() {
-
-    DGR::Random::initialize(1);
+    DGR::Random::initialize(0);
     std::shared_ptr<DGR::Window> window = std::make_shared<DGR::Window>();
     std::shared_ptr<DGR::GameStateManager> dgrGame = std::make_shared<DGR::GameStateManager>(window);
 

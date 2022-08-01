@@ -14,4 +14,8 @@ void UIElement::draw(const std::shared_ptr<SpriteRenderer> &spriteRenderer,
                                1.0f, glm::vec3(0.4), 0.0f);
 }
 
+void UIElement::setColor(const glm::vec3 &color_) {
+    color = color_;
+}
+
 }

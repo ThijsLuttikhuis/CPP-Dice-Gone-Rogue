@@ -1,4 +1,4 @@
-.dgr.version=0.2
+.dgr.version=0.3
 
 characters:
   knight:
@@ -9,19 +9,19 @@ characters:
         damage: 5;
       ;
       face1:
-        damage: 2;
+        damage: 3;
       ;
       face2:
         damage: 5;
       ;
       face3:
-        damage: 2;
+        damage: 3;
       ;
       face4:
-        shield: 4;
+        shield: 5;
       ;
       face5:
-        shield: 2;
+        shield: 3;
       ;
     ;
   ;
@@ -46,24 +46,24 @@ characters:
         mod: "ranged";
       ;
       face4:
-        damage: 2;
+        damage: 3;
         mod: "first blood";
         mod1: "single use";
       ;
       face5:
-        damage: 2;
+        damage: 3;
           mod: "first blood";
           mod1: "single use";
       ;
     ;
   ;
 
-  hunter:
+  ranger:
     size: 32;
     hp: 10;
     dice:
       face0:
-        damage: 5;
+        damage: 6;
         mod: "ranged";
       ;
       face1:
@@ -97,15 +97,15 @@ characters:
         damage and self shield: 3;
       ;
       face1:
-        shield: 1;
+        shield: 2;
         mod: "sweeping edge";
         mod1: "single use";
       ;
       face2:
-        damage: 2;
+        damage and self shield: 3;
       ;
       face3:
-        shield: 1;
+        shield: 2;
         mod: "sweeping edge";
         mod1: "single use";
       ;
@@ -128,7 +128,7 @@ characters:
     ;
     dice:
       face0:
-        mana: 2;
+        shield and mana: 2;
       ;
       face1:
         mana: 4;
@@ -205,9 +205,7 @@ characters:
         mod: "single use";
       ;
       face4:
-        heal: 1;
-        mod: "cleanse";
-        mod1: "sweeping edge";
+        damage and mana: 2;
       ;
       face5:
         empty: 0;
