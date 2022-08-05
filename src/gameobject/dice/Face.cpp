@@ -68,6 +68,7 @@ glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
             dicePosition += faceDeltaPos.at(face_);
             break;
         case Dice::current_face_pos:
+            dicePosition += glm::vec2(-8,2);
             break;
         default:
             std::cerr << "Face::getPosition: dicePos unknown: " << dicePos << std::endl;
@@ -129,6 +130,18 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
 
 void Face::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const {
     drawFace(spriteRenderer, getPosition(Dice::current_face_pos));
+
+    glm::vec3 textureColor = modifiers.toColor() * 2.0f / 3.0f;
+
+    spriteRenderer->drawSprite("dice_3d_current_face", 0.22f, getPosition(Dice::current_face_pos) - glm::vec2(1,5),
+                               getSize() + glm::vec2(6,6));
+
+    spriteRenderer->drawSprite("dice_3d_current_face", 0.22f, getPosition(Dice::current_face_pos) - glm::vec2(1,5),
+                               getSize() + glm::vec2(6,6));
+
+    spriteRenderer->drawSprite("box", 0.2f, getPosition(Dice::current_face_pos),
+                               getSize() - glm::vec2(1,1), 0.3f, textureColor, 0.0f);
+
 }
 
 void Face::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
@@ -165,12 +178,12 @@ void Face::drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRe
 
     int tooltipWidth = 96;
     int arrowWidth = 16;
-    position += glm::vec2(tooltipWidth+5, -5);
+    position += glm::vec2(tooltipWidth + 5, -5);
 
     spriteRenderer->drawSprite("arrow", 0.0f,
                                position, glm::vec2(arrowWidth));
 
-    position += glm::vec2(arrowWidth-5, +5);
+    position += glm::vec2(arrowWidth - 5, +5);
 
     levelUp();
     drawFaceToolTip(spriteRenderer, textRenderer, position);

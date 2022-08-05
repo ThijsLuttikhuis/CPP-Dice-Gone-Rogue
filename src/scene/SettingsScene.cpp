@@ -13,7 +13,7 @@ namespace DGR {
 SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
       : Scene("SettingsScene", std::move(gameState),
               glm::vec2(DGR_WIDTH * 0.1, DGR_HEIGHT * 0.1),
-              glm::vec2(DGR_WIDTH * 0.8, DGR_HEIGHT * 0.8)) {
+              glm::vec2(DGR_WIDTH * 0.8, DGR_HEIGHT * 0.8), glm::vec3(0.2f)) {
 
     double width = size.x;
     double height = size.y;
@@ -34,6 +34,10 @@ SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
                                             glm::vec2(buttonWidth, buttonHeight));
     button2->setText("HUDSize?");
     buttons.push_back(std::move(button2));
+
+    auto button3 = makeDefaultButton("Close", glm::vec2(width - 16.0f, 8.0f), glm::vec2(8.0f));
+    buttons.push_back(std::move(button3));
+
 }
 
 void SettingsScene::handleMouseButton(double xPos, double yPos) {
@@ -42,27 +46,7 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
         gameStatePtr->popSceneFromStack();
     }
 
-    for (auto &button : buttons) {
-        if (button->isPressed(xPos, yPos)) {
-            pressButton(button);
-        }
-    }
-}
-
-void SettingsScene::pressButton(const std::unique_ptr<Button> &button) {
-    (void) button;
-    std::cout << "pressed a button!" << std::endl;
-
-}
-
-void SettingsScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::unique_ptr<TextRenderer> &textRenderer) const {
-    spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
-                               0.0f, glm::vec3(0.2f), 0.9f);
-
-    for (auto &button : buttons) {
-        button->draw(spriteRenderer, textRenderer);
-    }
+    handleMouseButtonDefault(xPos, yPos);
 }
 
 }

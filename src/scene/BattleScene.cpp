@@ -18,15 +18,17 @@ BattleScene::BattleScene(std::weak_ptr<GameStateManager> gameState) :
     auto button1 = std::make_unique<Button>("leftMainButton", glm::vec2(304, 232),
                                             glm::vec2(80, 15), glm::vec3(0.9));
     button1->setText("2 rerolls left");
+    button1->setKeyboardKey(GLFW_KEY_COMMA);
     buttons.push_back(std::move(button1));
 
     auto button2 = std::make_unique<Button>("rightMainButton", glm::vec2(400, 232),
                                             glm::vec2(80, 15), glm::vec3(0.9));
     button2->setText("done rolling");
+    button2->setKeyboardKey(GLFW_KEY_PERIOD);
     buttons.push_back(std::move(button2));
 
-    auto button3 = std::make_unique<Button>("settings", glm::vec2(112, 8),
-                                            glm::vec2(12, 12));
+    auto button3 = Scene::makeDefaultButton("Settings", glm::vec2(112, 8), glm::vec2(12, 12));
+
     button3->setText("S");
     buttons.push_back(std::move(button3));
 
@@ -121,6 +123,10 @@ int BattleScene::reroll() {
 
 void BattleScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
+
+    if (pressDefaultButton(button)) {
+        return;
+    }
 
     if (button->getName() == "leftMainButton") {
         if (rerunBattle) {
@@ -570,15 +576,11 @@ void BattleScene::clickCharacter(const std::shared_ptr<Character> &character) {
 }
 
 void BattleScene::handleMouseButton(double xPos, double yPos) {
-    for (auto &button : buttons) {
-        if (button->isPressed(xPos, yPos)) {
-            pressButton(button);
-            return;
-        }
-    }
+
+    handleMouseButtonDefault(xPos, yPos);
 
     for (auto &hero : heroes) {
-        if (hero->isMouseHovering(xPos, yPos, true)) {
+        if (hero->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
             clickCharacter(hero);
             return;
         }
@@ -593,15 +595,15 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     }
 
     for (auto &enemy : enemies) {
-        if (enemy->isMouseHovering(xPos, yPos, true)) {
+        if (enemy->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
             clickCharacter(enemy);
             return;
         }
     }
 
     // clicked nowhere..
-    setClickedSpell(nullptr);
-    setClickedCharacter(nullptr);
+//    setClickedSpell(nullptr);
+//    setClickedCharacter(nullptr);
 }
 
 std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(
@@ -646,50 +648,6 @@ std::string BattleScene::message(const std::string &data) {
         setNextGameState();
     }
     return data;
-}
-
-void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                         const std::unique_ptr<TextRenderer> &textRenderer) const {
-
-    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
-                               0.0f, glm::vec3(1.0f), 0.8f);
-
-    for (auto &hero : heroes) {
-        hero->drawShadow(spriteRenderer, textRenderer);
-        hero->draw(spriteRenderer, textRenderer);
-    }
-
-    for (auto &enemy : enemies) {
-        enemy->drawShadow(spriteRenderer, textRenderer);
-        enemy->draw(spriteRenderer, textRenderer);
-    }
-
-    for (auto &hero : heroes) {
-        hero->drawHover(spriteRenderer, textRenderer, true);
-    }
-
-    for (auto &enemy : enemies) {
-        enemy->drawHover(spriteRenderer, textRenderer, true);
-    }
-
-    if (clickedCharacter) {
-        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
-
-    if (clickedSpell) {
-        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
-    }
-
-    glm::vec2 manaPosition = glm::vec2(300, 250);
-    glm::vec2 manaSize = glm::vec2(22, 24);
-    glm::vec2 manaTextPosition = manaPosition + glm::vec2(8, 6);
-    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize,
-                               0.0f, glm::vec3(1.0f), 0.8f);
-    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
-
-    for (auto &button : buttons) {
-        button->draw(spriteRenderer, textRenderer);
-    }
 }
 
 bool BattleScene::checkVictory() {
@@ -813,6 +771,57 @@ void BattleScene::setEnemiesFromLevel(int selectedLevel) {
             strengthBudget -= enemyStrength;
         }
     }
+}
+
+
+void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                         const std::unique_ptr<TextRenderer> &textRenderer) const {
+
+    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
+                               0.0f, glm::vec3(1.0f), 0.8f);
+
+    for (auto &hero : heroes) {
+        if (hero->getPosition().x < 0) continue;
+
+        hero->drawShadow(spriteRenderer, textRenderer);
+        hero->draw(spriteRenderer, textRenderer);
+    }
+
+    for (auto &enemy : enemies) {
+        if (enemy->getPosition().x < 0) continue;
+
+        enemy->drawShadow(spriteRenderer, textRenderer);
+        enemy->draw(spriteRenderer, textRenderer);
+    }
+
+    for (auto &hero : heroes) {
+        if (hero->getPosition().x < 0) continue;
+
+        hero->drawHover(spriteRenderer, textRenderer, true);
+    }
+
+    for (auto &enemy : enemies) {
+        if (enemy->getPosition().x < 0) continue;
+
+        enemy->drawHover(spriteRenderer, textRenderer, true);
+    }
+
+    if (clickedCharacter) {
+        clickedCharacter->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
+    }
+
+    if (clickedSpell) {
+        clickedSpell->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
+    }
+
+    glm::vec2 manaPosition = glm::vec2(300, 250);
+    glm::vec2 manaSize = glm::vec2(22, 24);
+    glm::vec2 manaTextPosition = manaPosition + glm::vec2(8, 6);
+    spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize,
+                               0.0f, glm::vec3(1.0f), 0.8f);
+    textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
+
+    renderDefaults(spriteRenderer, textRenderer);
 }
 
 }

@@ -26,9 +26,12 @@ protected:
     std::vector<std::unique_ptr<Button>> buttons;
     std::unique_ptr<Button> nullButton = std::make_unique<Button>("", glm::vec2(), glm::vec2());
 
+    bool drawKeyPress = false;
+
     virtual void pressButton(const std::unique_ptr<Button> &button) {
         (void) button;
     };
+
 public:
     explicit InputHandler(std::weak_ptr<GameStateManager> gameState);
 
@@ -49,6 +52,7 @@ public:
 
     virtual void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                         const std::unique_ptr<TextRenderer> &textRenderer) const;
+
 };
 
 }

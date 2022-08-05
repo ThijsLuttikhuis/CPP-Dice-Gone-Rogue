@@ -48,7 +48,7 @@ private:
 
     bool checkVictory();
 
-    void pressButton(const std::unique_ptr<Button> &button);
+    void pressButton(const std::unique_ptr<Button> &button) override;
 
     void handleMousePosition(std::shared_ptr<Character> character, double xPos, double yPos);
 

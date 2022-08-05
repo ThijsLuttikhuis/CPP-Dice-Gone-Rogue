@@ -68,6 +68,7 @@ void GameStateManager::update() {
     for (auto &scene : sceneStack) {
         if (scene->isEnabled()) {
             scene->update(dt);
+            scene->updateDefaults(dt);
         }
     }
 

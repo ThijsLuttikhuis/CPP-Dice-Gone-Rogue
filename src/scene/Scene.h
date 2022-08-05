@@ -46,6 +46,29 @@ public:
     virtual std::string message(const std::string &data);
 
     virtual void update(double dt);
+
+    void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) override;
+
+    void handleMouseButton(double xPos, double yPos) override;
+
+    void handleKeyboardDefault(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed);
+
+    void handleMouseButtonDefault(double xPos, double yPos);
+
+    void pressButton(const std::unique_ptr<Button> &button) override;
+
+    bool pressDefaultButton(const std::unique_ptr<Button> &button);
+
+    static std::unique_ptr<Button> makeDefaultButton(const std::string &string, glm::vec2 position, glm::vec2 size);
+
+    void updateDefaults(double dt);
+
+    /// render
+    void renderDefaults(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                        const std::unique_ptr<TextRenderer> &textRenderer) const;
+
+    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

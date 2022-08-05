@@ -185,7 +185,8 @@ void Dice::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     glm::vec2 diceTemplateTextBoxSize = glm::vec2(getSize(Dice::background_pos).x, 8);
     spriteRenderer->drawSprite("box", 0.8f, diceTemplateBackgroundPosition,
                                diceTemplateTextBoxSize, 1.0f, glm::vec3(0.2f), 0.5f);
-    textRenderer->drawText(name + "  [Lvl " + std::to_string(characterPtr->getLevel()) + "]", 0.1f, diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
+    textRenderer->drawText(name + "  [Lvl " + std::to_string(characterPtr->getLevel()) + "]", 0.1f,
+                           diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
 
     glm::vec2 diceTemplatePosition = getPosition(Dice::dice_layout_pos);
     glm::vec2 diceTemplateSize = getSize(Dice::dice_layout_pos);

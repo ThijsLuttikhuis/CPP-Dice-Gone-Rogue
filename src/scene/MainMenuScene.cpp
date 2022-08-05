@@ -32,24 +32,19 @@ MainMenuScene::MainMenuScene(std::weak_ptr<GameStateManager> gameState)
     button2->setText("Load Game");
     buttons.push_back(std::move(button2));
 
-    auto button3 = std::make_unique<Button>("Settings",
-                                            glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
-                                            glm::vec2(buttonWidth, buttonHeight));
+    auto button3 = Scene::makeDefaultButton("Settings",
+                                                   glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
+                                                   glm::vec2(buttonWidth, buttonHeight));
 
-    button3->setText("Settings");
     buttons.push_back(std::move(button3));
-}
-
-void MainMenuScene::handleMouseButton(double xPos, double yPos) {
-    for (auto &button : buttons) {
-        if (button->isPressed(xPos, yPos)) {
-            pressButton(button);
-        }
-    }
 }
 
 void MainMenuScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
+
+    if (pressDefaultButton(button)) {
+        return;
+    }
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
@@ -61,13 +56,6 @@ void MainMenuScene::pressButton(const std::unique_ptr<Button> &button) {
         gameStatePtr->pushSceneToStack("LoadGameScene", false);
     } else if (button->getName() == "Settings") {
         gameStatePtr->pushSceneToStack("SettingsScene");
-    }
-}
-
-void MainMenuScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                           const std::unique_ptr<TextRenderer> &textRenderer) const {
-    for (auto &button : buttons) {
-        button->draw(spriteRenderer, textRenderer);
     }
 }
 

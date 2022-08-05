@@ -15,11 +15,6 @@ private:
 
 public:
     explicit MainMenuScene(std::weak_ptr<GameStateManager> gameState);
-
-    void handleMouseButton(double xPos, double yPos) override;
-
-    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

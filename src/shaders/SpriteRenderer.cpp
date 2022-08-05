@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <string>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform2.hpp>
+
 
 #include "SpriteRenderer.h"
 #include "utilities/Constants.h"
@@ -82,6 +84,9 @@ void SpriteRenderer::drawSprite(const std::string &textureName_, float zIndex,
     glm::vec2 screenPos = position + basePos;
     if (screenPos.x < basePos.x || screenPos.y < basePos.y ||
         position.x + size.x > baseSize.x + 1 || position.y + size.y > baseSize.y + 1) {
+#if DGR_PRINT_RENDER_OUTSIDE_SCENE
+        std::cout << "Object does not fit in scene space!" << std::endl;
+#endif
         return;
     }
 
@@ -91,23 +96,17 @@ void SpriteRenderer::drawSprite(const std::string &textureName_, float zIndex,
     model = glm::translate(model, glm::vec3(screenPos, 0.0f));
 
     if (shadow) {
-        float shadowAngle = glm::radians(155.0f);
+        float shadowAngle = glm::tan(glm::radians(rotate));
 
-        /// magic... the rotate/scale/rotate/scale in the center is a skew matrix
-        model = glm::translate(model, glm::vec3(0.0f, size.y, 0.0f));
 
-        model = glm::rotate(model, shadowAngle / 2.0f, glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, glm::vec3(cosf(shadowAngle / 2.0f), sinf(shadowAngle / 2.0f), 1.0f));
-        model = glm::rotate(model, -glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, glm::vec3(std::sqrt(2.0), std::sqrt(2.0) / cosf(shadowAngle), 1.0f));
+        model = glm::translate(model, glm::vec3(position.x, size.y, 0.0));
 
-        model = glm::scale(model, glm::vec3(1.0f, -1.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(0.0f, -size.y, 0.0f));
+        model = glm::shearX3D(model, -shadowAngle, 0.0f);
+        model = glm::translate(model, glm::vec3(-position.x, -size.y, 0.0));
+        //model = glm::translate(model, glm::vec3(-size.x + size.x * shadowAngle, 0.0, 0.0));
+
     }
 
-    model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-    model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
     model = glm::scale(model, glm::vec3(size, 1.0f));
 
     shader->use();

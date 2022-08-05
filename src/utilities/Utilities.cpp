@@ -6,6 +6,7 @@
 #include "Utilities.h"
 #include "Constants.h"
 #include <iostream>
+#include <glfw-3.3.7/include/GLFW/glfw3.h>
 
 namespace DGR {
 
@@ -168,6 +169,20 @@ Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &exten
     }
 
     return filePaths;
+}
+
+std::string Utilities::keyPressToName(int key) {
+    switch (key) {
+        case GLFW_KEY_ESCAPE:
+            return "Esc";
+        case GLFW_KEY_PERIOD:
+            return ".";
+        case GLFW_KEY_COMMA:
+            return ",";
+
+        default:
+            return "NaN";
+    }
 }
 
 }

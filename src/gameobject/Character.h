@@ -10,6 +10,7 @@
 
 #include "dice/Dice.h"
 #include "GameObject.h"
+#include "ui/UIElement.h"
 
 namespace DGR {
 
@@ -22,6 +23,13 @@ class GameStateManager;
 class BattleScene;
 
 class Character : public std::enable_shared_from_this<Character>, public GameObject {
+public:
+    enum hoverType {
+        onlyHero,
+        onlyCurrentFace,
+        heroAndCurrentFace,
+        extendedBox
+    };
 private:
     std::string characterType;
 
@@ -49,9 +57,6 @@ private:
     /// level bonus stats
     double hpFactorPerLevel = 1.2;
     int getMaxHpAtLevel(int level);
-
-    bool levelingUp = false;
-
 
     void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
 
@@ -85,7 +90,7 @@ public:
 
     [[nodiscard]] bool getUsedDice() const;
 
-    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, bool alsoCurrentFacehover = false) const;
+    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, hoverType hoverType = onlyHero) const;
 
     [[nodiscard]] int getIncomingDamage() const;
 
@@ -140,8 +145,6 @@ public:
     void roll();
 
     void levelUp();
-
-    void fullRest();
 
     void toggleDiceLock();
 

@@ -40,7 +40,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 #if DGR_DEBUG
     std::cout << "key callback" << std::endl;
 #endif
-    // when a user presses the f4 key, we set the WindowShouldClose property to true, closing the application
     auto windowPtr = std::shared_ptr<Window>(callback_window_ptr);
     windowPtr->handleKeyboard(key, action, scancode);
 }

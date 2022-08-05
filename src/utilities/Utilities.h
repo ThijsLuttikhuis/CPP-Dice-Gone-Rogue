@@ -35,6 +35,8 @@ public:
                                                                    const std::string &extension = ".dgr");
 
     static std::string num2OneTwoThreeString(int number);
+
+    static std::string keyPressToName(int press);
 };
 
 }

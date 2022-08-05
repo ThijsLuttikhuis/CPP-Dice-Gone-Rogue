@@ -36,31 +36,38 @@ AreYouSureScene::AreYouSureScene(std::weak_ptr<GameStateManager> gameState)
                                             glm::vec2(width / 2 - buttonWidth / 2, i * buttonDistance),
                                             glm::vec2(buttonWidth/3, buttonHeight));
     button2->setText("Yes");
+    button2->setKeyboardKey(GLFW_KEY_ENTER);
     buttons.push_back(std::move(button2));
 
     auto button3 = std::make_unique<Button>("No",
                                             glm::vec2(width / 2 + buttonWidth / 2 - buttonWidth / 3, i * buttonDistance),
                                             glm::vec2(buttonWidth/3, buttonHeight));
     button3->setText("I will think about it");
+    button3->setKeyboardKey(GLFW_KEY_BACKSPACE);
     buttons.push_back(std::move(button3));
+
+    auto button4 = makeDefaultButton("Close", glm::vec2(width - 16.0f, 8.0f), glm::vec2(8.0f));
+    buttons.push_back(std::move(button4));
 }
 
 
 void AreYouSureScene::handleMouseButton(double xPos, double yPos) {
     if (!isMouseHovering(xPos, yPos)) {
+        messageSource = "";
+        messageData = "";
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
         gameStatePtr->popSceneFromStack();
     }
 
-    for (auto &button : buttons) {
-        if (button->isPressed(xPos, yPos)) {
-            pressButton(button);
-        }
-    }
+    handleMouseButtonDefault(xPos, yPos);
 }
 
 void AreYouSureScene::pressButton(const std::unique_ptr<Button> &button) {
     std::cout << "pressed a button!" << std::endl;
+
+    if (pressDefaultButton(button)) {
+        return;
+    }
 
     auto &buttonName = button->getName();
 
@@ -89,16 +96,6 @@ std::string AreYouSureScene::message(const std::string &data) {
     messageData = data.substr(posColon+2, data.size() - (posColon+2));
 
     return data;
-}
-
-void AreYouSureScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                          const std::unique_ptr<TextRenderer> &textRenderer) const {
-    spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
-                               0.0f, color, 0.9f);
-
-    for (auto &button : buttons) {
-        button->draw(spriteRenderer, textRenderer);
-    }
 }
 
 }

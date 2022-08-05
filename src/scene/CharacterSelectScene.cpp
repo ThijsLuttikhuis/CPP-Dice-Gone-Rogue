@@ -33,7 +33,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
     /// -------------
 
     auto button3 = std::make_unique<Button>("ScrollLeft",
-                                            glm::vec2(leftButtonX-4, leftRightButtonY),
+                                            glm::vec2(leftButtonX - 4, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
@@ -41,7 +41,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
     buttons.push_back(std::move(button3));
 
     auto button4 = std::make_unique<Button>("ScrollRight",
-                                            glm::vec2(rightButtonX+4, leftRightButtonY),
+                                            glm::vec2(rightButtonX + 4, leftRightButtonY),
                                             glm::vec2(leftRightButtonWidth, leftRightButtonHeight),
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
@@ -223,15 +223,21 @@ void CharacterSelectScene::render(const std::unique_ptr<SpriteRenderer> &spriteR
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     for (auto &hero : gameStatePtr->getAllHeroes()) {
+        if (hero->getPosition().x < 0) continue;
+
         hero->draw(spriteRenderer, textRenderer);
     }
 
     for (auto &hero : gameStatePtr->getAllHeroes()) {
+        if (hero->getPosition().x < 0) continue;
+
         hero->setHoverMouse(true);
         hero->drawHover(spriteRenderer, textRenderer);
     }
 
     for (auto &hero : selectedHeroes) {
+        if (hero->getPosition().x < 0) continue;
+
         hero->drawBox(spriteRenderer, glm::vec3(0.7f, 0.0f, 0.0f));
     }
 
@@ -308,7 +314,7 @@ bool CharacterSelectScene::handleHeroesMouseButton(double xPos, double yPos) {
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     for (auto &hero : gameStatePtr->getAllHeroes()) {
-        if (hero->isMouseHovering(xPos, yPos, true)) {
+        if (hero->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
 
             bool removedCharacter = false;
             for (auto it = selectedHeroes.begin(); it != selectedHeroes.end(); it++) {

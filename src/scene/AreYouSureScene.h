@@ -22,9 +22,6 @@ public:
 
     void handleMouseButton(double xPos, double yPos) override;
 
-    void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-                const std::unique_ptr<TextRenderer> &textRenderer) const override;
-
     std::string message(const std::string &data) override;
 };
 

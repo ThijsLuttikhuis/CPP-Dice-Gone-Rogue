@@ -64,14 +64,22 @@ bool Character::getUsedDice() const {
     return dice->isUsed();
 }
 
-bool Character::isMouseHovering(double xPos, double yPos, bool alsoCurrentFace) const {
-    bool heroHover = Utilities::isPositionInBox(xPos, yPos, position, size);
+bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const {
+    switch (type) {
+        case onlyHero:
+            return Utilities::isPositionInBox(xPos, yPos, position, size);
+        case onlyCurrentFace:
+            return dice->isMouseHovering(xPos, yPos, Dice::current_face_pos);
+        case heroAndCurrentFace:
+            return Utilities::isPositionInBox(xPos, yPos, position, size) ||
+                   dice->isMouseHovering(xPos, yPos, Dice::current_face_pos);
+        case extendedBox:
+            auto currentFacePos = dice->getPosition(Dice::current_face_pos);
+            auto currentFaceSize = dice->getSize(Dice::current_face_pos);
 
-    bool currentFaceHover = false;
-    if (alsoCurrentFace) {
-        currentFaceHover = dice->isMouseHovering(xPos, yPos, Dice::current_face_pos);
+            auto extendedSize = glm::vec2(size.x + 12, currentFacePos.y + currentFaceSize.y - position.y);
+            return Utilities::isPositionInBox(xPos, yPos, position - glm::vec2(6, 0), extendedSize);
     }
-    return heroHover || currentFaceHover;
 }
 
 void Character::addXP(int xp_) {
@@ -536,21 +544,6 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std
     face->addModifier(FaceModifier::modifier::sweeping_edge);
 }
 
-void Character::fullRest() {
-
-    maxHP = level1DefaultMaxHP;
-    hp = isDead() ? (maxHP + 1) / 2 : maxHP;
-
-    shield = 0;
-    incomingDamage = 0;
-    incomingPoison = 0;
-    incomingRegen = 0;
-    poison = 0;
-    regen = 0;
-    isDodging = false;
-    isUndying = false;
-}
-
 void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                               const std::unique_ptr<TextRenderer> &textRenderer) const {
     glm::vec2 hpBarPosition = position + glm::vec2(-6, size.y + 24);
@@ -616,13 +609,15 @@ void Character::drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer
 
     (void) textRenderer;
 
-    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size);
+    static float ti = 0.0f;
+    ti+= 0.01;
+    std::cout << ti << std::endl;
+    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size, ti);
 
 }
 
 void Character::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                      const std::unique_ptr<TextRenderer> &textRenderer) const {
-
 
     spriteRenderer->drawSprite(name, 1.0f, position, size);
 
@@ -696,7 +691,7 @@ int Character::getMaxHpAtLevel(int level) {
 
 double Character::getXPBarFill(double percent) {
     int xpRequired = xpToLevelUp(characterLevel);
-    return (percent / 100.0) * ((double)xp / xpRequired);
+    return (percent / 100.0) * ((double) xp / xpRequired);
 }
 
 void Character::levelUp() {
@@ -705,7 +700,7 @@ void Character::levelUp() {
         return;
     }
 
-    xp -=  xpToLevelUp(characterLevel);
+    xp -= xpToLevelUp(characterLevel);
     characterLevel++;
     hp = maxHP = getMaxHpAtLevel(characterLevel);
 
@@ -717,7 +712,7 @@ int Character::getLevel() const {
 
 int Character::xpToLevelUp(int currentLevel) const {
     const int baseXP = 48;
-    return baseXP * (int) std::pow((currentLevel+1), 2.5);
+    return baseXP * (int) std::pow((currentLevel + 1), 2.5);
 }
 
 

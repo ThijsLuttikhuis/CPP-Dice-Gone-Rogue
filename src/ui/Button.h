@@ -18,8 +18,7 @@ class Button : public UIElement {
 private:
     std::string text;
 
-    //TODO::: keys
-    int keyPress = -1;
+    int keyboardKey = -10;
 
     bool enabled = true;
     bool textHasAlpha = true;
@@ -30,6 +29,9 @@ private:
     double blinkTimer = 0.0;
 
 public:
+    Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size, int keyPress)
+        : UIElement(std::move(name), pos, size, glm::vec3(0.4f)), keyboardKey(keyPress) {}
+
     Button(std::string name, const glm::vec2 &pos, const glm::vec2 &size,
            const glm::vec3 &color = glm::vec3(0.4f), float alpha = 0.0f, bool textHasAlpha = false,
            bool doBlink = false, double blinkPeriod = 2.0f)
@@ -40,6 +42,8 @@ public:
           : UIElement(std::move(name), pos, size), drawButton(drawButton) {}
 
     [[nodiscard]] bool isPressed(double xPos, double yPos) const;
+
+    [[nodiscard]] bool isKeyPressed(int key) const;
 
     [[nodiscard]] bool isEnabled() const;
 
@@ -56,6 +60,11 @@ public:
 
     void drawColor(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                    const std::unique_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex = 0.9f) const;
+
+    void drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                 const std::unique_ptr<TextRenderer> &textRenderer) const;
+
+    void setKeyboardKey(int key);
 };
 
 }
