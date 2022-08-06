@@ -297,8 +297,8 @@ std::string LoadGameScene::message(const std::string &data) {
 
 void LoadGameScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                            const std::unique_ptr<TextRenderer> &textRenderer) const {
-    spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
-                               0.0f, glm::vec3(0.2f), 0.9f);
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, glm::vec2(0), size,
+                               glm::vec3(0.2f), 0.9f);
 
     for (auto &button : buttons) {
         button->draw(spriteRenderer, textRenderer);

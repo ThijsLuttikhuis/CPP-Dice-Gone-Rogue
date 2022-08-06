@@ -66,7 +66,7 @@ public:
     void drawSpellToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                           const std::unique_ptr<TextRenderer> &textRenderer);
 
-    void drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color);
+    void drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color);
 
 };
 

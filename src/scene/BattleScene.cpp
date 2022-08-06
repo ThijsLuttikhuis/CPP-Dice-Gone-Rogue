@@ -778,7 +778,7 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
-                               0.0f, glm::vec3(1.0f), 0.8f);
+                               glm::vec3(1.0f), 0.8f);
 
     for (auto &hero : heroes) {
         if (hero->getPosition().x < 0) continue;
@@ -818,7 +818,7 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     glm::vec2 manaSize = glm::vec2(22, 24);
     glm::vec2 manaTextPosition = manaPosition + glm::vec2(8, 6);
     spriteRenderer->drawSprite("mana", 0.3f, manaPosition, manaSize,
-                               0.0f, glm::vec3(1.0f), 0.8f);
+                               glm::vec3(1.0f), 0.8f);
     textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 
     renderDefaults(spriteRenderer, textRenderer);

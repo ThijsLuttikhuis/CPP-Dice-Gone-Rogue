@@ -33,7 +33,14 @@ void OnScreenMessage::update(double dt) {
 
 void OnScreenMessage::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                            const std::unique_ptr<TextRenderer> &textRenderer) const {
-    spriteRenderer->drawSprite("box", 1.0f, position, size, alpha, color, alpha);
+
+    auto color_ = color;
+    auto alpha_ = alpha;
+    spriteArgs args = {{"color",     &color_},
+                       {"alpha",     &alpha_},
+                       {"edgeAlpha", &alpha_}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, position, size, args);
     textRenderer->drawText(text, 0.0f, position, size, color, alpha);
 }
 

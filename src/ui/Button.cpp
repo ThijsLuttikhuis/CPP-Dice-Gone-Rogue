@@ -19,18 +19,25 @@ void Button::drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
     if (keyboardKey >= 0) {
         std::string keyName = Utilities::keyPressToName(keyboardKey);
-        glm::vec2 keyPressSize = glm::vec2(keyName.length()*4+2, 8);
+        glm::vec2 keyPressSize = glm::vec2(keyName.length() * 4 + 2, 8);
 
         keyName = "^" + keyName + "^";
-        textRenderer->drawText(keyName, 0.0f, position+size-keyPressSize, keyPressSize, color);
+        textRenderer->drawText(keyName, 0.0f, position + size - keyPressSize, keyPressSize, color);
     }
 }
 
 void Button::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                   const std::unique_ptr<TextRenderer> &textRenderer) const {
     if (drawButton) {
-        spriteRenderer->drawSprite("box", 1.0f, position, size,
-                                   1.0f, color, textHasAlpha ? 0.0f : alpha);
+        float alpha_ = textHasAlpha ? 0.0f : alpha;
+        float edgeAlpha = 1.0f;
+        auto color_ = color;
+
+        spriteArgs args = {{"color",     &color_},
+                           {"alpha",     &alpha_},
+                           {"edgeAlpha", &edgeAlpha}};
+
+        spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, position, size, args);
     }
 
     float blinkAlpha = alpha;
@@ -44,8 +51,13 @@ void Button::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 void Button::drawColor(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                        const std::unique_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex) const {
     if (drawButton) {
-        spriteRenderer->drawSprite("box", zIndex, position, size,
-                                   1.0f, color_, textHasAlpha ? 0.0f : alpha);
+        auto alpha_ = textHasAlpha ? 0.0f : alpha;
+        auto edgeAlpha = 1.0f;
+        spriteArgs args = {{"color",     &color_},
+                           {"alpha",     &alpha_},
+                           {"edgeAlpha", &edgeAlpha}};
+
+        spriteRenderer->drawSprite(SpriteRenderer::box, "", zIndex, position, size, args);
     }
 
     textRenderer->drawText(text, 0.0f, position, size, color_, textHasAlpha ? alpha : 1.0f);

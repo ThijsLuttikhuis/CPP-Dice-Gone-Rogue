@@ -15,10 +15,6 @@
 
 namespace DGR {
 
-//Dice::Dice(std::string name,  std::shared_ptr<Character> character) :
-//      name(std::move(name)), character(character) {
-//}
-
 const std::string &Dice::getName() const {
     return name;
 }
@@ -156,15 +152,19 @@ void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     if (lock) {
         glm::vec2 lockPosition = getPosition(Dice::current_face_pos) + glm::vec2(-2, -2);
         glm::vec2 lockSize = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("dice_lock", 0.05f,
-                                   lockPosition, lockSize, 0.0f, glm::vec3(1.0), 0.8f);
+
+
+        spriteRenderer->drawSprite(SpriteRenderer::default_sprite, "dice_lock",
+                                   0.05f, lockPosition, lockSize);
+
+        spriteRenderer->drawSprite("dice_lock", 0.05f, lockPosition, lockSize, glm::vec3(1.0), 0.8f);
     }
 
     if (used) {
         glm::vec2 usedPosition = getPosition(Dice::current_face_pos);
         glm::vec2 usedSize = getSize(Dice::current_face_pos);
-        spriteRenderer->drawSprite("box", 0.05f,
-                                   usedPosition, usedSize, 0.0f, glm::vec3(1.0), 0.3f);
+        spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.05f,
+                                   usedPosition, usedSize, glm::vec3(1.0), 0.3f);
     }
 
     if (hoverCurrentFace) {
@@ -179,12 +179,20 @@ void Dice::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
     glm::vec2 diceTemplateBackgroundPosition = getPosition(Dice::background_pos);
     glm::vec2 diceTemplateBackgroundSize = getSize(Dice::background_pos);
-    spriteRenderer->drawSprite("box", 0.9f, diceTemplateBackgroundPosition,
-                               diceTemplateBackgroundSize, 1.0f, glm::vec3(0.2f), 0.5f);
+
+    auto color = glm::vec3(0.2f);
+    float alpha = 0.5f;
+    float edgeAlpha = 1.0f;
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.9f, diceTemplateBackgroundPosition,
+                               diceTemplateBackgroundSize, args);
 
     glm::vec2 diceTemplateTextBoxSize = glm::vec2(getSize(Dice::background_pos).x, 8);
-    spriteRenderer->drawSprite("box", 0.8f, diceTemplateBackgroundPosition,
-                               diceTemplateTextBoxSize, 1.0f, glm::vec3(0.2f), 0.5f);
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.8f, diceTemplateBackgroundPosition,
+                               diceTemplateTextBoxSize, args);
     textRenderer->drawText(name + "  [Lvl " + std::to_string(characterPtr->getLevel()) + "]", 0.1f,
                            diceTemplateBackgroundPosition, diceTemplateTextBoxSize);
 

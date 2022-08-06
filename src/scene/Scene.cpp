@@ -149,8 +149,8 @@ void Scene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                    const std::unique_ptr<TextRenderer> &textRenderer) const {
 
     if (size.x < DGR_WIDTH || size.y < DGR_HEIGHT) {
-        spriteRenderer->drawSprite("box", 1.0f, glm::vec2(0), size,
-                                   0.0f, color, 0.9f);
+        spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, glm::vec2(0), size,
+                                   color, 0.9f);
     }
 
     renderDefaults(spriteRenderer, textRenderer);

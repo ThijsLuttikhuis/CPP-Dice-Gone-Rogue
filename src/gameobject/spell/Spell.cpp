@@ -82,8 +82,8 @@ void Spell::drawSpellToolTip(const std::unique_ptr<SpriteRenderer> &spriteRender
     glm::vec2 tooltipSize(tooltipWidth, 1);
 
     glm::vec2 backgroundSize = glm::vec2(tooltipWidth, 16);
-    spriteRenderer->drawSprite("box", 0.0f,
-                               position + tooltipDPos, backgroundSize, 0.0f, glm::vec3(0.1f), 0.9f);
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.2f,
+                               position + tooltipDPos, backgroundSize, glm::vec3(0.1f), 0.9f);
 
     std::ostringstream tooltipOSS;
     tooltipOSS << name << ": ";
@@ -95,9 +95,8 @@ void Spell::drawSpellToolTip(const std::unique_ptr<SpriteRenderer> &spriteRender
     textRenderer->drawText(tooltipOSS.str(), 0.0f, position + tooltipDPos, tooltipSize);
 }
 
-void
-Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
-            const std::unique_ptr<TextRenderer> &textRenderer) {
+void Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                 const std::unique_ptr<TextRenderer> &textRenderer) {
 
     if (type == SpellType::empty) {
         return;
@@ -105,13 +104,21 @@ Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
     auto position = getPosition();
     auto size = getSize();
-    spriteRenderer->drawSprite("box", 0.1f, position, size,
-                               1.0f, glm::vec3(0.8f), 0.2f);
+
+    auto color = glm::vec3(0.8f);
+    float alpha = 0.2f;
+    float edgeAlpha = 1.0f;
+
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.1f, position, size, args);
 
     auto textPosition = getPosition();
     auto textSize = glm::vec2(getSize().x, 8);
-    spriteRenderer->drawSprite("box", 0.0f, textPosition, textSize,
-                               0.0f, glm::vec3(0.8f), 0.2f);
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.0f, textPosition, textSize,
+                               glm::vec3(0.8f), 0.2f);
     textRenderer->drawText(name, 0.00f, textPosition, textSize);
 
     float manaCostWidth = 11.0f;
@@ -126,7 +133,7 @@ Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
           glm::vec2(getPosition().x + getSize().x - manaCostWidth - 1, getPosition().y + 12);
 
     auto manaCostSize = glm::vec2(manaCostWidth, spriteHeight);
-    spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize, 0.0f,
+    spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize,
                                glm::vec3{1.0f}, 0.6f);
 
     textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, textSize,
@@ -134,7 +141,7 @@ Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
 }
 
-void Spell::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::highp_vec3 color) {
+void Spell::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) {
     if (type == SpellType::empty) {
         return;
     }
@@ -142,7 +149,14 @@ void Spell::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
     auto position = getPosition();
     auto size = getSize();
 
-    spriteRenderer->drawSprite("box", 0.0f, position, size, 1.0f, color, 0.0f);
+    float alpha = 0.0f;
+    float edgeAlpha = 1.0f;
+
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.0f, position, size, args);
 }
 
 

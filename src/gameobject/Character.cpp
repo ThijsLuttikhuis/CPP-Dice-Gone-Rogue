@@ -550,8 +550,15 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
     glm::vec2 hpBarSize = glm::vec2(size.x + 12, 8);
     std::string hpText = std::to_string(hp) + " / " + std::to_string(maxHP);
 
-    spriteRenderer->drawSprite("box", 0.95, hpBarPosition, hpBarSize,
-                               1.0f, glm::vec3(0.2f), 0.5f);
+    auto color = glm::vec3(0.2f);
+    float alpha = 0.5f;
+    float edgeAlpha = 1.0f;
+
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.95, hpBarPosition, hpBarSize, args);
     textRenderer->drawText(hpText, 0.5, hpBarPosition, hpBarSize);
 
     float textDRight = 2;
@@ -566,7 +573,7 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
         size_ = glm::vec2(11, 14);
 
         spriteRenderer->drawSprite("hero_shield", 0.7, position_, size_,
-                                   0.0f, glm::vec3(0.1f), 0.5f);
+                                   glm::vec3(0.1f), 0.5f);
         textRenderer->drawText(std::to_string(shield), 0.5, textPosition_, size_);
     }
 
@@ -576,8 +583,16 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
         position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
         textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
         size_ = glm::vec2(11, 14);
-        spriteRenderer->drawSprite("hero_damage", 0.7, position_, size_,
-                                   90.0f, glm::vec3(0.1f), 0.5f);
+
+        color = glm::vec3(0.1f);
+        alpha = 0.5f;
+        float rotate = 90.0f;
+
+        args = {{"color",  &color},
+                {"alpha",  &alpha},
+                {"rotate", &rotate}};
+
+        spriteRenderer->drawSprite("hero_damage", 0.7, position_, size_, args);
 
         textRenderer->drawText("^" + std::to_string(incomingDamage) + "^", 0.5,
                                textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
@@ -587,8 +602,6 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
     int totalRegen = regen + incomingRegen;
     if (totalPoison != totalRegen) {
         bool morePoisonThanRegen = totalPoison > totalRegen;
-        glm::vec3 color = (morePoisonThanRegen ? FaceModifier(FaceModifier::modifier::poison).toColor()
-                                               : FaceModifier(FaceModifier::modifier::regen).toColor()) * 1.5f;
 
         dPosRight = hpBarSize.x * 8.0f / 16.0f - 10.0f;
         dPosUp = 8;
@@ -596,8 +609,16 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
         textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
         size_ = glm::vec2(11, 14);
 
-        spriteRenderer->drawSprite("hero_mana", 0.7, position_, size_,
-                                   morePoisonThanRegen ? 90.0f : 0.0f, color, 0.5f);
+        float rotate = morePoisonThanRegen ? 90.0f : 0.0f;
+        color = (morePoisonThanRegen ? FaceModifier(FaceModifier::modifier::poison).toColor()
+                                     : FaceModifier(FaceModifier::modifier::regen).toColor()) * 1.5f;
+        alpha = 0.5f;
+
+        args = {{"color",  &color},
+                {"alpha",  &alpha},
+                {"rotate", &rotate}};
+
+        spriteRenderer->drawSprite("hero_mana", 0.7, position_, size_, args);
 
         textRenderer->drawText("^" + std::to_string(std::abs(totalPoison - totalRegen)) + "^", 0.5,
                                textPosition_, size_, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f);
@@ -609,10 +630,10 @@ void Character::drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer
 
     (void) textRenderer;
 
-    static float ti = 0.0f;
-    ti+= 0.01;
-    std::cout << ti << std::endl;
-    spriteRenderer->drawSprite("shadow: " + name, 1.0f, position, size, ti);
+//    float shadowHeight = 0.7f;
+//    float shadowAngle = 60.0f;
+//    spriteRenderer->drawSprite(SpriteRenderer::shadow, name, 1.0f, position, size,
+//                               shadowAngle, glm::vec3(1.0f), shadowHeight);
 
 }
 
@@ -639,7 +660,14 @@ void Character::drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 }
 
 void Character::drawBox(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec3 color) const {
-    spriteRenderer->drawSprite("box", 0.4f, position, size, 1.0f, color, 0.0f);
+    float alpha = 0.0f;
+    float edgeAlpha = 1.0f;
+
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.4f, position, size, args);
 }
 
 void Character::drawHeroOnly(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const {
@@ -655,12 +683,11 @@ void Character::drawXPBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
     double barFill = getXPBarFill(xpPercent);
 
-    spriteRenderer->drawSprite("box", 1.0f,
-                               barPosition, barSize, 0.0f, glm::vec3(0.7));
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f,
+                               barPosition, barSize, glm::vec3(0.7));
 
-    spriteRenderer->drawSprite("box", 0.9f,
-                               barPosition, barSize * glm::vec2(barFill, 1.0),
-                               0.0f, glm::vec3(0.5f, 0.2f, 0.2f));
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.9f,
+                               barPosition, barSize * glm::vec2(barFill, 1.0), glm::vec3(0.5f, 0.2f, 0.2f));
 
     textRenderer->drawText("Lvl " + std::to_string(characterLevel), 0.1f, barPosition, barSize);
 
@@ -677,8 +704,16 @@ void Character::drawLevelUp(const std::unique_ptr<SpriteRenderer> &spriteRendere
                               std::to_string(getMaxHpAtLevel(characterLevel) -
                                              getMaxHpAtLevel(characterLevel - 1)) + "^";
 
-    spriteRenderer->drawSprite("box", 0.95, deltaHPBarPosition, deltaHPBarSize,
-                               1.0f, glm::vec3(0.2f), 0.5f);
+    auto color = glm::vec3(0.2f);
+    float alpha = 0.5f;
+    float edgeAlpha = 1.0f;
+
+    spriteArgs args = {{"color",     &color},
+                       {"alpha",     &alpha},
+                       {"edgeAlpha", &edgeAlpha}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.95,
+                               deltaHPBarPosition, deltaHPBarSize, args);
 
     textRenderer->drawText(deltaHPText, 0.1f, deltaHPBarPosition, deltaHPBarSize,
                            glm::vec3(0.1f, 0.5f, 0.1f));
