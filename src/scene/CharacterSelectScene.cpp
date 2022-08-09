@@ -225,7 +225,9 @@ void CharacterSelectScene::render(const std::unique_ptr<SpriteRenderer> &spriteR
     for (auto &hero : gameStatePtr->getAllHeroes()) {
         if (hero->getPosition().x < 0) continue;
 
+        hero->drawShadow(spriteRenderer, textRenderer);
         hero->draw(spriteRenderer, textRenderer);
+
     }
 
     for (auto &hero : gameStatePtr->getAllHeroes()) {

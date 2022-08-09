@@ -147,12 +147,30 @@ void Dice::roll() {
 void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                 const std::unique_ptr<TextRenderer> &textRenderer) {
 
+    float shadowHeight = 0.7f;
+    float shadowAngle = 60.0f;
+
+    glm::vec2 dicePosition = getPosition(current_face_pos) + glm::vec2(-9, -3);
+    glm::vec2 diceSize = getSize(current_face_pos) + glm::vec2(6, 6);
+
+    spriteArgs args = {{"height",     &shadowHeight},
+                       {"skewx",      &shadowAngle},
+                       {"skewoffset", &diceSize}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::shadow, "dice_3d_current_face", 0.22f, dicePosition, diceSize, args);
+
+    spriteRenderer->drawSprite("dice_3d_current_face", 0.21f, dicePosition, diceSize);
+
+
     faces[currentFace]->draw(spriteRenderer);
+    faces[currentFace]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-7, -13.5),
+                                 0.0f, 45.0f, 0.0f, 0.2f, 1.0f);
+    faces[currentFace]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(0, 0),
+                                 0.0f, 0.0f, 20.0f, 1.0f, 0.25f);
 
     if (lock) {
-        glm::vec2 lockPosition = getPosition(Dice::current_face_pos) + glm::vec2(-2, -2);
+        glm::vec2 lockPosition = getPosition(Dice::current_face_pos) + glm::vec2(-12, -2);
         glm::vec2 lockSize = glm::vec2(11, 14);
-
 
         spriteRenderer->drawSprite(SpriteRenderer::default_sprite, "dice_lock",
                                    0.05f, lockPosition, lockSize);
@@ -161,7 +179,7 @@ void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     }
 
     if (used) {
-        glm::vec2 usedPosition = getPosition(Dice::current_face_pos);
+        glm::vec2 usedPosition = getPosition(Dice::current_face_pos) + glm::vec2(-8, 2);
         glm::vec2 usedSize = getSize(Dice::current_face_pos);
         spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.05f,
                                    usedPosition, usedSize, glm::vec3(1.0), 0.3f);

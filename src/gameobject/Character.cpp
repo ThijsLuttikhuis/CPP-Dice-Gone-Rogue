@@ -74,11 +74,13 @@ bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const 
             return Utilities::isPositionInBox(xPos, yPos, position, size) ||
                    dice->isMouseHovering(xPos, yPos, Dice::current_face_pos);
         case extendedBox:
-            auto currentFacePos = dice->getPosition(Dice::current_face_pos);
-            auto currentFaceSize = dice->getSize(Dice::current_face_pos);
-
-            auto extendedSize = glm::vec2(size.x + 12, currentFacePos.y + currentFaceSize.y - position.y);
-            return Utilities::isPositionInBox(xPos, yPos, position - glm::vec2(6, 0), extendedSize);
+            return Utilities::isPositionInBox(xPos, yPos, position - glm::vec2(6, 0),
+                                              glm::vec2(size.x + 12,
+                                                    dice->getPosition(Dice::current_face_pos).y +
+                                                        dice->getSize(Dice::current_face_pos).y -
+                                                        position.y));
+        default:
+            return false;
     }
 }
 
@@ -630,10 +632,14 @@ void Character::drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer
 
     (void) textRenderer;
 
-//    float shadowHeight = 0.7f;
-//    float shadowAngle = 60.0f;
-//    spriteRenderer->drawSprite(SpriteRenderer::shadow, name, 1.0f, position, size,
-//                               shadowAngle, glm::vec3(1.0f), shadowHeight);
+    float shadowHeight = 0.7f;
+    float shadowAngle = 60.0f;
+
+    spriteArgs args = {{"height", &shadowHeight},
+                       {"skewx",  &shadowAngle},
+                       {"skewoffset", (void*)&this->size}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::shadow, name, 1.0f, position, size, args);
 
 }
 

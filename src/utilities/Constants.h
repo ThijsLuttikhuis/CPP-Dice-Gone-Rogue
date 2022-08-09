@@ -14,6 +14,9 @@
 #define DGR_WIDTH 32*16
 #define DGR_HEIGHT 32*9
 #define DGR_ANIMATION_SPEED 1.0
+#define DGR_GLOBAL_SHADOW_XSKEW 45.0f
+#define DGR_GLOBAL_SHADOW_HEIGHT 0.6f
+#define DGR_GLOBAL_SHADOW_ALPHA 0.4f
 
 #define DGR_FILE_VERSION std::string("0.3")
 #define DGR_AUTOSAVE_NAME std::string("auto.save.dgr")

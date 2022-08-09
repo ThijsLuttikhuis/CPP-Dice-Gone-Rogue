@@ -4,6 +4,7 @@
 
 #ifndef DICEGONEROGUE_FACE_H
 #define DICEGONEROGUE_FACE_H
+
 #include <memory>
 #include <string>
 #include <map>
@@ -41,8 +42,6 @@ private:
 
     static const std::vector<glm::vec2> faceDeltaPos;
     static const std::vector<glm::vec2> tickValueDeltaPos;
-
-    void drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position) const;
 
     void drawFaceToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer,
@@ -110,6 +109,8 @@ public:
 
     void draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const;
 
+    void drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position, float rotate = 0.0f,
+                  float skewX = 0.0f, float skewY = 0.0f, float height = 1.0f, float width = 1.0f) const;
 
     void drawCurrentFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer,

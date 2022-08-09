@@ -294,7 +294,6 @@ std::string LoadGameScene::message(const std::string &data) {
     return data;
 }
 
-
 void LoadGameScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                            const std::unique_ptr<TextRenderer> &textRenderer) const {
     spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, glm::vec2(0), size,

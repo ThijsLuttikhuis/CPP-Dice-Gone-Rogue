@@ -777,8 +777,23 @@ void BattleScene::setEnemiesFromLevel(int selectedLevel) {
 void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer) const {
 
-    spriteRenderer->drawSprite("background_catacombs", 1.0f, glm::vec2(0, 0), size,
-                               glm::vec3(1.0f), 0.8f);
+    spriteRenderer->drawSprite("background_catacombs_background", 1.0f,
+                               glm::vec2(0, 0), size, glm::vec3(1.0f), 0.8f);
+
+    float shadowHeight = 0.7f;
+    float shadowAngle = 60.0f;
+
+    spriteArgs args = {{"height", &shadowHeight},
+                       {"skewx",  &shadowAngle}};
+
+    spriteRenderer->drawSprite(SpriteRenderer::shadow, "background_catacombs_front_pillars", 1.0f,
+                               glm::vec2(-145, -180),
+                               glm::vec2(700, 288), args);
+
+    spriteRenderer->drawSprite("background_catacombs_front_pillars", 1.0f,
+                               glm::vec2(-145, -180),
+                               glm::vec2(700, 288),
+                               glm::vec3(1.0f));
 
     for (auto &hero : heroes) {
         if (hero->getPosition().x < 0) continue;
