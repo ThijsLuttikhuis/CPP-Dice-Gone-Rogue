@@ -15,7 +15,7 @@
 namespace DGR {
 
 class Button : public UIElement {
-private:
+protected:
     std::string text;
 
     int keyboardKey = -10;
@@ -61,7 +61,7 @@ public:
     void drawColor(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                    const std::unique_ptr<TextRenderer> &textRenderer, glm::vec3 color_, float zIndex = 0.9f) const;
 
-    void drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+    virtual void drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                  const std::unique_ptr<TextRenderer> &textRenderer) const;
 
     void setKeyboardKey(int key);

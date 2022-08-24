@@ -37,6 +37,10 @@ public:
     static std::string num2OneTwoThreeString(int number);
 
     static std::string keyPressToName(int press);
+
+    static glm::vec2 rotateVec2(glm::vec2 vec, float rotate);
+
+    static glm::vec2 rotateVec2(float x, float y, float rotate);
 };
 
 }

@@ -21,14 +21,6 @@ const std::vector<glm::vec2> Face::faceDeltaPos = {{
                                                          glm::vec2(32, 17),
                                                          glm::vec2(47, 17)}};
 
-const std::vector<glm::vec2> Face::tickValueDeltaPos = {{
-                                                              glm::vec2(11, 12),
-                                                              glm::vec2(11, 10),
-                                                              glm::vec2(11, 8),
-                                                              glm::vec2(11, 6),
-                                                              glm::vec2(11, 4),
-                                                              glm::vec2(11, 2)}};
-
 
 Face::Face(std::string name, std::weak_ptr<Dice> dice,
            int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers)
@@ -129,6 +121,7 @@ void Face::removeModifier(FaceModifier::modifier modifier) {
 }
 
 void Face::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer) const {
+
     drawFace(spriteRenderer, getPosition(Dice::current_face_pos));
 
     glm::vec3 textureColor = modifiers.toColor() * 2.0f / 3.0f;
@@ -214,34 +207,47 @@ void Face::drawCurrentFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer
 void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::vec2 position,
                     float rotate, float skewX, float skewY, float height, float width) const {
 
-    auto offsetTotalSize = glm::vec2(11, 14);
+    auto originPosition = position;
+    auto originSize = glm::vec2(14, 14);
     float alpha = 1.0f;
     auto color = glm::vec3(1.0f);
-    glm::vec2 offset = glm::vec2(0.0f);
-    spriteArgs args = {{"rotate",     &rotate},
-                       {"skewx",      &skewX},
-                       {"skewy",      &skewY},
-                       {"skewoffset", &offset},
-                       {"height",     &height},
-                       {"alpha",      &alpha},
-                       {"color",      &color},
-                       {"width",      &width}};
+    spriteArgs args = {{"rotate",         &rotate},
+                       {"skewx",          &skewX},
+                       {"skewy",          &skewY},
+                       {"originposition", &originPosition},
+                       {"originsize",     &originSize},
+                       {"height",         &height},
+                       {"alpha",          &alpha},
+                       {"color",          &color},
+                       {"width",          &width}};
 
     int value_ = value < 0 ? 0 : value > 40 ? 40 : value;
 
     // draw tick values as roman numerals
+    bool IV = false;
+    bool IX = false;
+    if (value_ % 10 == 9) {
+        IX = true;
+        value_ -= 9;
+    } else if (value_ % 10 == 4) {
+        IV = true;
+        value_ -= 4;
+    }
+
     int tens = value_ / 10;
     int fives = (value_ - tens * 10) / 5;
     int ones = (value_ - tens * 10 - fives * 5);
 
     int h = 0;
-    while (h < 12) {
+    int maxH = 12;
+    while (h < maxH) {
+        auto tickValueDeltaPos = glm::vec2(11, 12);
+
         glm::vec2 tickValueSize;
         glm::vec2 tickValuePos;
-        if (tens > 0) {
+        if (tens > 0 && h < maxH-3) {
             tickValueSize = glm::vec2(2, 3);
-            offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h - 2);
-            tickValuePos = position + offsetTotalSize - offset;
+            tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 2);
             color = glm::vec3(1.0f, 0.5f, 0.0f);
             spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
                                        tickValuePos, tickValueSize, args);
@@ -249,10 +255,9 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
             h += 4;
             continue;
         }
-        if (fives > 0) {
+        if (fives > 0 && h < maxH-2) {
             tickValueSize = glm::vec2(2, 2);
-            offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h - 1);
-            tickValuePos = position + offsetTotalSize - offset;
+            tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 1);
 
             color = glm::vec3(0.9f, 0.8f, 0.0f);
             spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
@@ -261,43 +266,40 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
             h += 3;
             continue;
         }
-        if (ones == 4 || ones == 9) {
+        if ((IV && maxH-3) || (IX && h < maxH-4)) {
             tickValueSize = glm::vec2(2, 1);
-            offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h);
-            tickValuePos = position + offsetTotalSize - offset;
+            tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h);
 
-            color = glm::vec3(0.9f, 0.8f, 0.0f);
+            color = glm::vec3(1.0f);
             spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
                                        tickValuePos, tickValueSize, args);
             h += 2;
 
-            if (ones == 4) {
+            if (IV) {
                 tickValueSize = glm::vec2(2, 2);
-                offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h - 1);
-                tickValuePos = position + offsetTotalSize - offset;
+                tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 1);
 
                 color = glm::vec3(0.9f, 0.8f, 0.0f);
                 spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
                                            tickValuePos, tickValueSize, args);
                 h += 3;
-
-            } else {
+                IV = false;
+            }
+            if (IX) {
                 tickValueSize = glm::vec2(2, 3);
-                offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h - 2);
-                tickValuePos = position + offsetTotalSize - offset;
+                tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 2);
 
                 color = glm::vec3(1.0f, 0.5f, 0.0f);
                 spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
                                            tickValuePos, tickValueSize, args);
                 h += 4;
+                IX = false;
             }
-            ones = 0;
             continue;
         }
-        if (ones > 0) {
+        if (ones > 0 && h < maxH-1) {
             tickValueSize = glm::vec2(2, 1);
-            offset = offsetTotalSize - tickValueDeltaPos.at(0) - glm::vec2(0, -h);
-            tickValuePos = position + offsetTotalSize - offset;
+            tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h);
 
             color = glm::vec3(0.9f, 0.9f, 0.9f);
             spriteRenderer->drawSprite(SpriteRenderer::shadow, "pixel", 0.1f,
@@ -318,10 +320,9 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
     std::string textureName = spriteRenderer->hasTexture(textureNameSpecific) ? textureNameSpecific
                                                                               : textureNameGeneric;
 
-    offset = offsetTotalSize;
     color = modifiers.toColor();
     spriteRenderer->drawSprite(SpriteRenderer::shadow, textureName, 0.1f,
-                               position, offsetTotalSize, args);
+                               position, glm::vec2(11, 14), args);
 
 }
 

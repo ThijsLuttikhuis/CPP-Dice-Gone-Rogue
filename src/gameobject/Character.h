@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include <ui/Button.h>
 
 #include "dice/Dice.h"
 #include "GameObject.h"
@@ -22,7 +23,7 @@ class GameStateManager;
 
 class BattleScene;
 
-class Character : public std::enable_shared_from_this<Character>, public GameObject {
+class Character : public std::enable_shared_from_this<Character>, public Button {
 public:
     enum hoverType {
         onlyHero,
@@ -104,6 +105,10 @@ public:
 
     [[nodiscard]] int getLevel() const;
 
+    [[nodiscard]] double getXPBarFill(double percent) const;
+
+    [[nodiscard]] int xpToLevelUp(int currentLevel) const;
+
     /// setters
     void setDice(const std::shared_ptr<Dice> &dice);
 
@@ -178,9 +183,8 @@ public:
     void drawLevelUp(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                      const std::unique_ptr<TextRenderer> &textRenderer);
 
-    double getXPBarFill(double percent);
-
-    int xpToLevelUp(int currentLevel) const;
+    void drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                 const std::unique_ptr<TextRenderer> &textRenderer) const override;
 };
 
 }

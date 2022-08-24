@@ -63,6 +63,8 @@ public:
     void render();
 
     void handleKeyboard(int key, int action, int scanCode);
+
+    static void closeWindow();
 };
 
 }

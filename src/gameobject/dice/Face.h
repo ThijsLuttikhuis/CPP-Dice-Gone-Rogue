@@ -41,7 +41,6 @@ private:
     bool hover = false;
 
     static const std::vector<glm::vec2> faceDeltaPos;
-    static const std::vector<glm::vec2> tickValueDeltaPos;
 
     void drawFaceToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer,

@@ -16,7 +16,8 @@ namespace DGR {
 
 
 Character::Character(std::string name, std::string characterType)
-      : GameObject(std::move(name)), characterType(std::move(characterType)) {}
+      : Button(std::move(name), glm::vec2(0), glm::vec2(1), glm::vec3(1.0f)),
+        characterType(std::move(characterType)) {}
 
 std::shared_ptr<Character> Character::makeCopy(bool copyUniqueID) const {
     auto copy = std::make_shared<Character>(name, getCharacterType());
@@ -64,6 +65,15 @@ bool Character::getUsedDice() const {
     return dice->isUsed();
 }
 
+int Character::getLevel() const {
+    return characterLevel;
+}
+
+int Character::xpToLevelUp(int currentLevel) const {
+    const int baseXP = 48;
+    return baseXP * (int) std::pow((currentLevel + 1), 2.5);
+}
+
 bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const {
     switch (type) {
         case onlyHero:
@@ -76,7 +86,7 @@ bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const 
         case extendedBox:
             return Utilities::isPositionInBox(xPos, yPos, position - glm::vec2(6, 0),
                                               glm::vec2(size.x + 12,
-                                                    dice->getPosition(Dice::current_face_pos).y +
+                                                        dice->getPosition(Dice::current_face_pos).y +
                                                         dice->getSize(Dice::current_face_pos).y -
                                                         position.y));
         default:
@@ -84,12 +94,12 @@ bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const 
     }
 }
 
-void Character::addXP(int xp_) {
-    xp += xp_;
-}
-
 bool Character::canLevelUp() const {
     return xp >= xpToLevelUp(characterLevel);
+}
+
+void Character::addXP(int xp_) {
+    xp += xp_;
 }
 
 void Character::setXP(int xp_) {
@@ -114,6 +124,15 @@ std::string Character::getCharacterType() const {
 
 std::shared_ptr<Spell> Character::getSpell() const {
     return spell;
+}
+
+int Character::getMaxHpAtLevel(int level) {
+    return (int) (level1DefaultMaxHP * std::pow(hpFactorPerLevel, level - 1));
+}
+
+double Character::getXPBarFill(double percent) const {
+    int xpRequired = xpToLevelUp(characterLevel);
+    return (percent / 100.0) * ((double) xp / xpRequired);
 }
 
 void Character::setSpell(const std::shared_ptr<Spell> &spell_) {
@@ -178,6 +197,17 @@ void Character::toggleDiceLock() {
 
 void Character::setUsedDice(bool usedDice) {
     dice->setUsed(usedDice);
+}
+
+void Character::levelUp() {
+    if (!canLevelUp()) {
+        std::cerr << "Character::levelUp: error: not enough xp to level up!!" << std::endl;
+        return;
+    }
+
+    xp -= xpToLevelUp(characterLevel);
+    characterLevel++;
+    hp = maxHP = getMaxHpAtLevel(characterLevel);
 }
 
 bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
@@ -567,16 +597,20 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
     float textDUp = 4;
     float dPosRight, dPosUp;
     glm::vec2 position_, textPosition_, size_;
-    if (shield > 0) {
+    if (shield > 0 || isDodging) {
         dPosRight = hpBarSize.x * 12.0f / 16.0f - 2.0f;
         dPosUp = -6;
         position_ = hpBarPosition + glm::vec2(dPosRight, dPosUp);
         textPosition_ = hpBarPosition + glm::vec2(dPosRight + textDRight, dPosUp + textDUp);
         size_ = glm::vec2(11, 14);
 
-        spriteRenderer->drawSprite("hero_shield", 0.7, position_, size_,
+        std::string textureName = isDodging ? "hero_dodge" : "hero_shield";
+
+        spriteRenderer->drawSprite(textureName, 0.7, position_, size_,
                                    glm::vec3(0.1f), 0.5f);
-        textRenderer->drawText(std::to_string(shield), 0.5, textPosition_, size_);
+        if (!isDodging) {
+            textRenderer->drawText(std::to_string(shield), 0.5, textPosition_, size_);
+        }
     }
 
     if (incomingDamage > 0) {
@@ -629,18 +663,10 @@ void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRende
 
 void Character::drawShadow(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                            const std::unique_ptr<TextRenderer> &textRenderer) const {
-
     (void) textRenderer;
 
-    float shadowHeight = 0.7f;
-    float shadowAngle = 60.0f;
-
-    spriteArgs args = {{"height", &shadowHeight},
-                       {"skewx",  &shadowAngle},
-                       {"skewoffset", (void*)&this->size}};
-
+    spriteArgs args = {};
     spriteRenderer->drawSprite(SpriteRenderer::shadow, name, 1.0f, position, size, args);
-
 }
 
 void Character::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
@@ -726,35 +752,24 @@ void Character::drawLevelUp(const std::unique_ptr<SpriteRenderer> &spriteRendere
 
 }
 
-int Character::getMaxHpAtLevel(int level) {
-    return (int) (level1DefaultMaxHP * std::pow(hpFactorPerLevel, level - 1));
-}
+void Character::drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
+                        const std::unique_ptr<TextRenderer> &textRenderer) const {
+    (void) spriteRenderer;
 
-double Character::getXPBarFill(double percent) {
-    int xpRequired = xpToLevelUp(characterLevel);
-    return (percent / 100.0) * ((double) xp / xpRequired);
-}
+    if (keyboardKey >= 0) {
+        std::string keyName = Utilities::keyPressToName(keyboardKey);
 
-void Character::levelUp() {
-    if (!canLevelUp()) {
-        std::cerr << "Character::levelUp: error: not enough xp to level up!!" << std::endl;
-        return;
+        if (characterType == "hero") {
+            keyName = "^" + keyName + "^";
+        } else {
+            keyName = "^Shift+" + keyName + "^";
+        }
+
+        glm::vec2 keyPressSize = glm::vec2(keyName.length() * 4 - 2, 8);
+
+        textRenderer->drawText(keyName, 0.0f,
+                               position + glm::vec2(0.0f, -keyPressSize.y), keyPressSize, color);
     }
-
-    xp -= xpToLevelUp(characterLevel);
-    characterLevel++;
-    hp = maxHP = getMaxHpAtLevel(characterLevel);
-
 }
-
-int Character::getLevel() const {
-    return characterLevel;
-}
-
-int Character::xpToLevelUp(int currentLevel) const {
-    const int baseXP = 48;
-    return baseXP * (int) std::pow((currentLevel + 1), 2.5);
-}
-
 
 }

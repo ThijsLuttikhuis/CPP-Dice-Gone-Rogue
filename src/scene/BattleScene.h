@@ -23,6 +23,7 @@ public:
         rolling_enemies,
         attack_block_enemies
     };
+
 private:
     int level = 0;
     const int rerollsMax = 3;
@@ -34,7 +35,6 @@ private:
     bool rerunBattle = false;
     bool skipRerun = false;
     bool pauseRerun = false;
-    bool allowButtonPress = true;
 
     std::shared_ptr<Character> clickedCharacter = nullptr;
     std::shared_ptr<Spell> clickedSpell = nullptr;
@@ -131,12 +131,15 @@ public:
 
     void update(double dt) override;
 
+    void updateCharacterKeyPresses();
+
     std::string message(const std::string &data) override;
 
     /// render
     void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                 const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
+    void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed);
 };
 
 }

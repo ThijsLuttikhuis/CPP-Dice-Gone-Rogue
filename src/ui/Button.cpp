@@ -16,6 +16,7 @@ bool Button::isPressed(double xPos, double yPos) const {
 
 void Button::drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                      const std::unique_ptr<TextRenderer> &textRenderer) const {
+    (void) spriteRenderer;
 
     if (keyboardKey >= 0) {
         std::string keyName = Utilities::keyPressToName(keyboardKey);

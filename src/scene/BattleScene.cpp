@@ -188,10 +188,12 @@ void BattleScene::pressButton(const std::unique_ptr<Button> &button) {
 
 void BattleScene::setHeroes(const std::vector<std::shared_ptr<Character>> &heroes_) {
     heroes = heroes_;
+    updateCharacterKeyPresses();
 }
 
 void BattleScene::setEnemies(const std::vector<std::shared_ptr<Character>> &enemies_) {
     enemies = enemies_;
+    updateCharacterKeyPresses();
 }
 
 void BattleScene::setMana(int mana_) {
@@ -601,9 +603,6 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
         }
     }
 
-    // clicked nowhere..
-//    setClickedSpell(nullptr);
-//    setClickedCharacter(nullptr);
 }
 
 std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(
@@ -690,6 +689,8 @@ void BattleScene::setCharactersFromBattleLog() {
     heroes = *std::get<0>(battleLogState);
     enemies = *std::get<1>(battleLogState);
     mana = std::get<2>(battleLogState);
+    updateCharacterKeyPresses();
+
 }
 
 void BattleScene::rerunBattleFromStart() {
@@ -771,6 +772,8 @@ void BattleScene::setEnemiesFromLevel(int selectedLevel) {
             strengthBudget -= enemyStrength;
         }
     }
+    updateCharacterKeyPresses();
+
 }
 
 
@@ -780,14 +783,11 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     spriteRenderer->drawSprite("background_catacombs_background", 1.0f,
                                glm::vec2(0, 0), size, glm::vec3(1.0f), 0.8f);
 
-    float shadowHeight = 0.7f;
-    float shadowAngle = 60.0f;
 
-    spriteArgs args = {{"height", &shadowHeight},
-                       {"skewx",  &shadowAngle}};
+    spriteArgs args = {};
 
     spriteRenderer->drawSprite(SpriteRenderer::shadow, "background_catacombs_front_pillars", 1.0f,
-                               glm::vec2(-145, -180),
+                               glm::vec2(-290, -180),
                                glm::vec2(700, 288), args);
 
     spriteRenderer->drawSprite("background_catacombs_front_pillars", 1.0f,
@@ -800,6 +800,9 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
         hero->drawShadow(spriteRenderer, textRenderer);
         hero->draw(spriteRenderer, textRenderer);
+        if (drawKeyPress) {
+            hero->drawKey(spriteRenderer, textRenderer);
+        }
     }
 
     for (auto &enemy : enemies) {
@@ -807,6 +810,9 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
         enemy->drawShadow(spriteRenderer, textRenderer);
         enemy->draw(spriteRenderer, textRenderer);
+        if (drawKeyPress) {
+            enemy->drawKey(spriteRenderer, textRenderer);
+        }
     }
 
     for (auto &hero : heroes) {
@@ -837,6 +843,38 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 
     renderDefaults(spriteRenderer, textRenderer);
+}
+
+void BattleScene::updateCharacterKeyPresses() {
+    for (int i = 0; i < (int)heroes.size(); i++) {
+        heroes[i]->setKeyboardKey(GLFW_KEY_1 + i);
+    }
+    for (int i = 0; i < (int)enemies.size(); i++) {
+        enemies[i]->setKeyboardKey(GLFW_KEY_1 + i);
+    }
+}
+
+void BattleScene::handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) {
+    handleKeyboardDefault(key, action, keysPressed);
+
+    if (action == GLFW_RELEASE) {
+        if (keysPressed->at(GLFW_KEY_LEFT_SHIFT)) {
+            for (auto &enemy : enemies) {
+                if (enemy->isKeyPressed(key)) {
+                    clickCharacter(enemy);
+                    break;
+                }
+            }
+        }
+        else {
+            for (auto &hero : heroes) {
+                if (hero->isKeyPressed(key)) {
+                    clickCharacter(hero);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 }

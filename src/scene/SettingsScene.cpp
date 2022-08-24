@@ -35,6 +35,13 @@ SettingsScene::SettingsScene(std::weak_ptr<GameStateManager> gameState)
     button2->setText("HUDSize?");
     buttons.push_back(std::move(button2));
 
+    auto button4 = std::make_unique<Button>("Quit",
+                                            glm::vec2(width / 2 - buttonWidth / 2, 8 * buttonDistance),
+                                            glm::vec2(buttonWidth, buttonHeight));
+    button4->setText("Quit");
+    buttons.push_back(std::move(button4));
+
+
     auto button3 = makeDefaultButton("Close", glm::vec2(width - 16.0f, 8.0f), glm::vec2(8.0f));
     buttons.push_back(std::move(button3));
 
@@ -47,6 +54,20 @@ void SettingsScene::handleMouseButton(double xPos, double yPos) {
     }
 
     handleMouseButtonDefault(xPos, yPos);
+
 }
+
+void SettingsScene::pressButton(const std::unique_ptr<Button> &button) {
+    std::cout << "pressed a button!" << std::endl;
+    if (pressDefaultButton(button)) {
+        return;
+    }
+    auto &buttonName = button->getName();
+
+    if (buttonName == "Quit") {
+        Window::closeWindow();
+    }
+}
+
 
 }

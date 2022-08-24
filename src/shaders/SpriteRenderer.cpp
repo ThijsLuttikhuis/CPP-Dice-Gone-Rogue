@@ -2,6 +2,8 @@
 // Created by thijs on 30-05-22.
 //
 
+#define GLM_SWIZZLE
+
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -13,6 +15,7 @@
 #include "SpriteRenderer.h"
 #include "utilities/Constants.h"
 #include "ui/UIElement.h"
+#include "utilities/Utilities.h"
 
 namespace DGR {
 
@@ -91,67 +94,78 @@ void SpriteRenderer::setBaseUI(std::shared_ptr<DGR::UIElement> baseUI_) {
 }
 
 void SpriteRenderer::drawShadowSprite(const SpriteRenderer* spriteRenderer, const std::string &texture,
-                                      float zIndex, const glm::vec2 &position, const glm::vec2 &size,
+                                      float zIndex, const glm::vec2 &position, const glm::vec2 &size_,
                                       const spriteArgs &args) {
 
+    glm::vec2 size = size_;
+
+    // get args
     float height = args.count("height") ? *(float*) args.at("height") : DGR_GLOBAL_SHADOW_HEIGHT;
     float width = args.count("width") ? *(float*) args.at("width") : 1.0f;
     float alpha = args.count("alpha") ? *(float*) args.at("alpha") : DGR_GLOBAL_SHADOW_ALPHA;
     glm::vec3 color = args.count("color") ? *(glm::vec3*) args.at("color") : glm::vec3(0.0f);
-    float rotate = args.count("rotate") ? *(float*) args.at("rotate") : 0.0f;
+    float rotate = glm::radians(args.count("rotate") ? *(float*) args.at("rotate") : 0.0f);
 
-    float skewX = args.count("skewx") ? *(float*) args.at("skewx") : DGR_GLOBAL_SHADOW_XSKEW;
-    float skewY = args.count("skewy") ? *(float*) args.at("skewy") : 0.0f;
-    glm::vec3 skewPositionOffset = glm::vec3(args.count("skewoffset") ? *(glm::vec2*) args.at("skewoffset")
-                                                                      : glm::vec2(0.0f), 0.0f);
+    float skewX = glm::radians(args.count("skewx") ? *(float*) args.at("skewx") : DGR_GLOBAL_SHADOW_XSKEW);
+    float skewY = glm::radians(args.count("skewy") ? *(float*) args.at("skewy") : 0.0f);
 
-    glm::vec3 skewPositionOffsetScaled_1 = glm::vec3(skewPositionOffset * glm::vec3((width - 1), (height - 1), 0.0f));
-    glm::vec3 skewPositionOffsetScaled = glm::vec3(skewPositionOffset * glm::vec3(width, height, 0.0f));
+    glm::vec2 originPosition = args.count("originposition") ? *(glm::vec2*) args.at("originposition")
+                                                            : position;
+    glm::vec2 originSize = args.count("originsize") ? *(glm::vec2*) args.at("originsize")
+                                                    : size;
 
-    float skewXAngle = glm::tan(glm::radians(skewX));
-    float skewYAngle = glm::tan(glm::radians(skewY));
+    float skewXAngle = glm::tan(skewX);
+    float skewYAngle = glm::tan(skewY);
 
     auto &baseUI = spriteRenderer->baseUI;
     glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0, 0);
-    glm::vec2 screenPos = position + basePos;
+    glm::vec2 originScreenPos = originPosition + basePos;
 
-    glm::mat4 model = glm::mat4(1.0f);
+    // rotate
+    glm::mat4 rotateModel = glm::mat4(1.0f);
 
+    rotateModel = glm::translate(rotateModel, glm::vec3(0.5f * originSize.x, 0.5f * originSize.y, 0.0f));
+    rotateModel = glm::rotate(rotateModel, rotate, glm::vec3(0.0f, 0.0f, 1.0f));
+    rotateModel = glm::translate(rotateModel, glm::vec3(-0.5f * originSize.x, -0.5f * originSize.y, 0.0f));
 
-    model = glm::translate(model, glm::vec3(screenPos, 0.0f));
+    // skew x
+    glm::mat4 skewXModel = glm::mat4(1.0f);
 
     if (skewXAngle != 0.0f) {
-        model = glm::translate(model, glm::vec3(skewXAngle * (skewPositionOffset.y - size.y), 0.0f, 0.0f));
-
-        model = glm::translate(model, glm::vec3(0.0f, size.y, 0.0f));
-        model = glm::shearX3D(model, -skewXAngle, 0.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -size.y, 0.0f));
+        skewXModel = glm::translate(skewXModel, glm::vec3(0.0f, originSize.y, 0.0f));
+        skewXModel = glm::shearX3D(skewXModel, -skewXAngle, 0.0f);
+        skewXModel = glm::translate(skewXModel, glm::vec3(0.0f, -originSize.y, 0.0f));
     }
+
+    // skew y
+    glm::mat4 skewYModel = glm::mat4(1.0f);
 
     if (skewYAngle != 0.0f) {
-        model = glm::translate(model, glm::vec3(0.0f, skewYAngle * (skewPositionOffset.x - size.x), 0.0f));
-
-        model = glm::translate(model, glm::vec3(size.x, 0.0f, 0.0f));
-        model = glm::shearY3D(model, -skewYAngle, 0.0f);
-        model = glm::translate(model, glm::vec3(-size.x, 0.0f, 0.0f));
+        skewYModel = glm::translate(skewYModel, glm::vec3(originSize.x, 0.0f, 0.0f));
+        skewYModel = glm::shearY3D(skewYModel, -skewYAngle, 0.0f);
+        skewYModel = glm::translate(skewYModel, glm::vec3(-originSize.x, 0.0f, 0.0f));
     }
 
-    model = glm::translate(model, -skewPositionOffset * glm::vec3(width - 1, height - 1, 0.0f));
-    model = glm::scale(model, glm::vec3(size * glm::vec2(width, height), 1.0f));
+    // width/height
+    glm::mat4 widthheightModel = glm::mat4(1.0f);
+    widthheightModel = glm::translate(widthheightModel, glm::vec3(originSize, 0.0f));
+    widthheightModel = glm::scale(widthheightModel, glm::vec3(width, height, 0.0f));
+    widthheightModel = glm::translate(widthheightModel, glm::vec3(-originSize, 0.0f));
 
-    // skew/angle
-//    model = glm::translate(model, -skewPositionOffsetScaled + glm::vec3(-screenPos.x, size.y, 0.0f));
-//    model = glm::shearX3D(model, -skewXAngle, 0.0f);
-//    model = glm::translate(model, skewPositionOffsetScaled + glm::vec3(screenPos.x, -size.y, 0.0f));
-//
-//    model = glm::translate(model, glm::vec3(size.x , -screenPos.y, 0.0f));
-//    model = glm::shearY3D(model, -skewYAngle, 0.0f);
-//    model = glm::translate(model, glm::vec3(-size.x, screenPos.y, 0.0f));
+    // screen space
+    glm::mat4 screenModel = glm::mat4(1.0f);
+    screenModel = glm::translate(screenModel, glm::vec3(originScreenPos, 0.0f));
 
-    spriteArgs shadowArgs = {{"color",  &color},
-                             {"alpha",  &alpha},
-                             {"model",  &model},
-                             {"rotate", &rotate}};
+    // local offset
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(position - originPosition, 0.0f));
+    model = glm::scale(model, glm::vec3(size, 1.0f));
+
+    model = screenModel * widthheightModel * skewYModel * skewXModel *rotateModel * model;
+
+    spriteArgs shadowArgs = {{"color", &color},
+                             {"alpha", &alpha},
+                             {"model", &model}};
 
     spriteRenderer->drawSprite(texture, zIndex, position, size, shadowArgs);
 }
@@ -175,12 +189,16 @@ void SpriteRenderer::drawBoxSprite(const SpriteRenderer* spriteRenderer, const s
 
         edgeArgs["alpha"] = args.at("edgeAlpha");
         edgeArgs["color"] = args.at("color");
+
         // draw edges
-        spriteRenderer->drawSprite(default_sprite, tex, zIndex, glm::vec2(left, up), glm::vec2(size.x, 1.0), edgeArgs);
-        spriteRenderer->drawSprite(default_sprite, tex, zIndex, glm::vec2(left, down), glm::vec2(size.x + 1, 1.0),
-                                   edgeArgs);
-        spriteRenderer->drawSprite(default_sprite, tex, zIndex, glm::vec2(left, up), glm::vec2(1.0, size.y), edgeArgs);
-        spriteRenderer->drawSprite(default_sprite, tex, zIndex, glm::vec2(right, up), glm::vec2(1.0, size.y), edgeArgs);
+        spriteRenderer->drawSprite(default_sprite, tex, zIndex,
+                                   glm::vec2(left, up), glm::vec2(size.x, 1.0), edgeArgs);
+        spriteRenderer->drawSprite(default_sprite, tex, zIndex,
+                                   glm::vec2(left, down), glm::vec2(size.x + 1, 1.0), edgeArgs);
+        spriteRenderer->drawSprite(default_sprite, tex, zIndex,
+                                   glm::vec2(left, up), glm::vec2(1.0, size.y), edgeArgs);
+        spriteRenderer->drawSprite(default_sprite, tex, zIndex,
+                                   glm::vec2(right, up), glm::vec2(1.0, size.y), edgeArgs);
     }
 }
 
@@ -204,13 +222,8 @@ void SpriteRenderer::drawDefaultSprite(const SpriteRenderer* spriteRenderer, con
     }
 
     // get args
-    glm::vec3 color;
-    float alpha;
-    float rotate;
-
-    color = args.count("color") ? *(glm::vec3*) args.at("color") : glm::vec3(1.0f);
-    alpha = args.count("alpha") ? *(float*) args.at("alpha") : 1.0f;
-    rotate = args.count("rotate") ? *(float*) args.at("rotate") : 0.0f;
+    glm::vec3 color = args.count("color") ? *(glm::vec3*) args.at("color") : glm::vec3(1.0f);
+    float alpha = args.count("alpha") ? *(float*) args.at("alpha") : 1.0f;
 
     // load shadow/skew
     glm::mat4 model = glm::mat4(1.0f);
@@ -219,14 +232,7 @@ void SpriteRenderer::drawDefaultSprite(const SpriteRenderer* spriteRenderer, con
 
     } else {
         model = glm::translate(model, glm::vec3(screenPos, 0.0f));
-
-        // rotate model
-        model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f));
-        model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f));
-
         model = glm::scale(model, glm::vec3(size, 1.0f));
-
     }
 
     // apply shader variables

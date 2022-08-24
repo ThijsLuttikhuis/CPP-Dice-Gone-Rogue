@@ -172,6 +172,9 @@ Utilities::getAllFileNamesInDir(const std::string &dir, const std::string &exten
 }
 
 std::string Utilities::keyPressToName(int key) {
+    if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) {
+        return std::to_string(key - GLFW_KEY_0);
+    }
     switch (key) {
         case GLFW_KEY_ESCAPE:
             return "Esc";
@@ -179,10 +182,18 @@ std::string Utilities::keyPressToName(int key) {
             return ".";
         case GLFW_KEY_COMMA:
             return ",";
-
         default:
             return "NaN";
     }
+}
+
+glm::vec2 Utilities::rotateVec2(glm::vec2 vec, float rotate) {
+    return glm::vec2(std::cos(rotate) * vec.x - std::sin(rotate) * vec.y,
+                     std::sin(rotate) * vec.x + std::cos(rotate) * vec.y);
+}
+
+glm::vec2 Utilities::rotateVec2(float x, float y, float rotate) {
+    return rotateVec2(glm::vec2(x, y), rotate);
 }
 
 }

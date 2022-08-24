@@ -196,4 +196,9 @@ void Window::render() {
 
 }
 
+void Window::closeWindow() {
+    auto glfwWindow = std::shared_ptr<Window>(callback_window_ptr)->glfwWindow;
+    glfwSetWindowShouldClose(glfwWindow, true);
+}
+
 }

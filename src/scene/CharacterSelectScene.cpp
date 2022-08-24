@@ -105,6 +105,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                        leftRightButtonHeight + leftRightButtonY + 4),
                                              glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button10->setText("Return to main menu");
+    button10->setKeyboardKey(GLFW_KEY_ESCAPE);
     buttons.push_back(std::move(button10));
 }
 

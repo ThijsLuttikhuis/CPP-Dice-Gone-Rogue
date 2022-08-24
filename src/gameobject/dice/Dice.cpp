@@ -147,27 +147,36 @@ void Dice::roll() {
 void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                 const std::unique_ptr<TextRenderer> &textRenderer) {
 
-    float shadowHeight = 0.7f;
-    float shadowAngle = 60.0f;
-
+    // draw 3D dice + shadow
     glm::vec2 dicePosition = getPosition(current_face_pos) + glm::vec2(-9, -3);
     glm::vec2 diceSize = getSize(current_face_pos) + glm::vec2(6, 6);
 
-    spriteArgs args = {{"height",     &shadowHeight},
-                       {"skewx",      &shadowAngle},
-                       {"skewoffset", &diceSize}};
+    spriteArgs args = {};
 
-    spriteRenderer->drawSprite(SpriteRenderer::shadow, "dice_3d_current_face", 0.22f, dicePosition, diceSize, args);
-
+    spriteRenderer->drawSprite(SpriteRenderer::shadow, "dice_3d_current_face", 0.22f,
+                               dicePosition, diceSize, args);
     spriteRenderer->drawSprite("dice_3d_current_face", 0.21f, dicePosition, diceSize);
 
+    // draw three visible faces of the dice
+
+    // 0245 -> right = 2450; 13 -> right = (-90)4(90)4
+    // 0245 -> up = (-90)1(0)1(90)1(180)1; 13 -> up = (180)5(0)2
+    float upRotate[6] = {-90, 180, 0, 0, 90, 180};
+    int upFace[6] = {1, 5, 1, 2, 1, 1};
+    float rightRotate[6] = {0, -90, 0, 90, 0, 0};
+    int rightFace[6] = {2, 4, 4, 4, 5, 0};
 
     faces[currentFace]->draw(spriteRenderer);
-    faces[currentFace]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-7, -13.5),
-                                 0.0f, 45.0f, 0.0f, 0.2f, 1.0f);
-    faces[currentFace]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(0, 0),
-                                 0.0f, 0.0f, 20.0f, 1.0f, 0.25f);
 
+    float skew = 30.0f;
+
+    faces[upFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-10, -13.5),
+                                         upRotate[currentFace], skew, 0.0f, 0.2f, 1.0f);
+
+    faces[rightFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-3, -3),
+                                            rightRotate[currentFace], 0.0f, skew, 1.0f, 0.25f);
+
+    // draw lock symbol if dice is locked
     if (lock) {
         glm::vec2 lockPosition = getPosition(Dice::current_face_pos) + glm::vec2(-12, -2);
         glm::vec2 lockSize = glm::vec2(11, 14);
@@ -178,6 +187,7 @@ void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
         spriteRenderer->drawSprite("dice_lock", 0.05f, lockPosition, lockSize, glm::vec3(1.0), 0.8f);
     }
 
+    // draw grey box if dice is used
     if (used) {
         glm::vec2 usedPosition = getPosition(Dice::current_face_pos) + glm::vec2(-8, 2);
         glm::vec2 usedSize = getSize(Dice::current_face_pos);
@@ -185,6 +195,7 @@ void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                                    usedPosition, usedSize, glm::vec3(1.0), 0.3f);
     }
 
+    // draw reminder text if dice is hovered
     if (hoverCurrentFace) {
         faces[currentFace]->drawHover(spriteRenderer, textRenderer, current_face_pos);
     }

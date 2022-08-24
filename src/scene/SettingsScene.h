@@ -11,6 +11,8 @@
 namespace DGR {
 
 class SettingsScene : public Scene {
+private:
+    void pressButton(const std::unique_ptr<Button> &button) override;
 
 public:
     explicit SettingsScene(std::weak_ptr<GameStateManager> gameState);
