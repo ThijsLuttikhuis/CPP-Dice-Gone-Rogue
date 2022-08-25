@@ -24,12 +24,14 @@ MainMenuScene::MainMenuScene(std::weak_ptr<GameStateManager> gameState)
                                             glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button1->setText("Start New Game");
+    button1->setKeyboardKey(GLFW_KEY_1);
     buttons.push_back(std::move(button1));
 
     auto button2 = std::make_unique<Button>("LoadGame",
                                             glm::vec2(width / 2 - buttonWidth / 2, i++ * buttonDistance),
                                             glm::vec2(buttonWidth, buttonHeight));
     button2->setText("Load Game");
+    button2->setKeyboardKey(GLFW_KEY_2);
     buttons.push_back(std::move(button2));
 
     auto button3 = Scene::makeDefaultButton("Settings",

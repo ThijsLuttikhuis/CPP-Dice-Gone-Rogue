@@ -38,6 +38,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button3->setText(" <<");
+    button3->setKeyboardKey(GLFW_KEY_COMMA);
     buttons.push_back(std::move(button3));
 
     auto button4 = std::make_unique<Button>("ScrollRight",
@@ -46,6 +47,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                             glm::vec3(0.4f),
                                             0.0f, true, true);
     button4->setText(" >>");
+    button4->setKeyboardKey(GLFW_KEY_PERIOD);
     buttons.push_back(std::move(button4));
 
     auto button5 = std::make_unique<Button>("SelectHero0",
@@ -53,6 +55,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button5->setText("");
+    button5->setKeyboardKey(GLFW_KEY_1);
     buttons.push_back(std::move(button5));
 
     auto button6 = std::make_unique<Button>("SelectHero1",
@@ -60,6 +63,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button6->setText("");
+    button6->setKeyboardKey(GLFW_KEY_2);
     buttons.push_back(std::move(button6));
 
     auto button7 = std::make_unique<Button>("SelectHero2",
@@ -67,6 +71,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button7->setText("");
+    button7->setKeyboardKey(GLFW_KEY_3);
     buttons.push_back(std::move(button7));
 
     auto button8 = std::make_unique<Button>("SelectHero3",
@@ -74,6 +79,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonY),
                                             glm::vec2(midButtonWidth, leftRightButtonHeight), false);
     button8->setText("");
+    button8->setKeyboardKey(GLFW_KEY_4);
     buttons.push_back(std::move(button8));
 
     /// -------------
@@ -91,6 +97,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonHeight + leftRightButtonY + 4),
                                             glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button2->setText("Ready");
+    button2->setKeyboardKey(GLFW_KEY_ENTER);
     buttons.push_back(std::move(button2));
 
     auto button9 = std::make_unique<Button>("Randomize",
@@ -98,6 +105,7 @@ CharacterSelectScene::CharacterSelectScene(std::weak_ptr<GameStateManager> gameS
                                                       leftRightButtonHeight + leftRightButtonY + 4),
                                             glm::vec2(midButtonWidth_3, topBotButtonHeight));
     button9->setText("Randomize");
+    button9->setKeyboardKey(GLFW_KEY_R);
     buttons.push_back(std::move(button9));
 
     auto button10 = std::make_unique<Button>("Return",
@@ -217,9 +225,7 @@ void CharacterSelectScene::render(const std::unique_ptr<SpriteRenderer> &spriteR
     spriteRenderer->drawSprite(SpriteRenderer::box, "", 1.0f, glm::vec2(0), size,
                                 glm::vec3(0.2f), 0.9f);
 
-    for (auto &button : buttons) {
-        button->draw(spriteRenderer, textRenderer);
-    }
+    renderDefaults(spriteRenderer, textRenderer);
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 

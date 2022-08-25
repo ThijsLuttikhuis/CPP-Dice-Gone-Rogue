@@ -121,6 +121,8 @@ public:
 
     void handleMousePosition(double xPos, double yPos) override;
 
+    void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) override;
+
     void rerunBattleFromStart();
 
     void initialize() override;
@@ -139,7 +141,6 @@ public:
     void render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                 const std::unique_ptr<TextRenderer> &textRenderer) const override;
 
-    void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed);
 };
 
 }

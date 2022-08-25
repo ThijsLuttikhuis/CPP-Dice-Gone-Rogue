@@ -454,6 +454,8 @@ void BattleScene::enemyAttack(int index) {
 }
 
 void BattleScene::alignCharacterPositions(double dt) {
+    updateCharacterKeyPresses();
+
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     const int width = gameStatePtr->getWindow()->getWidth();
@@ -603,6 +605,43 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
         }
     }
 
+}
+
+void BattleScene::updateCharacterKeyPresses() {
+    int count = 0;
+    for (auto &hero : heroes) {
+        if (!hero->isDead()) {
+            hero->setKeyboardKey(GLFW_KEY_1 + count++);
+        }
+    }
+    count = 0;
+    for (auto &enemy : enemies) {
+        if (!enemy->isDead()) {
+            enemy->setKeyboardKey(GLFW_KEY_1 + count++);
+        }
+    }
+}
+
+void BattleScene::handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) {
+    handleKeyboardDefault(key, action, keysPressed);
+
+    if (action == GLFW_RELEASE) {
+        if (keysPressed->at(GLFW_KEY_LEFT_SHIFT)) {
+            for (auto &enemy : enemies) {
+                if (enemy->isKeyPressed(key)) {
+                    clickCharacter(enemy);
+                    break;
+                }
+            }
+        } else {
+            for (auto &hero : heroes) {
+                if (hero->isKeyPressed(key)) {
+                    clickCharacter(hero);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 std::pair<std::shared_ptr<Character>, std::shared_ptr<Character>> BattleScene::getNeighbours(
@@ -843,38 +882,6 @@ void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     textRenderer->drawText(std::to_string(mana) + "  mana", 0.2f, manaTextPosition, glm::vec2(100, 1));
 
     renderDefaults(spriteRenderer, textRenderer);
-}
-
-void BattleScene::updateCharacterKeyPresses() {
-    for (int i = 0; i < (int)heroes.size(); i++) {
-        heroes[i]->setKeyboardKey(GLFW_KEY_1 + i);
-    }
-    for (int i = 0; i < (int)enemies.size(); i++) {
-        enemies[i]->setKeyboardKey(GLFW_KEY_1 + i);
-    }
-}
-
-void BattleScene::handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed) {
-    handleKeyboardDefault(key, action, keysPressed);
-
-    if (action == GLFW_RELEASE) {
-        if (keysPressed->at(GLFW_KEY_LEFT_SHIFT)) {
-            for (auto &enemy : enemies) {
-                if (enemy->isKeyPressed(key)) {
-                    clickCharacter(enemy);
-                    break;
-                }
-            }
-        }
-        else {
-            for (auto &hero : heroes) {
-                if (hero->isKeyPressed(key)) {
-                    clickCharacter(hero);
-                    break;
-                }
-            }
-        }
-    }
 }
 
 }

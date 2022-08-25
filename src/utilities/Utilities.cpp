@@ -175,6 +175,9 @@ std::string Utilities::keyPressToName(int key) {
     if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9) {
         return std::to_string(key - GLFW_KEY_0);
     }
+    if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
+        return std::string(1, (char)('A' + key - GLFW_KEY_A));
+    }
     switch (key) {
         case GLFW_KEY_ESCAPE:
             return "Esc";
@@ -182,6 +185,10 @@ std::string Utilities::keyPressToName(int key) {
             return ".";
         case GLFW_KEY_COMMA:
             return ",";
+        case GLFW_KEY_ENTER:
+            return "Enter";
+        case GLFW_KEY_BACKSPACE:
+            return "BackSpace";
         default:
             return "NaN";
     }
