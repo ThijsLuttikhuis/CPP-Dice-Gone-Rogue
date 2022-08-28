@@ -815,7 +815,6 @@ void BattleScene::setEnemiesFromLevel(int selectedLevel) {
 
 }
 
-
 void BattleScene::render(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                          const std::unique_ptr<TextRenderer> &textRenderer) const {
 

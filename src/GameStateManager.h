@@ -25,7 +25,6 @@ private:
     double t = 0.0;
     double tPrev = 0.0;
 
-
     std::shared_ptr<Window> window;
     std::vector<std::shared_ptr<Scene>> allScenes;
     std::vector<std::shared_ptr<Scene>> sceneStack;

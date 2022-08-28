@@ -1,0 +1,33 @@
+.dgr.version=0.3
+
+gamestate:
+  t: 100.03;
+
+  scenestack:
+    AreYouSureScene: -1;
+    BattleDefeatScene: -1;
+    BattleScene: 1;
+
+  allscenes:
+    AreYouSureScene:
+      messageSource: "";
+      messageData: "";
+    ;
+    BattleDefeatScene:
+    ;
+    BattleScene:
+      level: 0;
+      rerollsMax: 3;
+      rerolls: 2;
+      mana: 0;
+      state: rolling_enemies;
+
+      animationCounter: 0;
+      rerunBattle: false;
+      skipRerun: false;
+      pauseRerun: false;
+    ;
+  ;
+
+
+
