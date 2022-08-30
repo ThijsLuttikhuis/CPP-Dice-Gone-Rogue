@@ -10,7 +10,7 @@ std::mt19937 Random::rng;
 std::uniform_real_distribution<double> Random::unif;
 
 void Random::initialize(int seed) {
-    if (seed == 0) {
+    if (seed == -1) {
         std::random_device rd;
         rng = std::mt19937(rd());
     } else {

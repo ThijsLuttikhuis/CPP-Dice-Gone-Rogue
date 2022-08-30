@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 #include <ui/Button.h>
+#include <gameobject/item/Item.h>
 
 #include "dice/Dice.h"
 #include "GameObject.h"
@@ -18,6 +19,7 @@ namespace DGR {
 class Face;
 
 class Spell;
+
 
 class GameStateManager;
 
@@ -36,6 +38,7 @@ private:
 
     std::shared_ptr<Dice> dice = nullptr;
     std::shared_ptr<Spell> spell = nullptr;
+    std::map<Item::itemSlot, std::shared_ptr<Item>> items = {};
 
     /// xp stats
     int characterLevel = 1;
@@ -91,7 +94,7 @@ public:
 
     [[nodiscard]] bool getUsedDice() const;
 
-    [[nodiscard]] bool isMouseHovering(double xPos, double yPos, hoverType hoverType = onlyHero) const;
+    [[nodiscard]] bool isMouseHovering_(double xPos, double yPos, hoverType hoverType = onlyHero) const;
 
     [[nodiscard]] int getIncomingDamage() const;
 
@@ -113,6 +116,8 @@ public:
     void setDice(const std::shared_ptr<Dice> &dice);
 
     void setDiceLock(bool diceLock_);
+
+    void setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item);
 
     void setHP(int hp);
 

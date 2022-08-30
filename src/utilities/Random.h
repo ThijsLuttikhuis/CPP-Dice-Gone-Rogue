@@ -18,7 +18,7 @@ public:
     /**
     * @brief initialize the random engine with the specified seed
     */
-    static void initialize(int seed);
+    static void initialize(int seed = -1);
 
     /**
     * @brief return the random engine

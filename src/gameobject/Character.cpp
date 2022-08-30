@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <utility>
 #include <utilities/Utilities.h>
 
 #include "Character.h"
@@ -74,8 +75,8 @@ int Character::xpToLevelUp(int currentLevel) const {
     return baseXP * (int) std::pow((currentLevel + 1), 2.5);
 }
 
-bool Character::isMouseHovering(double xPos, double yPos, hoverType type) const {
-    switch (type) {
+bool Character::isMouseHovering_(double xPos, double yPos, hoverType hoverType) const {
+    switch (hoverType) {
         case onlyHero:
             return Utilities::isPositionInBox(xPos, yPos, position, size);
         case onlyCurrentFace:
@@ -770,6 +771,10 @@ void Character::drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
         textRenderer->drawText(keyName, 0.0f,
                                position + glm::vec2(0.0f, -keyPressSize.y), keyPressSize, color);
     }
+}
+
+void Character::setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item) {
+    items[itemSlot] = std::move(item);
 }
 
 }

@@ -7,7 +7,7 @@
 
 #include <string>
 #include <memory>
-#include <gameobject/Item.h>
+#include <gameobject/item/Item.h>
 #include <vector>
 
 namespace DGR {

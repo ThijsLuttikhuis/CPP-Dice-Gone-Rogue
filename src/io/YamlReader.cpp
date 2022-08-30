@@ -73,7 +73,7 @@ YamlReader::YamlReader() {
 
 void YamlReader::readFile(const std::string &name) {
     /// read file and put all data into a string
-    std::string fileName = "../src/io/characters/" + name + ".dgr";
+    std::string fileName = "../src/io/gamedata/" + name + ".dgr";
     std::ifstream ifile;
     ifile.open(fileName);
     if (!ifile) { // file couldn't be opened

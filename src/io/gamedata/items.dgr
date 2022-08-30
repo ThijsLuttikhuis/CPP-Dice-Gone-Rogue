@@ -1,0 +1,37 @@
+.dgr.version=0.3
+
+items:
+  ring of courage:
+    level: 2;
+    slot: ring;
+    cost: 100;
+    effect:
+      face5:
+        bonus: 1;
+      ;
+    ;
+  ;
+
+  ring of vigor:
+    level: 3;
+    slot: ring;
+    cost: 120;
+    effect:
+      hp:
+        multiplier: 1.05;
+      ;
+    ;
+  ;
+
+  thornmail:
+    level: 6;
+    slot: chest;
+    cost: 450;
+    effect:
+      hp:
+        multiplier: 1.2;
+      thorns: 1;
+      ;
+    ;
+    ;
+  ;

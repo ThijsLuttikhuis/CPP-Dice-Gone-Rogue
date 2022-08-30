@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
 project(DiceGoneRogue)
 
-
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wnone")
 set(CMAKE_CXX_FLAGS "-lstdc++fs")
 
@@ -31,6 +29,9 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/dice/FaceModifier.h
         src/gameobject/dice/FaceType.cpp
         src/gameobject/dice/FaceType.h
+
+        src/gameobject/item/Item.cpp
+        src/gameobject/item/Item.h
 
         src/gameobject/spell/Spell.cpp
         src/gameobject/spell/Spell.h
@@ -63,6 +64,12 @@ set(INCLUDE_SCENE
         src/scene/BattleVictoryScene.h
         src/scene/CharacterSelectScene.cpp
         src/scene/CharacterSelectScene.h
+        src/scene/LoadGameScene.cpp
+        src/scene/LoadGameScene.h
+        src/scene/AreYouSureScene.cpp
+        src/scene/AreYouSureScene.h
+        src/scene/LevelSelectScene.cpp
+        src/scene/LevelSelectScene.h
         )
 
 set(INCLUDE_SHADERS
@@ -85,7 +92,9 @@ set(INCLUDE_UI
         src/ui/Window.h
         src/ui/UIElement.cpp
         src/ui/UIElement.h
-        src/ui/OnScreenMessage.cpp src/ui/OnScreenMessage.h)
+        src/ui/OnScreenMessage.cpp
+        src/ui/OnScreenMessage.h
+        )
 
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
@@ -97,7 +106,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/scene/LoadGameScene.cpp src/scene/LoadGameScene.h src/scene/AreYouSureScene.cpp src/scene/AreYouSureScene.h src/scene/LevelSelectScene.cpp src/scene/LevelSelectScene.h src/Inventory.cpp src/Inventory.h src/GameProgress.cpp src/GameProgress.h src/gameobject/Item.cpp src/gameobject/Item.h)
+        src/gameobject/effect/PassiveEffect.cpp src/gameobject/effect/PassiveEffect.h)
 
 
 add_executable(DiceGoneRogue main.cpp
@@ -113,6 +122,10 @@ add_executable(DiceGoneRogue main.cpp
 
         src/GameStateManager.cpp
         src/GameStateManager.h
+        src/Inventory.cpp
+        src/Inventory.h
+        src/GameProgress.cpp
+        src/GameProgress.h
         )
 
 target_link_libraries(DiceGoneRogue

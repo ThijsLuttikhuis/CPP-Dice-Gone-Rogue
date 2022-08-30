@@ -321,7 +321,7 @@ void BattleScene::handleMousePosition(std::shared_ptr<Character> character, doub
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::current_face_pos));
 
-    if (character->isMouseHovering(xPos, yPos)) {
+    if (character->isMouseHovering_(xPos, yPos)) {
         character->setHoverMouse(true);
     } else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {
@@ -584,7 +584,7 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     handleMouseButtonDefault(xPos, yPos);
 
     for (auto &hero : heroes) {
-        if (hero->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
+        if (hero->isMouseHovering_(xPos, yPos, Character::hoverType::extendedBox)) {
             clickCharacter(hero);
             return;
         }
@@ -599,7 +599,7 @@ void BattleScene::handleMouseButton(double xPos, double yPos) {
     }
 
     for (auto &enemy : enemies) {
-        if (enemy->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
+        if (enemy->isMouseHovering_(xPos, yPos, Character::hoverType::extendedBox)) {
             clickCharacter(enemy);
             return;
         }
@@ -612,12 +612,16 @@ void BattleScene::updateCharacterKeyPresses() {
     for (auto &hero : heroes) {
         if (!hero->isDead()) {
             hero->setKeyboardKey(GLFW_KEY_1 + count++);
+        } else {
+            hero->setKeyboardKey();
         }
     }
     count = 0;
     for (auto &enemy : enemies) {
         if (!enemy->isDead()) {
             enemy->setKeyboardKey(GLFW_KEY_1 + count++);
+        } else {
+            enemy->setKeyboardKey();
         }
     }
 }

@@ -186,7 +186,7 @@ void Window::initialize() {
 
 void Window::render() {
     glClearColor(0.25f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 

@@ -121,7 +121,7 @@ void CharacterSelectScene::handleMousePosition(std::shared_ptr<Character> charac
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::current_face_pos));
 
-    if (character->isMouseHovering(xPos, yPos)) {
+    if (character->isMouseHovering_(xPos, yPos)) {
         character->setHoverMouse(true);
     } else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {
@@ -323,7 +323,7 @@ bool CharacterSelectScene::handleHeroesMouseButton(double xPos, double yPos) {
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
     for (auto &hero : gameStatePtr->getAllHeroes()) {
-        if (hero->isMouseHovering(xPos, yPos, Character::hoverType::extendedBox)) {
+        if (hero->isMouseHovering_(xPos, yPos, Character::hoverType::extendedBox)) {
 
             bool removedCharacter = false;
             for (auto it = selectedHeroes.begin(); it != selectedHeroes.end(); it++) {

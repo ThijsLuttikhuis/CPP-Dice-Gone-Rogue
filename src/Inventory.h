@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <memory>
-#include <gameobject/Item.h>
+#include <gameobject/item/Item.h>
 #include "gameobject/Character.h"
 
 namespace DGR {

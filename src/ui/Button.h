@@ -64,7 +64,7 @@ public:
     virtual void drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                  const std::unique_ptr<TextRenderer> &textRenderer) const;
 
-    void setKeyboardKey(int key);
+    void setKeyboardKey(int key = -10);
 };
 
 }

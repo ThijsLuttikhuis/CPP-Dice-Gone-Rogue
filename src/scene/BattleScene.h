@@ -46,6 +46,8 @@ private:
 
     void alignCharacterPositions(double dt);
 
+    void updateCharacterKeyPresses();
+
     bool checkVictory();
 
     void pressButton(const std::unique_ptr<Button> &button) override;
@@ -132,8 +134,6 @@ public:
     void reset() override;
 
     void update(double dt) override;
-
-    void updateCharacterKeyPresses();
 
     std::string message(const std::string &data) override;
 

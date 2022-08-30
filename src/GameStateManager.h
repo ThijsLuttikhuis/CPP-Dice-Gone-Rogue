@@ -26,19 +26,20 @@ private:
     double tPrev = 0.0;
 
     std::shared_ptr<Window> window;
-    std::vector<std::shared_ptr<Scene>> allScenes;
-    std::vector<std::shared_ptr<Scene>> sceneStack;
-
     std::unique_ptr<TextRenderer> textRenderer;
     std::unique_ptr<SpriteRenderer> spriteRenderer;
 
     std::vector<std::unique_ptr<OnScreenMessage>> onScreenMessages;
 
+    std::vector<std::shared_ptr<Scene>> allScenes;
+    std::vector<std::shared_ptr<Scene>> sceneStack;
+
     std::vector<std::shared_ptr<Character>> allHeroes;
     std::vector<std::shared_ptr<Character>> allEnemies;
 
-    std::shared_ptr<Character> nullCharacter = nullptr;
+    std::vector<std::shared_ptr<Item>> allItems;
 
+    std::shared_ptr<Character> nullCharacter = nullptr;
 
     std::unique_ptr<Inventory> inventory;
     std::unique_ptr<GameProgress> gameProgress;

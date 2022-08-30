@@ -110,7 +110,7 @@ void LoadGameScene::handleMousePosition(const std::shared_ptr<Character> &charac
     auto dice = character->getDice();
     dice->setCurrentFaceHover(dice->isMouseHovering(xPos, yPos, Dice::current_face_pos));
 
-    if (character->isMouseHovering(xPos, yPos)) {
+    if (character->isMouseHovering_(xPos, yPos)) {
         character->setHoverMouse(true);
     } else if (character->getHoverMouse()) {
         if (dice->isMouseHovering(xPos, yPos)) {

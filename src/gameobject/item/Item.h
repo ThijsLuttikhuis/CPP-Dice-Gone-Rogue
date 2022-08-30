@@ -17,18 +17,37 @@ class ItemEffect {
 };
 
 class Item : public std::enable_shared_from_this<Item> {
+public:
+    enum itemSlot {
+        head,
+        chest,
+        legs,
+        feet,
+        left_ring,
+        right_ring,
+        any_ring
+    };
 private:
+
     std::string name;
 
     std::weak_ptr<Character> character{};
 
     int cost{};
-    int value{};
+    itemSlot slot{};
     ItemEffect itemEffect{};
+    int itemLevel{};
 
     bool hover = false;
 public:
     Item() = default;
+
+    /// getters
+    std::shared_ptr<Item> getSharedFromThis();
+
+    void remove();
+
+    void add(const std::weak_ptr<Character> &character_);
 
 };
 
