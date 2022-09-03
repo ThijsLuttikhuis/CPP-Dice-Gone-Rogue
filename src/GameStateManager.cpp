@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
-#include <io/YamlReader.h>
+#include <io/yamlreader/YamlReader.h>
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
@@ -40,10 +40,10 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
     allEnemies = *std::static_pointer_cast<std::vector<std::shared_ptr<Character>>>(
           yamlReaderEnemies.getData()->getFeature()).get();
 
-    YamlReader yamlReaderItems;
-    yamlReaderItems.readFile("items");
-    allItems = *std::static_pointer_cast<std::vector<std::shared_ptr<Item>>>(
-          yamlReaderItems.getData()->getFeature()).get();
+//    YamlReader yamlReaderItems;
+//    yamlReaderItems.readFile("items");
+//    allItems = *std::static_pointer_cast<std::vector<std::shared_ptr<Item>>>(
+//          yamlReaderItems.getData()->getFeature()).get();
 
     inventory = std::make_unique<Inventory>();
     gameProgress = std::make_unique<GameProgress>();

@@ -6,27 +6,33 @@ characters:
     hp: 12;
     dice:
       face0:
-        damage: 5;
+        damage: 50;
+        mod: "sweeping edge";
         bonus: 2;
       ;
       face1:
-        damage: 3;
+        damage: 30;
+        mod: "sweeping edge";
         bonus: 2;
       ;
       face2:
-        damage: 5;
+        damage: 50;
+        mod: "sweeping edge";
         bonus: 2;
       ;
       face3:
-        damage: 3;
+        damage: 30;
+        mod: "sweeping edge";
         bonus: 2;
       ;
       face4:
-        shield: 5;
+        shield: 50;
+        mod: "sweeping edge";
         bonus: 2;
       ;
       face5:
-        shield: 3;
+        shield: 30;
+        mod: "sweeping edge";
         bonus: 2;
       ;
     ;

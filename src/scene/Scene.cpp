@@ -52,7 +52,14 @@ void Scene::reset() {
 
 void Scene::update(double dt) {
     t += dt;
-    updateDefaults(dt);
+}
+
+void Scene::updateDefaults(double dt) {
+    (void) dt;
+
+    for (auto &button : buttons) {
+        button->update(t);
+    }
 }
 
 std::string Scene::message(const std::string &data) {
@@ -86,14 +93,6 @@ void Scene::handleKeyboardDefault(int key, int action, const std::unique_ptr<std
                 pressButton(button);
             }
         }
-    }
-}
-
-void Scene::updateDefaults(double dt) {
-    (void) dt;
-
-    for (auto &button : buttons) {
-        button->update(t);
     }
 }
 

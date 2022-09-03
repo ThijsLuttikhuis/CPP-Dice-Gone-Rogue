@@ -702,11 +702,10 @@ bool BattleScene::checkVictory() {
     }
     if (allEnemiesDead) {
         auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
-        gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
-        updateRerunBattle(true);
 
         gameStatePtr->getGameProgress()->completeLevel(level, gameStatePtr->getInventory());
-
+        gameStatePtr->pushSceneToStack("BattleVictoryScene", true);
+        updateRerunBattle(true);
 
         return true;
     }

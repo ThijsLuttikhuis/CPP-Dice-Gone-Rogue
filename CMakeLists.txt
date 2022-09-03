@@ -45,8 +45,8 @@ set(INCLUDE_GAMEOBJECT
         )
 
 set(INCLUDE_IOFILEMANAGER
-        src/io/YamlReader.cpp
-        src/io/YamlReader.h
+        src/io/yamlreader/YamlReader.cpp
+        src/io/yamlreader/YamlReader.h
         )
 
 set(INCLUDE_SCENE
@@ -106,7 +106,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/gameobject/effect/PassiveEffect.cpp src/gameobject/effect/PassiveEffect.h)
+        src/gameobject/effect/PassiveEffect.cpp src/gameobject/effect/PassiveEffect.h src/io/yamlreader/YamlReaderCharacters.h src/io/yamlreader/YamlReaderItems.h)
 
 
 add_executable(DiceGoneRogue main.cpp

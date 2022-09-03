@@ -8,6 +8,8 @@
 
 #include "utilities/Constants.h"
 #include "YamlReader.h"
+#include "YamlReaderCharacters.h"
+#include "YamlReaderItems.h"
 
 namespace DGR {
 
@@ -16,27 +18,27 @@ YamlReader::YamlReader() {
 
     keyToFunc["characters"] = std::make_shared<YamlHandleCharacters>();
 
-    keyToFunc["knight"] = std::make_shared<YamlHandleCharacter>("knight", stringCode::hero);
-    keyToFunc["rogue"] = std::make_shared<YamlHandleCharacter>("rogue", stringCode::hero);
-    keyToFunc["paladin"] = std::make_shared<YamlHandleCharacter>("paladin", stringCode::hero);
-    keyToFunc["druid"] = std::make_shared<YamlHandleCharacter>("druid", stringCode::hero);
-    keyToFunc["wizard"] = std::make_shared<YamlHandleCharacter>("wizard", stringCode::hero);
-    keyToFunc["priest"] = std::make_shared<YamlHandleCharacter>("priest", stringCode::hero);
-    keyToFunc["ranger"] = std::make_shared<YamlHandleCharacter>("ranger", stringCode::hero);
+    std::vector<std::string> heroNames = {"knight", "rogue", "paladin", "druid", "wizard", "priest", "ranger"};
+    for (const auto& heroName : heroNames) {
+        keyToFunc[heroName] = std::make_shared<YamlHandleCharacter>(heroName, stringCode::hero);
+    }
 
-    keyToFunc["skeleton"] = std::make_shared<YamlHandleCharacter>("skeleton", stringCode::enemy);
-    keyToFunc["rat"] = std::make_shared<YamlHandleCharacter>("rat", stringCode::enemy);
-    keyToFunc["slime"] = std::make_shared<YamlHandleCharacter>("slime", stringCode::enemy);
-    keyToFunc["dragon"] = std::make_shared<YamlHandleCharacter>("dragon", stringCode::enemy);
+    std::vector<std::string> enemyNames = {"skeleton", "rat", "slime", "dragon"};
+    for (const auto& enemyName : enemyNames) {
+        keyToFunc[enemyName] = std::make_shared<YamlHandleCharacter>(enemyName, stringCode::enemy);
+    }
+
+    std::vector<std::string> itemNames = {"ring of vigor", "ring of courage", "thornmail"};
+    for (const auto& itemName : itemNames) {
+        keyToFunc[itemName] = std::make_shared<YamlHandleItem>(itemName, stringCode::item);
+    }
 
     keyToFunc["spell"] = std::make_shared<YamlHandleSpell>();
     keyToFunc["dice"] = std::make_shared<YamlHandleDice>();
-    keyToFunc["face0"] = std::make_shared<YamlHandleFace>(0);
-    keyToFunc["face1"] = std::make_shared<YamlHandleFace>(1);
-    keyToFunc["face2"] = std::make_shared<YamlHandleFace>(2);
-    keyToFunc["face3"] = std::make_shared<YamlHandleFace>(3);
-    keyToFunc["face4"] = std::make_shared<YamlHandleFace>(4);
-    keyToFunc["face5"] = std::make_shared<YamlHandleFace>(5);
+
+    for (int i = 0; i < 6; i++) {
+        keyToFunc["face" + std::to_string(i)] = std::make_shared<YamlHandleFace>(i);
+    }
 
     keyToFunc["hp"] = std::make_shared<YamlHandleInt>(stringCode::hp);
     keyToFunc["size"] = std::make_shared<YamlHandleInt>(stringCode::size);

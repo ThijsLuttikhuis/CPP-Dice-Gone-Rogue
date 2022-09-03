@@ -18,7 +18,7 @@ items:
     cost: 120;
     effect:
       hp:
-        multiplier: 1.05;
+        multiplier: 1.1;
       ;
     ;
   ;
