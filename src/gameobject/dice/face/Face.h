@@ -6,6 +6,7 @@
 #define DICEGONEROGUE_FACE_H
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <map>
 #include <utility>
@@ -15,14 +16,16 @@
 #include "shaders/TextRenderer.h"
 #include "FaceModifier.h"
 #include "FaceType.h"
-#include "Dice.h"
+#include "gameobject/dice/Dice.h"
 
 namespace DGR {
+
+class BattleScene;
 
 class Dice;
 
 class Face : public std::enable_shared_from_this<Face> {
-private:
+protected:
     std::string name;
     std::weak_ptr<Dice> dice{};
 
@@ -31,11 +34,11 @@ private:
     int bonusValuePerLevel{};
 
     /// face stats
-    int face_{};
+    int face_;
 
     int level1DefaultValue{};
     int value{};
-    FaceType type{};
+
     FaceModifier modifiers{};
 
     bool hover = false;
@@ -46,13 +49,18 @@ private:
                          const std::unique_ptr<TextRenderer> &textRenderer,
                          glm::vec2 position) const;
 
+    static void applySweepingEdge(const std::shared_ptr<Character> &character, const std::shared_ptr<Face> &face,
+                                  const std::shared_ptr<BattleScene> &battleScene, bool isFoe);
+
 public:
-    Face(int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers = {})
+    explicit Face(int face_) : face_(face_) {};
+
+    Face(int face_, int value, int bonusValuePerLevel, FaceModifier modifiers = {})
           : bonusValuePerLevel(bonusValuePerLevel), face_(face_), level1DefaultValue(value), value(value),
-            type(type), modifiers(modifiers) {};
+            modifiers(modifiers) {};
 
     Face(std::string name, std::weak_ptr<Dice> dice, int face_,
-         int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers);
+         int value, int bonusValuePerLevel, FaceModifier modifiers);
 
     /// getters
     [[nodiscard]] std::shared_ptr<Face> getSharedFromThis();
@@ -67,39 +75,45 @@ public:
 
     [[nodiscard]] int getValue() const;
 
-    [[nodiscard]] FaceType getFaceType() const;
-
     [[nodiscard]] FaceModifier getModifiers() const;
 
-    [[nodiscard]] std::shared_ptr<Face> makeCopy() const;
+    [[nodiscard]] virtual std::shared_ptr<Face> makeCopy() const = 0;
 
-    [[nodiscard]] std::string getToolTipString() const;
+    [[nodiscard]] virtual std::string getToolTipString() const;
+
+    [[nodiscard]] int getBonusValuePerLevel() const;
+
+    [[nodiscard]] virtual std::string toString() const;
 
     /// setters
     void setName(const std::string &name_);
 
-    void setValue(int value_);
+    virtual void setValue(int value_);
 
-    void setBonusValuePerLevel(int bonus);
+    virtual void setBonusValuePerLevel(int bonus);
+
+    virtual void addModifier(FaceModifier::modifier modifier);
+
+    virtual void addModifier(const std::string &modifierStr);
+
+    virtual void removeModifier(FaceModifier::modifier modifier);
+
+    virtual void setModifiers(unsigned int modifiers_);
+
+    virtual void setModifiers(FaceModifier modifiers_);
 
     void setHover(bool hover_);
-
-    void setType(FaceType type);
-
-    void setType(FaceType::faceType type_);
-
-    void addModifier(FaceModifier::modifier modifier);
-
-    void addModifier(const std::string &modifierStr);
-
-    void removeModifier(FaceModifier::modifier modifier);
-
-    void setModifiers(unsigned int modifiers_);
 
     void setDice(const std::weak_ptr<Dice> &dice);
 
     /// functions
     void levelUp();
+
+    virtual bool interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
+
+    virtual bool interactFriendly(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
+
+    virtual bool interactFoe(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
 
     /// render
     void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,

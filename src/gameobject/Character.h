@@ -46,6 +46,7 @@ private:
 
     /// battle stats
     int level1DefaultMaxHP = 0;
+
     int hp = 0;
     int maxHP = 0;
     int shield = 0;
@@ -60,6 +61,7 @@ private:
 
     /// level bonus stats
     double hpFactorPerLevel = 1.2;
+
     int getMaxHpAtLevel(int level);
 
     void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
@@ -88,7 +90,7 @@ public:
     /// getters
     [[nodiscard]] std::shared_ptr<Character> getSharedFromThis();
 
-    [[nodiscard]]  std::shared_ptr<Dice> getDice() const;
+    [[nodiscard]] std::shared_ptr<Dice> getDice() const;
 
     [[nodiscard]] bool isDead() const;
 
@@ -111,6 +113,24 @@ public:
     [[nodiscard]] double getXPBarFill(double percent) const;
 
     [[nodiscard]] int xpToLevelUp(int currentLevel) const;
+
+    [[nodiscard]] const std::map<Item::itemSlot, std::shared_ptr<Item>> &getItems() const;
+
+    [[nodiscard]] int getHP() const;
+
+    [[nodiscard]] int getMaxHP() const;
+
+    [[nodiscard]] int getShield() const;
+
+    [[nodiscard]] int getIncomingPoison() const;
+
+    [[nodiscard]] int getIncomingRegen() const;
+
+    [[nodiscard]]  int getPoison() const;
+
+    [[nodiscard]]  int getRegen() const;
+
+    [[nodiscard]]  bool isBackRow() const;
 
     /// setters
     void setDice(const std::shared_ptr<Dice> &dice);

@@ -23,30 +23,40 @@ set(LIBS ${LIBS} GLAD)
 set(INCLUDE_GAMEOBJECT
         src/gameobject/dice/Dice.cpp
         src/gameobject/dice/Dice.h
-        src/gameobject/dice/Face.cpp
-        src/gameobject/dice/Face.h
-        src/gameobject/dice/FaceModifier.cpp
-        src/gameobject/dice/FaceModifier.h
-        src/gameobject/dice/FaceType.cpp
-        src/gameobject/dice/FaceType.h
+        src/gameobject/dice/face/Face.cpp
+        src/gameobject/dice/face/Face.h
+        src/gameobject/dice/face/FaceModifier.cpp
+        src/gameobject/dice/face/FaceModifier.h
+        src/gameobject/dice/face/FaceType.cpp
+        src/gameobject/dice/face/FaceType.h
 
         src/gameobject/item/Item.cpp
         src/gameobject/item/Item.h
+        src/gameobject/item/ItemEffect.cpp
+        src/gameobject/item/ItemEffect.h
 
         src/gameobject/spell/Spell.cpp
         src/gameobject/spell/Spell.h
         src/gameobject/spell/SpellType.cpp
         src/gameobject/spell/SpellType.h
 
+        src/gameobject/passive/PassiveEffect.cpp
+        src/gameobject/passive/PassiveEffect.h
+
         src/gameobject/Character.cpp
         src/gameobject/Character.h
         src/gameobject/GameObject.cpp
         src/gameobject/GameObject.h
-        )
+        src/gameobject/dice/face/FaceDamage.cpp src/gameobject/dice/face/FaceDamage.h)
 
 set(INCLUDE_IOFILEMANAGER
         src/io/yamlreader/YamlReader.cpp
         src/io/yamlreader/YamlReader.h
+        src/io/yamlreader/YamlReaderCharacters.h
+        src/io/yamlreader/YamlReaderItems.h
+
+        src/io/BattleLog.cpp
+        src/io/BattleLog.h
         )
 
 set(INCLUDE_SCENE
@@ -99,14 +109,12 @@ set(INCLUDE_UI
 set(INCLUDE_UTILITIES
         src/utilities/Utilities.cpp
         src/utilities/Utilities.h
-        src/io/BattleLog.cpp
-        src/io/BattleLog.h
         src/utilities/Random.cpp
         src/utilities/Random.h
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/gameobject/effect/PassiveEffect.cpp src/gameobject/effect/PassiveEffect.h src/io/yamlreader/YamlReaderCharacters.h src/io/yamlreader/YamlReaderItems.h)
+        src/gameobject/dice/face/FaceShield.cpp src/gameobject/dice/face/FaceShield.h src/gameobject/dice/face/FaceEmpty.cpp src/gameobject/dice/face/FaceEmpty.h)
 
 
 add_executable(DiceGoneRogue main.cpp

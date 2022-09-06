@@ -61,8 +61,10 @@ void BattleVictoryScene::handleMouseButton(double xPos, double yPos) {
         for (int i = 0; i < 6; i++) {
             auto face = dice->getFace(i);
             if (face->isMouseHovering(xPos, yPos)) {
-                face->levelUp();
-                state = get_xp;
+                if (face->getBonusValuePerLevel()) {
+                    face->levelUp();
+                    state = get_xp;
+                }
             }
         }
     }
@@ -175,7 +177,6 @@ void BattleVictoryScene::render(const std::unique_ptr<SpriteRenderer> &spriteRen
                 currentFace->drawLevelUpComparison(spriteRenderer, textRenderer,
                                                    currentFace->getPosition(Dice::dice_layout_pos));
             }
-
     }
 
 }

@@ -18,12 +18,13 @@
 
 #include "gameobject/Character.h"
 #include "gameobject/dice/Dice.h"
-#include "gameobject/dice/Face.h"
+#include "gameobject/dice/face/Face.h"
 #include "gameobject/spell/Spell.h"
 
 namespace DGR {
 
 enum struct stringCode : int {
+    empty,
     characters,
     name,
     hero,
@@ -57,7 +58,11 @@ enum struct stringCode : int {
     items,
     item,
 
-    empty,
+    item_level,
+    item_slot,
+    item_effect,
+
+
 };
 
 class YamlHandle {

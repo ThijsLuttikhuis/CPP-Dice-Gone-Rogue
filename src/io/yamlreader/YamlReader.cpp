@@ -71,6 +71,11 @@ YamlReader::YamlReader() {
     keyToFunc["damage if full health"] = std::make_shared<YamlHandleInt>(stringCode::damage_if_full_health);
     keyToFunc["kill if below threshold"] = std::make_shared<YamlHandleInt>(stringCode::kill_if_below_threshold);
 
+    keyToFunc["level"] = std::make_shared<YamlHandleInt>(stringCode::item_level);
+    keyToFunc["cost"] = std::make_shared<YamlHandleInt>(stringCode::cost);
+    keyToFunc["slot"] = std::make_shared<YamlHandleInt>(stringCode::item_slot);
+
+
 }
 
 void YamlReader::readFile(const std::string &name) {

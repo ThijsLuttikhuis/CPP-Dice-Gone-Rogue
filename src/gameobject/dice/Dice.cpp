@@ -8,7 +8,7 @@
 #include <utilities/Utilities.h>
 
 #include "Dice.h"
-#include "Face.h"
+#include "gameobject/dice/face/Face.h"
 #include "utilities/Random.h"
 #include "utilities/Constants.h"
 #include "gameobject/Character.h"
@@ -168,12 +168,12 @@ void Dice::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
 
     faces[currentFace]->draw(spriteRenderer);
 
-    float skew = 30.0f;
+    float skew = 15.0f;
 
-    faces[upFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-10, -13.5),
+    faces[upFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-8, -13.5),
                                          upRotate[currentFace], skew, 0.0f, 0.2f, 1.0f);
 
-    faces[rightFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-3, -3),
+    faces[rightFace[currentFace]]->drawFace(spriteRenderer, getPosition(Dice::current_face_pos) + glm::vec2(-2, -1),
                                             rightRotate[currentFace], 0.0f, skew, 1.0f, 0.25f);
 
     // draw lock symbol if dice is locked

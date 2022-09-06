@@ -57,7 +57,13 @@ void Scene::update(double dt) {
 void Scene::updateDefaults(double dt) {
     (void) dt;
 
+    if (buttons.size() > 100) {
+        std::cout << "RRRRR" << std::endl;
+    }
     for (auto &button : buttons) {
+        if (!button) {
+            continue;
+        }
         button->update(t);
     }
 }

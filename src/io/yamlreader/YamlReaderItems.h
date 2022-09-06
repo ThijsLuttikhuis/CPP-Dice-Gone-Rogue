@@ -37,6 +37,7 @@ class YamlHandleItem : public YamlHandle {
     int level{};
     int cost{};
     Item::itemSlot slot{};
+    ItemEffect effect{};
     std::string name;
 public:
     explicit YamlHandleItem(std::string name, stringCode stringCode)
@@ -51,16 +52,19 @@ public:
 
     void handle(std::shared_ptr<YamlHandle> yamlHandle) override {
         switch (yamlHandle->getType()) {
-            case stringCode::hp:
+            case stringCode::item_level:
                 level = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
-            case stringCode::size:
+            case stringCode::cost:
                 cost = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
-            case stringCode::spell:
+            case stringCode::item_slot:
                 slot = *std::static_pointer_cast<Item::itemSlot>(yamlHandle->getFeature()).get();
                 break;
-            default:
+            case stringCode::item_effect:
+                effect = *std::static_pointer_cast<ItemEffect>(yamlHandle->getFeature()).get();
+                break;
+                default:
                 std::cerr << "[YamlHandleItem] unsupported feature: " <<
                           static_cast<int>(yamlHandle->getType()) << std::endl;
                 exit(4);
@@ -68,7 +72,7 @@ public:
     }
 
     std::shared_ptr<void> getFeature() override {
-        std::shared_ptr<Item> item = std::make_shared<Item>(name, cost, slot, ItemEffect(), level);
+        std::shared_ptr<Item> item = std::make_shared<Item>(name, cost, slot, effect, level);
         return item;
     };
 };

@@ -2,14 +2,14 @@
 // Created by thijs on 01-06-22.
 //
 
-#include <sstream>
 #include <iostream>
 #include <utility>
 #include <utilities/Utilities.h>
 
 #include "Face.h"
-#include "Dice.h"
+#include "gameobject/dice/Dice.h"
 #include "utilities/Constants.h"
+#include "scene/BattleScene.h"
 
 namespace DGR {
 
@@ -23,14 +23,9 @@ const std::vector<glm::vec2> Face::faceDeltaPos = {{
 
 
 Face::Face(std::string name, std::weak_ptr<Dice> dice,
-           int face_, int value, int bonusValuePerLevel, FaceType type, FaceModifier modifiers)
+           int face_, int value, int bonusValuePerLevel, FaceModifier modifiers)
       : name(std::move(name)), dice(std::move(dice)), bonusValuePerLevel(bonusValuePerLevel), face_(face_),
-        level1DefaultValue(value), value(value), type(type), modifiers(modifiers) {
-}
-
-std::shared_ptr<Face> Face::makeCopy() const {
-    auto copy = std::make_shared<Face>(name, dice, face_, value, bonusValuePerLevel, type, modifiers);
-    return copy;
+        level1DefaultValue(value), value(value), modifiers(modifiers) {
 }
 
 int Face::getFace_() const {
@@ -39,10 +34,6 @@ int Face::getFace_() const {
 
 int Face::getValue() const {
     return value;
-}
-
-FaceType Face::getFaceType() const {
-    return type;
 }
 
 FaceModifier Face::getModifiers() const {
@@ -84,14 +75,6 @@ void Face::setName(const std::string &name_) {
     name = name_;
 }
 
-void Face::setType(FaceType::faceType type_) {
-    type = type_;
-}
-
-void Face::setType(FaceType type_) {
-    type = type_;
-}
-
 void Face::setValue(int value_) {
     level1DefaultValue = value = value_;
 }
@@ -114,6 +97,10 @@ void Face::addModifier(const std::string &modifierStr) {
 
 void Face::setModifiers(unsigned int modifiers_) {
     modifiers.setModifiers(modifiers_);
+}
+
+void Face::setModifiers(FaceModifier modifiers_) {
+    modifiers = modifiers_;
 }
 
 void Face::removeModifier(FaceModifier::modifier modifier) {
@@ -166,9 +153,11 @@ void Face::drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRe
 
 
     drawFace(spriteRenderer, position);
-
     drawFaceToolTip(spriteRenderer, textRenderer, position);
 
+    if (!bonusValuePerLevel) {
+        return;
+    }
 
     int tooltipWidth = 96;
     int arrowWidth = 16;
@@ -177,7 +166,7 @@ void Face::drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRe
     spriteRenderer->drawSprite("arrow", 0.0f,
                                position, glm::vec2(arrowWidth));
 
-    position += glm::vec2(arrowWidth - 5, +5);
+    position += glm::vec2(arrowWidth - 5, 5);
 
     levelUp();
     drawFaceToolTip(spriteRenderer, textRenderer, position);
@@ -245,7 +234,7 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
 
         glm::vec2 tickValueSize;
         glm::vec2 tickValuePos;
-        if (tens > 0 && h < maxH-3) {
+        if (tens > 0 && h < maxH - 3) {
             tickValueSize = glm::vec2(2, 3);
             tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 2);
             color = glm::vec3(1.0f, 0.5f, 0.0f);
@@ -255,7 +244,7 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
             h += 4;
             continue;
         }
-        if (fives > 0 && h < maxH-2) {
+        if (fives > 0 && h < maxH - 2) {
             tickValueSize = glm::vec2(2, 2);
             tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h - 1);
 
@@ -266,7 +255,7 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
             h += 3;
             continue;
         }
-        if ((IV && maxH-3) || (IX && h < maxH-4)) {
+        if ((IV && maxH - 3) || (IX && h < maxH - 4)) {
             tickValueSize = glm::vec2(2, 1);
             tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h);
 
@@ -297,7 +286,7 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
             }
             continue;
         }
-        if (ones > 0 && h < maxH-1) {
+        if (ones > 0 && h < maxH - 1) {
             tickValueSize = glm::vec2(2, 1);
             tickValuePos = position + tickValueDeltaPos + glm::vec2(0, -h);
 
@@ -311,8 +300,8 @@ void Face::drawFace(const std::unique_ptr<SpriteRenderer> &spriteRenderer, glm::
         break;
     }
 
-    std::string textureNameGeneric = "hero_" + type.toString();
-    std::string textureNameSpecific = name + "_" + type.toString();
+    std::string textureNameGeneric = "hero_" + toString();
+    std::string textureNameSpecific = name + "_" + toString();
 
     Utilities::spaceToUnderscore(textureNameGeneric);
     Utilities::spaceToUnderscore(textureNameSpecific);
@@ -355,10 +344,7 @@ std::shared_ptr<Face> Face::getSharedFromThis() {
 
 std::string Face::getToolTipString() const {
     std::ostringstream tooltipOSS;
-    if (value >= 0 && type != FaceType::empty) {
-        tooltipOSS << value << " ";
-    }
-    tooltipOSS << type.toString();
+    tooltipOSS << value << " " << toString();
 
     auto modStr = modifiers.toString();
     if (!modStr.empty()) {
@@ -376,5 +362,54 @@ void Face::levelUp() {
 void Face::setBonusValuePerLevel(int bonus) {
     bonusValuePerLevel = bonus;
 }
+
+int Face::getBonusValuePerLevel() const {
+    return bonusValuePerLevel;
+}
+
+std::string Face::toString() const {
+    return "none";
+}
+
+bool Face::interactSelf(std::shared_ptr<Character> character,
+                        std::shared_ptr<BattleScene> battleScene) {
+    (void) character, (void) battleScene;
+
+    return false;
+}
+
+bool Face::interactFriendly(std::shared_ptr<Character> character,
+                        std::shared_ptr<BattleScene> battleScene) {
+    (void) character, (void) battleScene;
+
+    return false;
+}
+
+bool Face::interactFoe(std::shared_ptr<Character> character,
+                        std::shared_ptr<BattleScene> battleScene) {
+    (void) character, (void) battleScene;
+
+    return false;
+}
+
+
+void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const std::shared_ptr<Face> &face,
+                                              const std::shared_ptr<BattleScene> &battleScene, bool isFoe) {
+
+    face->removeModifier(FaceModifier::modifier::sweeping_edge);
+    auto neighbours = battleScene->getNeighbours(character);
+    for (auto &neighbour : {neighbours.first, neighbours.second}) {
+        if (neighbour) {
+            if (isFoe) {
+                face->interactFoe(neighbour, battleScene);
+            }
+            else {
+                face->interactFriendly(neighbour, battleScene);
+            }
+        }
+    }
+    face->addModifier(FaceModifier::modifier::sweeping_edge);
+}
+
 
 }

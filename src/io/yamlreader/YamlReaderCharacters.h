@@ -5,6 +5,9 @@
 #ifndef DICEGONEROGUE_YAMLREADERCHARACTERS_H
 #define DICEGONEROGUE_YAMLREADERCHARACTERS_H
 
+#include <gameobject/dice/face/FaceDamage.h>
+#include <gameobject/dice/face/FaceEmpty.h>
+#include <gameobject/dice/face/FaceShield.h>
 #include "YamlReader.h"
 
 namespace DGR {
@@ -152,10 +155,10 @@ public:
 };
 
 class YamlHandleFace : public YamlHandle {
-    int face_;
+    const int face_;
     int faceBonus = 1;
     int value = 0;
-    FaceType type = {};
+    std::shared_ptr<Face> face = {};
     FaceModifier modifiers = FaceModifier();
 public:
     explicit YamlHandleFace(int face_) : YamlHandle(stringCode::face), face_(face_) {};
@@ -163,8 +166,8 @@ public:
     void reset() override {
         value = {};
         faceBonus = {};
-        type = FaceType::empty;
         modifiers = FaceModifier();
+        face = {};
     }
 
     void handle(std::shared_ptr<YamlHandle> yamlHandle) override {
@@ -173,51 +176,51 @@ public:
                 faceBonus = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage:
-                type = FaceType::damage;
+                face = std::make_shared<FaceDamage>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::shield:
-                type = FaceType::shield;
+                face = std::make_shared<FaceShield>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal:
-                type = FaceType::heal;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::bonus_health:
-                type = FaceType::bonus_health;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::mana:
-                type = FaceType::mana;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::shield_and_mana:
-                type = FaceType::shield_and_mana;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_and_shield:
-                type = FaceType::heal_and_shield;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_and_self_shield:
-                type = FaceType::damage_and_self_shield;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_and_mana:
-                type = FaceType::heal_and_mana;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_and_mana:
-                type = FaceType::damage_and_mana;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::dodge:
-                type = FaceType::dodge;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = 0;
                 break;
             case stringCode::empty:
-                type = FaceType::empty;
+                face = std::make_shared<FaceEmpty>(face_);
                 value = 0;
                 break;
             case stringCode::mod:
@@ -231,7 +234,15 @@ public:
     }
 
     std::shared_ptr<void> getFeature() override {
-        return std::make_shared<Face>(face_, value, faceBonus, type, modifiers);
+        if (!face) {
+            std::cerr << "[YamlHandleFace] face not set!" << std::endl;
+            exit(4);
+        }
+        face->setValue(value);
+        face->setBonusValuePerLevel(faceBonus);
+        face->setModifiers(modifiers);
+
+        return face;
     };
 };
 

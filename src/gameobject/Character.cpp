@@ -7,7 +7,7 @@
 #include <utilities/Utilities.h>
 
 #include "Character.h"
-#include "dice/Face.h"
+#include "gameobject/dice/face/Face.h"
 #include "dice/Dice.h"
 #include "spell/Spell.h"
 #include "GameStateManager.h"
@@ -184,6 +184,10 @@ void Character::setDodging(bool isDodging_) {
     isDodging = isDodging_;
 }
 
+void Character::setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item) {
+    items[itemSlot] = std::move(item);
+}
+
 void Character::setIncomingDamage(int incomingDamage_) {
     incomingDamage = incomingDamage_;
 }
@@ -270,110 +274,132 @@ bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
                          const std::shared_ptr<BattleScene> &battleScene,
                          bool storeAction) {
 
-    bool success = false;
-    std::shared_ptr<Face> face;
-    FaceType type;
     bool differentCharacterType = false;
+    std::shared_ptr<Face> face;
+    bool success;
 
-    // single character interactions
     if (!otherCharacter) {
         face = getDice()->getCurrentFace();
-        type = face->getFaceType();
 
-        switch (type.getType()) {
-            case FaceType::empty:
-                success = true;
-                break;
-            case FaceType::mana:
-                battleScene->addMana(face->getValue());
-                success = true;
-                break;
-            case FaceType::dodge:
-                isDodging = true;
-                success = true;
-                break;
-            default:
-                break;
-        }
+        success = face->interactSelf(getSharedFromThis(), battleScene);
     } else {
-        // interaction with another character of the same type or not
-        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
-
         face = otherCharacter->getDice()->getCurrentFace();
-        type = face->getFaceType();
 
-        switch (type.getType()) {
-            case FaceType::damage:
-                if (differentCharacterType) {
-                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        applyFaceTypeDamage(face, battleScene);
-                        success = true;
-                    }
-                }
-                break;
-            case FaceType::heal:
-                if (!differentCharacterType) {
-                    applyFaceTypeHeal(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::shield:
-                if (!differentCharacterType) {
-                    applyFaceTypeShield(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::bonus_health:
-                if (!differentCharacterType) {
-                    applyFaceTypeBonusHealth(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::undying:
-                //TODO:
-                return false;
-            case FaceType::heal_and_shield:
-                if (!differentCharacterType) {
-                    applyFaceTypeShield(face, battleScene);
-                    applyFaceTypeHeal(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::heal_and_mana:
-                if (!differentCharacterType) {
-                    battleScene->addMana(face->getValue());
-                    applyFaceTypeHeal(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::shield_and_mana:
-                if (!differentCharacterType) {
-                    battleScene->addMana(face->getValue());
-                    applyFaceTypeShield(face, battleScene);
-                    success = true;
-                }
-                break;
-            case FaceType::damage_and_mana:
-                if (differentCharacterType) {
-                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-                        battleScene->addMana(face->getValue());
-                        applyFaceTypeDamage(face, battleScene);
-                        success = true;
-                    }
-                }
-                break;
-            case FaceType::damage_and_self_shield:
-                if (differentCharacterType) {
-                    otherCharacter->applyFaceTypeShield(face, battleScene);
-                    applyFaceTypeDamage(face, battleScene);
-                    success = true;
-                }
-                break;
-            default:
-                return false;
-
+        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
+        if (differentCharacterType) {
+            success = face->interactFoe(getSharedFromThis(), battleScene);
+        } else {
+            success = face->interactFriendly(getSharedFromThis(), battleScene);
         }
     }
+
+
+
+    // single character interactions
+//    if (!otherCharacter) {
+//        face = getDice()->getCurrentFace();
+//        if (face->interact()) {
+//
+//
+//
+//
+//        face = getDice()->getCurrentFace();
+//        type = face->getFaceType();
+//
+//        switch (type.getType()) {
+//            case FaceType::empty:
+//                success = true;
+//                break;
+//            case FaceType::mana:
+//                battleScene->addMana(face->getValue());
+//                success = true;
+//                break;
+//            case FaceType::dodge:
+//                isDodging = true;
+//                success = true;
+//                break;
+//            default:
+//                break;
+//        }
+//    } else {
+//        // interaction with another character of the same type or not
+//        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
+//
+//        face = otherCharacter->getDice()->getCurrentFace();
+//        type = face->getFaceType();
+//
+//        switch (type.getType()) {
+//            case FaceType::damage:
+//                if (differentCharacterType) {
+//                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
+//                        applyFaceTypeDamage(face, battleScene);
+//                        success = true;
+//                    }
+//                }
+//                break;
+//            case FaceType::heal:
+//                if (!differentCharacterType) {
+//                    applyFaceTypeHeal(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::shield:
+//                if (!differentCharacterType) {
+//                    applyFaceTypeShield(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::bonus_health:
+//                if (!differentCharacterType) {
+//                    applyFaceTypeBonusHealth(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::undying:
+//                //TODO:
+//                return false;
+//            case FaceType::heal_and_shield:
+//                if (!differentCharacterType) {
+//                    applyFaceTypeShield(face, battleScene);
+//                    applyFaceTypeHeal(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::heal_and_mana:
+//                if (!differentCharacterType) {
+//                    battleScene->addMana(face->getValue());
+//                    applyFaceTypeHeal(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::shield_and_mana:
+//                if (!differentCharacterType) {
+//                    battleScene->addMana(face->getValue());
+//                    applyFaceTypeShield(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            case FaceType::damage_and_mana:
+//                if (differentCharacterType) {
+//                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
+//                        battleScene->addMana(face->getValue());
+//                        applyFaceTypeDamage(face, battleScene);
+//                        success = true;
+//                    }
+//                }
+//                break;
+//            case FaceType::damage_and_self_shield:
+//                if (differentCharacterType) {
+//                    otherCharacter->applyFaceTypeShield(face, battleScene);
+//                    applyFaceTypeDamage(face, battleScene);
+//                    success = true;
+//                }
+//                break;
+//            default:
+//                return false;
+//
+//        }
+//    }
     if (success) {
         if (face->getModifiers().hasModifier(FaceModifier::modifier::growth)) {
             face->setValue(face->getValue() + 1);
@@ -383,7 +409,7 @@ bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
         }
         if (face->getModifiers().hasModifier(FaceModifier::modifier::single_use)) {
             face->setModifiers(0);
-            face->setType(FaceType::empty);
+            //face->setType(FaceType::empty);
             face->setValue(0);
         }
     }
@@ -453,7 +479,6 @@ void Character::applySpellTypeDamage(const std::shared_ptr<Spell> &spell_,
     int value = spell_->getValue();
     incomingDamage += value;
 }
-
 
 void Character::applySpellTypeCleanse(const std::shared_ptr<Spell> &spell_,
                                       const std::shared_ptr<BattleScene> &battleScene) {
@@ -773,8 +798,40 @@ void Character::drawKey(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
     }
 }
 
-void Character::setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item) {
-    items[itemSlot] = std::move(item);
+const std::map<Item::itemSlot, std::shared_ptr<Item>> &Character::getItems() const {
+    return items;
+}
+
+int Character::getHP() const {
+    return hp;
+}
+
+int Character::getMaxHP() const {
+    return maxHP;
+}
+
+int Character::getShield() const {
+    return shield;
+}
+
+int Character::getIncomingPoison() const {
+    return incomingPoison;
+}
+
+int Character::getIncomingRegen() const {
+    return incomingRegen;
+}
+
+int Character::getPoison() const {
+    return poison;
+}
+
+int Character::getRegen() const {
+    return regen;
+}
+
+bool Character::isBackRow() const {
+    return backRow;
 }
 
 }

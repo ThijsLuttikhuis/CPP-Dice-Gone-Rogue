@@ -1,243 +1,263 @@
-.dgr.version=0.3
+  .dgr.version=0.3
 
-characters:
-  knight:
-    size: 32;
-    hp: 12;
-    dice:
-      face0:
-        damage: 50;
-        mod: "sweeping edge";
-        bonus: 2;
-      ;
-      face1:
-        damage: 30;
-        mod: "sweeping edge";
-        bonus: 2;
-      ;
-      face2:
-        damage: 50;
-        mod: "sweeping edge";
-        bonus: 2;
-      ;
-      face3:
-        damage: 30;
-        mod: "sweeping edge";
-        bonus: 2;
-      ;
-      face4:
-        shield: 50;
-        mod: "sweeping edge";
-        bonus: 2;
-      ;
-      face5:
-        shield: 30;
-        mod: "sweeping edge";
-        bonus: 2;
+  characters:
+    knight:
+      size: 32;
+      hp: 12;
+      dice:
+        face0:
+          damage: 50;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
+        face1:
+          damage: 30;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
+        face2:
+          damage: 50;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
+        face3:
+          damage: 30;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
+        face4:
+          shield: 50;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
+        face5:
+          shield: 30;
+          mod: "sweeping edge";
+          bonus: 2;
+        ;
       ;
     ;
-  ;
 
-  rogue:
-    size: 32;
-    hp: 9;
-    dice:
-      face0:
-        damage: 2;
-        mod: "poison";
-      ;
-      face1:
-        damage: 3;
-        mod: "ranged";
-        bonus: 2;
-      ;
-      face2:
-        dodge: 0;
-        bonus: 0;
-      ;
-      face3:
-        damage: 3;
-        mod: "ranged";
-        bonus: 2;
-      ;
-      face4:
-        damage: 3;
-        mod: "first blood";
-        mod1: "single use";
-      ;
-      face5:
-        damage: 3;
+    rogue:
+      size: 32;
+      hp: 9;
+      dice:
+        face0:
+          damage: 2;
+          mod: "poison";
+          bonus: 1;
+        ;
+        face1:
+          damage: 3;
+          mod: "ranged";
+          bonus: 2;
+        ;
+        face2:
+          dodge: 0;
+          bonus: 0;
+        ;
+        face3:
+          damage: 3;
+          mod: "ranged";
+          bonus: 2;
+        ;
+        face4:
+          damage: 3;
           mod: "first blood";
           mod1: "single use";
+          bonus: 1;
+        ;
+        face5:
+          damage: 3;
+          mod: "first blood";
+          mod1: "single use";
+          bonus: 1;
+        ;
       ;
     ;
-  ;
 
-  ranger:
-    size: 32;
-    hp: 10;
-    dice:
-      face0:
-        damage: 6;
-        mod: "ranged";
-        bonus: 2;
-      ;
-      face1:
-        damage: 1;
-        mod: "poison";
-      ;
-      face2:
-        damage: 3;
-        bonus: 2;
-        mod: "ranged";
-      ;
-      face3:
-        damage: 1;
-        mod: "poison";
-      ;
-      face4:
-        damage: 2;
-        bonus: 2;
-        mod: "ranged";
-      ;
-      face5:
-        damage: 1;
-        bonus: 2;
+    ranger:
+      size: 32;
+      hp: 10;
+      dice:
+        face0:
+          damage: 6;
           mod: "ranged";
+          bonus: 2;
+        ;
+        face1:
+          damage: 1;
+          mod: "poison";
+          bonus: 1;
+        ;
+        face2:
+          damage: 3;
+          bonus: 2;
+          mod: "ranged";
+        ;
+        face3:
+          damage: 1;
+          mod: "poison";
+          bonus: 1;
+        ;
+        face4:
+          damage: 2;
+          bonus: 2;
+          mod: "ranged";
+        ;
+        face5:
+          damage: 1;
+          bonus: 2;
+          mod: "ranged";
+        ;
       ;
     ;
-  ;
 
-  paladin:
-    size: 32;
-    hp: 14;
-    dice:
-      face0:
-        damage and self shield: 3;
-      ;
-      face1:
-        shield: 2;
-        mod: "sweeping edge";
-        mod1: "single use";
-      ;
-      face2:
-        damage and self shield: 3;
-      ;
-      face3:
-        shield: 2;
-        mod: "sweeping edge";
-        mod1: "single use";
-      ;
-      face4:
-        heal and shield: 2;
-      ;
-      face5:
-        empty: 0;
-        bonus: 0;
+    paladin:
+      size: 32;
+      hp: 14;
+      dice:
+        face0:
+          damage and self shield: 3;
+          bonus: 1;
+        ;
+        face1:
+          shield: 2;
+          mod: "sweeping edge";
+          mod1: "single use";
+            bonus: 1;
+        ;
+        face2:
+          damage and self shield: 3;
+          bonus: 1;
+        ;
+        face3:
+          shield: 2;
+          mod: "sweeping edge";
+          mod1: "single use";
+          bonus: 1;
+        ;
+        face4:
+          heal and shield: 2;
+          bonus: 1;
+        ;
+        face5:
+          empty: 0;
+          bonus: 0;
+        ;
       ;
     ;
-  ;
 
-  wizard:
-    size: 32;
-    hp: 8;
-    spell:
-      name: "fireball";
-      damage: 6;
-      cost: 4;
+    wizard:
+      size: 32;
+      hp: 8;
+      spell:
+        name: "fireball";
+        damage: 6;
+        cost: 4;
+      ;
+      dice:
+        face0:
+          shield and mana: 2;
+          bonus: 1;
+        ;
+        face1:
+          mana: 4;
+          mod: "single use";
+          bonus: 2;
+        ;
+        face2:
+          shield and mana: 2;
+          bonus: 1;
+        ;
+        face3:
+          mana: 4;
+          mod: "single use";
+          bonus: 2;
+        ;
+        face4:
+          mana: 2;
+          bonus: 2;
+        ;
+        face5:
+          empty: 0;
+          bonus: 0;
+        ;
+      ;
     ;
-    dice:
-      face0:
-        shield and mana: 2;
-      ;
-      face1:
-        mana: 4;
-        mod: "single use";
-        bonus: 2;
-      ;
-      face2:
-        shield and mana: 2;
-      ;
-      face3:
-        mana: 4;
-        mod: "single use";
-        bonus: 2;
-      ;
-      face4:
-        mana: 2;
-        bonus: 2;
-      ;
-      face5:
-        empty: 0;
-        bonus: 0;
-      ;
-    ;
-  ;
 
-  druid:
-    size: 32;
-    hp: 10;
-    dice:
-      face0:
-        damage: 2;
-        mod: "growth";
-      ;
-      face1:
-        heal: 1;
-        mod: "regen";
-      ;
-      face2:
-        damage: 4;
-        mod: "decay";
-        bonus: 2;
-      ;
-      face3:
-        heal: 1;
-        mod: "regen";
-      ;
-      face4:
-        heal: 2;
-        mod: "growth";
-      ;
-      face5:
-        heal: 4;
-        mod: "decay";
-        bonus: 2;
+    druid:
+      size: 32;
+      hp: 10;
+      dice:
+        face0:
+          damage: 2;
+          mod: "growth";
+            bonus: 1;
+        ;
+        face1:
+          heal: 1;
+          mod: "regen";
+            bonus: 1;
+        ;
+        face2:
+          damage: 4;
+          mod: "decay";
+          bonus: 2;
+        ;
+        face3:
+          heal: 1;
+          mod: "regen";
+          bonus: 1;
+        ;
+        face4:
+          heal: 2;
+          mod: "growth";
+          bonus: 1;
+        ;
+        face5:
+          heal: 4;
+          mod: "decay";
+          bonus: 2;
+        ;
       ;
     ;
-  ;
 
-  priest:
-    size: 32;
-    hp: 9;
-    spell:
-      name: "cleanse";
-      cleanse: 0;
-      cost: 2;
+    priest:
+      size: 32;
+      hp: 9;
+      spell:
+        name: "cleanse";
+        cleanse: 0;
+        cost: 2;
+      ;
+      dice:
+        face0:
+          bonus health: 3;
+          bonus: 2;
+        ;
+        face1:
+          heal and mana: 2;
+          mod: "single use";
+          bonus: 1;
+        ;
+        face2:
+          bonus health: 3;
+          bonus: 2;
+        ;
+        face3:
+          heal and mana: 2;
+          mod: "single use";
+          bonus: 1;
+        ;
+        face4:
+          damage and mana: 2;
+          bonus: 1;
+        ;
+        face5:
+          empty: 0;
+          bonus: 0;
+        ;
+      ;
     ;
-    dice:
-      face0:
-        bonus health: 3;
-        bonus: 2;
-      ;
-      face1:
-        heal and mana: 2;
-        mod: "single use";
-      ;
-      face2:
-        bonus health: 3;
-        bonus: 2;
-      ;
-      face3:
-        heal and mana: 2;
-        mod: "single use";
-      ;
-      face4:
-        damage and mana: 2;
-      ;
-      face5:
-        empty: 0;
-      ;
     ;
-  ;
-  ;

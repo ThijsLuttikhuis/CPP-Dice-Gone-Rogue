@@ -11,7 +11,7 @@
 
 #include "gameobject/Character.h"
 #include "gameobject/spell/Spell.h"
-#include "gameobject/dice/Face.h"
+#include "gameobject/dice/face/Face.h"
 #include "utilities/Utilities.h"
 
 namespace DGR {

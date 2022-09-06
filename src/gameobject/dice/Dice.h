@@ -11,8 +11,8 @@
 
 #include "shaders/TextRenderer.h"
 #include "shaders/SpriteRenderer.h"
-#include "FaceModifier.h"
-#include "FaceType.h"
+#include "gameobject/dice/face/FaceModifier.h"
+#include "gameobject/dice/face/FaceType.h"
 
 namespace DGR {
 
