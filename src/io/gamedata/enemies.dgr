@@ -61,25 +61,25 @@ characters:
     dice:
       face0:
         damage: 4;
-        mod: "sweeping edge";
+        mod: "sweep";
       ;
       face1:
         damage: 1;
         mod: "poison";
-        mod1: "sweeping edge";
+        mod1: "sweep";
       ;
       face2:
         damage: 4;
-        mod: "sweeping edge";
+        mod: "sweep";
       ;
       face3:
         damage: 1;
         mod: "poison";
-        mod1: "sweeping edge";
+        mod1: "sweep";
       ;
       face4:
         heal: 2;
-        mod: "sweeping edge";
+        mod: "sweep";
       ;
       face5:
         empty: 0;
@@ -93,14 +93,14 @@ characters:
     dice:
       face0:
         damage: 8;
-        mod: "sweeping edge";
+        mod: "sweep";
       ;
       face1:
       damage: 16;
       ;
       face2:
         damage: 8;
-        mod: "sweeping edge";
+        mod: "sweep";
       ;
       face3:
         damage: 16;

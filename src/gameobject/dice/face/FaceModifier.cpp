@@ -11,21 +11,41 @@ namespace DGR {
 
 BiDirectionalMap<std::string, FaceModifier::modifier> FaceModifier::stringsAndModifiers =
       BiDirectionalMap(std::vector<std::pair<std::string, FaceModifier::modifier>>{
-            {"none",          modifier::none},
-            {"ranged",        modifier::ranged},
-            {"sweeping edge", modifier::sweeping_edge},
-            {"single use",    modifier::single_use},
-            {"poison",        modifier::poison},
-            {"regen",        modifier::regen},
-            {"cleanse",       modifier::cleanse},
-            {"first blood",   modifier::first_blood},
-            {"growth",        modifier::growth},
-            {"decay",         modifier::decay}}
+            {"none",        modifier::none},
+            {"ranged",      modifier::ranged},
+            {"sweep",       modifier::sweep},
+            {"single use",  modifier::single_use},
+            {"poison",      modifier::poison},
+            {"regenerate",  modifier::regen},
+            {"cleanse",     modifier::cleanse},
+            {"backstab",    modifier::backstab},
+            {"growth",      modifier::growth},
+            {"self shield", modifier::self_shield},
+            {"decay",       modifier::decay}}
       );
 
+std::map<FaceModifier::modifier, glm::vec3> FaceModifier::modifierToColor =
+      {{{modifier::none},        {1.0f, 1.0f, 1.0f}},
+       {{modifier::ranged},      {0.9f, 0.5f, 0.5f}},
+       {{modifier::sweep},       {1.5f, 2.0f, 0.6f}},
+       {{modifier::single_use},  {1.0f, 0.5f, 1.0f}},
+       {{modifier::poison},      {0.2f, 0.7f, 0.1f}},
+       {{modifier::regen},       {0.7f, 0.2f, 0.1f}},
+       {{modifier::cleanse},     {0.8f, 1.0f, 0.7f}},
+       {{modifier::backstab},    {1.5f, 0.4f, 0.2f}},
+       {{modifier::growth},      {1.0f, 1.4f, 1.0f}},
+       {{modifier::self_shield}, {0.8f, 0.8f, 0.8f}},
+       {{modifier::decay},       {1.0f, 0.8f, 0.8f}}};
+
 FaceModifier::modifier FaceModifier::stringToModifier(const std::string &modifierStr) {
-    modifier &mod = stringsAndModifiers.at(modifierStr);
-    return mod;
+    if (stringsAndModifiers.count(modifierStr)) {
+        modifier &mod = stringsAndModifiers.at(modifierStr);
+        return mod;
+    } else {
+        std::cerr << "modifier \"" << modifierStr << "\" does not exist!" << std::endl;
+        return modifier::none;
+    }
+
 }
 
 std::string FaceModifier::toString() const {
@@ -48,39 +68,7 @@ std::string FaceModifier::toString() const {
 }
 
 glm::vec3 FaceModifier::toColor() const {
-    if (modifiers == 0) {
-        return glm::vec3(1.0f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::poison)) {
-        return glm::vec3(0.2f, 0.7f, 0.1f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::regen)) {
-        return glm::vec3(0.7f, 0.2f, 0.1f);
-    }
-
-    if (modifiers & static_cast<unsigned int>(modifier::first_blood)) {
-        return glm::vec3(1.5f, 0.4f, 0.2f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::ranged)) {
-        return glm::vec3(0.9f, 0.5f, 0.5f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::sweeping_edge)) {
-        return glm::vec3(1.5f, 2.0f, 0.6f);
-    }
-    
-    if (modifiers & static_cast<unsigned int>(modifier::cleanse)) {
-        return glm::vec3(0.8f, 1.0f, 0.7f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::growth)) {
-        return glm::vec3(1.0f, 1.4f, 1.0f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::decay)) {
-        return glm::vec3(1.0f, 0.8f, 0.8f);
-    }
-    if (modifiers & static_cast<unsigned int>(modifier::single_use)) {
-        return glm::vec3(1.0f, 0.5f, 1.0f);
-    }
-    return glm::vec3(1.0f);
+    return modifierToColor.at(getMainModifier());
 }
 
 unsigned int FaceModifier::getModifiers() const {
@@ -114,6 +102,10 @@ void FaceModifier::addModifier(modifier modifier_) {
     if (!hasModifier(modifier_)) {
         modifiers += static_cast<unsigned int>(modifier_);
     }
+}
+
+FaceModifier::modifier FaceModifier::getMainModifier() const {
+    return (modifier) (modifiers & ~(modifiers - 1));
 }
 
 }

@@ -22,19 +22,25 @@ public:
         poison = 4,             // debuff - keeps damaging the target every turn
         regen = 8,             // buff - keeps healing the target every turn
 
-        first_blood = 64,         // deals 2x damage on full hp targets
-        ranged = 128,               // damage enemies in back row
+        cleanse = 1024 * 16,          // clears debuffs
+        sweep = 1024 * 32,    // damage the enemies left and right of the target
 
+        self_shield = 1024 * 64, // shield yourself for the same amount
 
-        cleanse = 16384,          // clears debuffs
-        sweeping_edge = 32768,    // damage the enemies left and right of the target
+        growth = 1024 * 256,          // grows by 1 every time used
+        decay = 1024 * 512,           // reduces by 1 every time used
 
-        growth = 262144,          // grows by 1 every time used
-        decay = 524288,           // reduces by 1 every time used
-        single_use = 1048576,     // can only be used a single time
+        backstab = 1024 * 1024 * 4,         // deals 2x damage on full hp targets
+        ranged = 1024 * 1024 * 8,               // damage enemies in back row
+
+        single_use = 1024 * 1024 * 512,     // can only be used a single time
+
     };
+
+
 private:
     static BiDirectionalMap<std::string, modifier> stringsAndModifiers;
+    static std::map<FaceModifier::modifier, glm::vec3> modifierToColor;
 
     unsigned int modifiers;
 public:
@@ -55,6 +61,8 @@ public:
 
     [[nodiscard]] bool hasModifier(modifier mod) const;
 
+    [[nodiscard]] modifier getMainModifier() const;
+
     /// setters
     bool removeModifier(modifier modifier);
 
@@ -64,6 +72,7 @@ public:
 
     void addModifier(const std::string &modifierStr);
 };
+
 
 }
 

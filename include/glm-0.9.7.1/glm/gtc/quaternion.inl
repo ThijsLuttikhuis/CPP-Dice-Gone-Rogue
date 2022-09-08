@@ -487,7 +487,7 @@ namespace detail
 	{
 		T cosTheta = dot(x, y);
 
-		// Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
+		// Perform a linear interpolation when cosTheta is close to 1 to avoid side passive of sin(angle) becoming a zero denominator
 		if(cosTheta > T(1) - epsilon<T>())
 		{
 			// Linear interpolation
@@ -530,7 +530,7 @@ namespace detail
 			cosTheta = -cosTheta;
 		}
 
-		// Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
+		// Perform a linear interpolation when cosTheta is close to 1 to avoid side passive of sin(angle) becoming a zero denominator
 		if(cosTheta > T(1) - epsilon<T>())
 		{
 			// Linear interpolation

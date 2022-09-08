@@ -7,32 +7,32 @@
       dice:
         face0:
           damage: 50;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
         face1:
           damage: 30;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
         face2:
           damage: 50;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
         face3:
           damage: 30;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
         face4:
           shield: 50;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
         face5:
           shield: 30;
-          mod: "sweeping edge";
+          mod: "sweep";
           bonus: 2;
         ;
       ;
@@ -63,13 +63,13 @@
         ;
         face4:
           damage: 3;
-          mod: "first blood";
+          mod: "backstab";
           mod1: "single use";
           bonus: 1;
         ;
         face5:
           damage: 3;
-          mod: "first blood";
+          mod: "backstab";
           mod1: "single use";
           bonus: 1;
         ;
@@ -118,22 +118,24 @@
       hp: 14;
       dice:
         face0:
-          damage and self shield: 3;
+          damage: 3;
+          mod: "self shield";
           bonus: 1;
         ;
         face1:
           shield: 2;
-          mod: "sweeping edge";
+          mod: "sweep";
           mod1: "single use";
             bonus: 1;
         ;
         face2:
-          damage and self shield: 3;
+          damage: 3;
+          mod: "self shield";
           bonus: 1;
         ;
         face3:
           shield: 2;
-          mod: "sweeping edge";
+          mod: "sweep";
           mod1: "single use";
           bonus: 1;
         ;
@@ -197,7 +199,7 @@
         ;
         face1:
           heal: 1;
-          mod: "regen";
+          mod: "regenerate";
             bonus: 1;
         ;
         face2:
@@ -207,7 +209,7 @@
         ;
         face3:
           heal: 1;
-          mod: "regen";
+          mod: "regenerate";
           bonus: 1;
         ;
         face4:

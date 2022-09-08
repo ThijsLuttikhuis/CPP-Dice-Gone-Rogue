@@ -500,7 +500,7 @@ GLM_FUNC_QUALIFIER detail::fquatSIMD slerp
 		cosTheta = -cosTheta;
 	}
 
-	// Perform a linear interpolation when cosTheta is close to 1 to avoid side effect of sin(angle) becoming a zero denominator
+	// Perform a linear interpolation when cosTheta is close to 1 to avoid side passive of sin(angle) becoming a zero denominator
 	if(cosTheta > 1.0f - epsilon<float>())
 	{
 		return _mm_add_ps(x.Data, _mm_mul_ps(_mm_set1_ps(a), _mm_sub_ps(y.Data, x.Data)));

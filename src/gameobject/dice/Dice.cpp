@@ -243,4 +243,8 @@ std::shared_ptr<Dice> Dice::getSharedFromThis() {
     return shared_from_this();
 }
 
+std::shared_ptr<Character> Dice::getCharacter() {
+    return std::shared_ptr<Character>(character);
+}
+
 }

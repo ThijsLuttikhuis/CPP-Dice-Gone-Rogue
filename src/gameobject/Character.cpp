@@ -158,6 +158,7 @@ void Character::setDice(const std::shared_ptr<Dice> &dice_) {
 
 void Character::setHP(int hp_) {
     hp = hp_;
+    hp = std::max(hp, maxHP);
 }
 
 void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
@@ -168,12 +169,28 @@ void Character::setMaxHP(int maxHP_, bool setHPToMaxHP) {
     }
 }
 
+void Character::addMaxHP(int dMaxHP, bool alsoAddHP) {
+    maxHP += dMaxHP;
+    if (alsoAddHP) {
+        hp += dMaxHP;
+    }
+}
+
+
 void Character::setIncomingPoison(int incomingPoison_) {
     incomingPoison = incomingPoison_;
 }
 
+void Character::addIncomingPoison(int dIncomingPoison) {
+    incomingPoison += dIncomingPoison;
+}
+
 void Character::setIncomingRegen(int incomingRegen_) {
     incomingRegen = incomingRegen_;
+}
+
+void Character::addIncomingRegen(int dIncomingRegen) {
+    incomingRegen += dIncomingRegen;
 }
 
 void Character::setUndying(bool isUndying_) {
@@ -190,6 +207,10 @@ void Character::setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item) {
 
 void Character::setIncomingDamage(int incomingDamage_) {
     incomingDamage = incomingDamage_;
+}
+
+void Character::addIncomingDamage(int dIncomingDamage) {
+    incomingDamage += dIncomingDamage;
 }
 
 void Character::setDiceLock(bool diceLock_) {
@@ -435,6 +456,11 @@ void Character::setShield(int shield_) {
     shield = shield_;
 }
 
+
+void Character::addShield(int dShield) {
+    shield += dShield;
+}
+
 void Character::roll() {
     if (!dice->isLocked()) {
         dice->roll();
@@ -495,7 +521,7 @@ void Character::applyFaceTypeDamage(const std::shared_ptr<Face> &face,
     int value = face->getValue();
     FaceModifier modifiers = face->getModifiers();
 
-    if (modifiers.hasModifier(FaceModifier::modifier::first_blood)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::backstab)) {
         if (hp == maxHP && incomingDamage == 0) {
             value *= 2;
         }
@@ -506,7 +532,7 @@ void Character::applyFaceTypeDamage(const std::shared_ptr<Face> &face,
         incomingPoison += value;
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
         applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
     }
 }
@@ -527,7 +553,7 @@ void Character::applyFaceTypeHeal(const std::shared_ptr<Face> &face,
         incomingRegen += value;
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
         applyFaceModifierSweepingEdge(FaceType::heal, face, battleScene);
     }
 }
@@ -543,7 +569,7 @@ void Character::applyFaceTypeShield(const std::shared_ptr<Face> &face,
         applyFaceModifierCleanse(face, battleScene);
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
         applyFaceModifierSweepingEdge(FaceType::shield, face, battleScene);
     }
 }
@@ -559,7 +585,7 @@ void Character::applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face,
         applyFaceModifierCleanse(face, battleScene);
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
         applyFaceModifierSweepingEdge(FaceType::bonus_health, face, battleScene);
     }
 }
@@ -574,7 +600,7 @@ void Character::applyFaceModifierCleanse(const std::shared_ptr<Face> &face,
 void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
                                               const std::shared_ptr<BattleScene> &battleScene) {
 
-    face->removeModifier(FaceModifier::modifier::sweeping_edge);
+    face->removeModifier(FaceModifier::modifier::sweep);
     auto neighbours = battleScene->getNeighbours(shared_from_this());
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
@@ -599,7 +625,7 @@ void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std
             }
         }
     }
-    face->addModifier(FaceModifier::modifier::sweeping_edge);
+    face->addModifier(FaceModifier::modifier::sweep);
 }
 
 void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
@@ -832,6 +858,11 @@ int Character::getRegen() const {
 
 bool Character::isBackRow() const {
     return backRow;
+}
+
+void Character::addHP(int dHP) {
+    hp += dHP;
+    hp = std::max(hp, maxHP);
 }
 
 }

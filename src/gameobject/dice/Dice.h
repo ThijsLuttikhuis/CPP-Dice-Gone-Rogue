@@ -45,6 +45,8 @@ public:
     /// getters
     [[nodiscard]] std::shared_ptr<Dice> getSharedFromThis();
 
+    [[nodiscard]] std::shared_ptr<Character> getCharacter();
+
     [[nodiscard]]  std::shared_ptr<Face> getCurrentFace() const;
 
     [[nodiscard]]  std::shared_ptr<Face> getFace(int index) const;

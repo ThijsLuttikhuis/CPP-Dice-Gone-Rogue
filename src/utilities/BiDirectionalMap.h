@@ -35,7 +35,11 @@ public:
 
     T &at(U u);
 
+    int count(U u);
+
     U &at(T t);
+
+    int count(T t);
 
 };
 
@@ -57,8 +61,18 @@ T &BiDirectionalMap<T, U>::at(U u) {
 }
 
 template<typename T, typename U>
+int BiDirectionalMap<T, U>::count(U u) {
+    return uToT.count(u);
+}
+
+template<typename T, typename U>
 U &BiDirectionalMap<T, U>::at(T t) {
     return tToU[t];
+}
+
+template<typename T, typename U>
+int BiDirectionalMap<T, U>::count(T t) {
+    return tToU.count(t);
 }
 
 }

@@ -139,27 +139,41 @@ public:
 
     void setItem(Item::itemSlot itemSlot, std::shared_ptr<Item> item);
 
+    void setSpell(const std::shared_ptr<Spell> &spell_);
+
     void setHP(int hp);
 
+    void addHP(int dHP);
+
     void setXP(int xp);
+
+    void addXP(int xp_);
 
     void setLevel(int level);
 
     void setMaxHP(int maxHP_, bool setHPToMaxHP = true);
 
+    void addMaxHP(int dMaxHP, bool alsoAddHP = true);
+
     void setIncomingDamage(int incomingDamage_);
 
+    void addIncomingDamage(int dIncomingDamage);
+
     void setIncomingRegen(int incomingRegen_);
+
+    void addIncomingRegen(int dIncomingRegen);
+
+    void setIncomingPoison(int incomingPoison_);
+
+    void addIncomingPoison(int dIncomingPoison_);
+
+    void setRegen(int regen_);
 
     void setPoison(int poison_);
 
     void setBackRow(bool backRow_);
 
-    void setRegen(int regen_);
-
     void setUsedDice(bool usedDice);
-
-    void setSpell(const std::shared_ptr<Spell> &spell_);
 
     void setDodging(bool isDodging_);
 
@@ -167,9 +181,7 @@ public:
 
     void setShield(int shield_);
 
-    void setIncomingPoison(int incomingPoison_);
-
-    void addXP(int xp_);
+    void addShield(int dShield);
 
     /// functions
     void roll();

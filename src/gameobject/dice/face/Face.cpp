@@ -396,7 +396,7 @@ bool Face::interactFoe(std::shared_ptr<Character> character,
 void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const std::shared_ptr<Face> &face,
                                               const std::shared_ptr<BattleScene> &battleScene, bool isFoe) {
 
-    face->removeModifier(FaceModifier::modifier::sweeping_edge);
+    face->removeModifier(FaceModifier::modifier::sweep);
     auto neighbours = battleScene->getNeighbours(character);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
@@ -408,7 +408,7 @@ void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const 
             }
         }
     }
-    face->addModifier(FaceModifier::modifier::sweeping_edge);
+    face->addModifier(FaceModifier::modifier::sweep);
 }
 
 

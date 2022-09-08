@@ -940,7 +940,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
     if (request->target == _glfw.x11.SAVE_TARGETS)
     {
         // The request is a check whether we support SAVE_TARGETS
-        // It should be handled as a no-op side effect target
+        // It should be handled as a no-op side passive target
 
         XChangeProperty(_glfw.x11.display,
                         request->requestor,

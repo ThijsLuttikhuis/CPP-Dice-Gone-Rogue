@@ -23,7 +23,7 @@ bool FaceShield::interactFriendly(std::shared_ptr<Character> character, std::sha
         character->setIncomingPoison(0);
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::sweeping_edge)) {
+    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
         applySweepingEdge(character, getSharedFromThis(), battleScene, false);
     }
 

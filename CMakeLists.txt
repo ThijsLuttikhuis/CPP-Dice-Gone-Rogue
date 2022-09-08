@@ -29,6 +29,20 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/dice/face/FaceModifier.h
         src/gameobject/dice/face/FaceType.cpp
         src/gameobject/dice/face/FaceType.h
+        src/gameobject/dice/face/FaceShield.cpp
+        src/gameobject/dice/face/FaceShield.h
+        src/gameobject/dice/face/FaceEmpty.cpp
+        src/gameobject/dice/face/FaceEmpty.h
+        src/gameobject/dice/face/FaceHeal.cpp
+        src/gameobject/dice/face/FaceHeal.h
+        src/gameobject/dice/face/FaceDodge.cpp
+        src/gameobject/dice/face/FaceDodge.h
+        src/gameobject/dice/face/FaceMana.cpp
+        src/gameobject/dice/face/FaceMana.h
+        src/gameobject/dice/face/FaceShieldAndMana.cpp
+        src/gameobject/dice/face/FaceShieldAndMana.h
+        src/gameobject/dice/face/FaceDamage.cpp
+        src/gameobject/dice/face/FaceDamage.h
 
         src/gameobject/item/Item.cpp
         src/gameobject/item/Item.h
@@ -47,7 +61,7 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/Character.h
         src/gameobject/GameObject.cpp
         src/gameobject/GameObject.h
-        src/gameobject/dice/face/FaceDamage.cpp src/gameobject/dice/face/FaceDamage.h)
+        )
 
 set(INCLUDE_IOFILEMANAGER
         src/io/yamlreader/YamlReader.cpp
@@ -114,7 +128,7 @@ set(INCLUDE_UTILITIES
 
         src/utilities/BiDirectionalMap.h
         src/utilities/Constants.h
-        src/gameobject/dice/face/FaceShield.cpp src/gameobject/dice/face/FaceShield.h src/gameobject/dice/face/FaceEmpty.cpp src/gameobject/dice/face/FaceEmpty.h)
+        )
 
 
 add_executable(DiceGoneRogue main.cpp
