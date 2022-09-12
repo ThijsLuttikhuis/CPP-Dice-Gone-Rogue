@@ -10,7 +10,7 @@
 #include <set>
 #include <utility>
 #include <filesystem>
-#include "io/BattleLog.h"
+#include "gamelogic/BattleLog.h"
 
 namespace DGR {
 
@@ -137,7 +137,7 @@ void LoadGameScene::handleMousePosition(double xPos, double yPos) {
 }
 
 void LoadGameScene::reset() {
-    loadedGames = {};
+    loadedGames.clear();
     selectedGame = 0;
 
     maxSavesOnRow = 4;
@@ -216,16 +216,12 @@ void LoadGameScene::pressButton(const std::unique_ptr<Button> &button) {
             gameStatePtr->addOnScreenMessage("No data found, please select another save.");
             return;
         }
-        auto &battle = loadedGames[loadedGameNames[selectedGame]];
-        std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(
-              gameStatePtr->getScene("BattleScene"));
-        if (!battleScene) {
-            std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
-            exit(404);
-        }
-        battleScene->reset();
-        battleScene->setBattleLog(battle);
-        battleScene->rerunBattleFromStart();
+        auto &battleLog = loadedGames[loadedGameNames[selectedGame]];
+        auto &battleController = gameStatePtr->getBattleController();
+
+        battleController->reset();
+        battleController->setBattleLog(std::move(battleLog));
+        battleController->rerunBattleFromStart();
 
         gameStatePtr->popSceneFromStack();
         gameStatePtr->pushSceneToStack("BattleScene");
@@ -233,8 +229,8 @@ void LoadGameScene::pressButton(const std::unique_ptr<Button> &button) {
 }
 
 void LoadGameScene::onPushToStack() {
-    loadedGames = {};
-    loadedGameNames = {};
+    loadedGames.clear();
+    loadedGameNames.clear();
 
     auto gameStatePtr = std::shared_ptr<GameStateManager>(gameState);
 
@@ -245,12 +241,12 @@ void LoadGameScene::onPushToStack() {
 #if DGR_DEBUG
         std::cout << entry.path() << std::endl;
 #endif
-        std::shared_ptr<BattleLog> battle =
+        std::unique_ptr<BattleLog> battle =
               BattleLog::loadBattle(gameStatePtr, save);
 
         if (battle) {
             auto name = std::string(save.stem());
-            loadedGames[name] = battle;
+            loadedGames[name] = std::move(battle);
             loadedGameNames.push_back(name);
         }
     }
@@ -324,8 +320,8 @@ void LoadGameScene::drawLoadedGame(const std::unique_ptr<SpriteRenderer> &sprite
     }
 
     auto gameName = loadedGameNames[index + currentLeftSaveIndex];
-    auto game = loadedGames.at(gameName);
-    auto state = game->getState();
+    auto &battleLog = loadedGames.at(gameName);
+    auto state = battleLog->getState();
     auto heroes = std::get<0>(state);
 
     textRenderer->drawText(gameName, 0.0f, position, size);

@@ -15,17 +15,20 @@ std::string FaceShield::toString() const {
     return "shield";
 }
 
-bool FaceShield::interactFriendly(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) {
+bool FaceShield::interactFriendly(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
 
-    character->setShield(character->getShield() + value);
+    character->addShield(value);
+
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
         character->setPoison(0);
         character->setIncomingPoison(0);
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applySweepingEdge(character, getSharedFromThis(), battleScene, false);
+        applySweepingEdge(character, getSharedFromThis(), battleController, false);
     }
+
+    applyValueModifiers(getSharedFromThis(), character, battleController, true);
 
     return true;
 }

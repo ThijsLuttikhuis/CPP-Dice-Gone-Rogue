@@ -40,6 +40,10 @@ FaceModifier Face::getModifiers() const {
     return modifiers;
 }
 
+std::shared_ptr<Dice> Face::getDice() {
+    return std::shared_ptr<Dice>(dice);
+}
+
 glm::vec2 Face::getPosition(Dice::dicePos dicePos) const {
     auto dicePtr = std::shared_ptr<Dice>(dice);
     glm::vec2 dicePosition = dicePtr->getPosition(dicePos);
@@ -372,44 +376,58 @@ std::string Face::toString() const {
 }
 
 bool Face::interactSelf(std::shared_ptr<Character> character,
-                        std::shared_ptr<BattleScene> battleScene) {
-    (void) character, (void) battleScene;
+                        std::shared_ptr<BattleController> battleController) {
+    (void) character, (void) battleController;
 
     return false;
 }
 
 bool Face::interactFriendly(std::shared_ptr<Character> character,
-                        std::shared_ptr<BattleScene> battleScene) {
-    (void) character, (void) battleScene;
+                        std::shared_ptr<BattleController> battleController) {
+    (void) character, (void) battleController;
 
     return false;
 }
 
 bool Face::interactFoe(std::shared_ptr<Character> character,
-                        std::shared_ptr<BattleScene> battleScene) {
-    (void) character, (void) battleScene;
+                        std::shared_ptr<BattleController> battleController) {
+    (void) character, (void) battleController;
 
     return false;
 }
 
 
 void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const std::shared_ptr<Face> &face,
-                                              const std::shared_ptr<BattleScene> &battleScene, bool isFoe) {
+                                              const std::shared_ptr<BattleController> &battleController, bool isFoe) {
 
     face->removeModifier(FaceModifier::modifier::sweep);
-    auto neighbours = battleScene->getNeighbours(character);
+    auto neighbours = battleController->getNeighbours(character);
     for (auto &neighbour : {neighbours.first, neighbours.second}) {
         if (neighbour) {
             if (isFoe) {
-                face->interactFoe(neighbour, battleScene);
+                face->interactFoe(neighbour, battleController);
             }
             else {
-                face->interactFriendly(neighbour, battleScene);
+                face->interactFriendly(neighbour, battleController);
             }
         }
     }
     face->addModifier(FaceModifier::modifier::sweep);
 }
 
+void Face::applyValueModifiers(const std::shared_ptr<Face>& face, std::shared_ptr<Character> character,
+                               const std::shared_ptr<BattleController>& battleController, bool isFoe) {
+
+    (void) character;
+    (void) isFoe;
+
+    if (face->modifiers.hasModifier(FaceModifier::modifier::mana_gain)) {
+        battleController->addMana(face->value);
+    }
+
+    if (face->modifiers.hasModifier(FaceModifier::modifier::self_shield)) {
+        face->getDice()->getCharacter()->addShield(face->value);
+    }
+}
 
 }

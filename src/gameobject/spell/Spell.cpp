@@ -58,7 +58,7 @@ int Spell::getCost() const {
 glm::vec2 Spell::getSize() const {
     glm::vec2 characterSize = std::shared_ptr<Character>(character)->getSize();
 
-    return glm::vec2(characterSize.x + 12, 20);
+    return glm::vec2(characterSize.x + 12, 17);
 }
 
 void Spell::setHover(bool hover_) {
@@ -113,31 +113,38 @@ void Spell::draw(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                        {"alpha",     &alpha},
                        {"edgeAlpha", &edgeAlpha}};
 
+    // draw outside box
     spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.1f, position, size, args);
 
-    auto textPosition = getPosition();
-    auto textSize = glm::vec2(getSize().x, 8);
-    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.0f, textPosition, textSize,
+    // draw top text and box
+    auto topTextPosition = getPosition();
+    auto topTextSize = glm::vec2(getSize().x, 8);
+    spriteRenderer->drawSprite(SpriteRenderer::box, "", 0.0f, topTextPosition, topTextSize,
                                glm::vec3(0.8f), 0.2f);
-    textRenderer->drawText(name, 0.00f, textPosition, textSize);
+    textRenderer->drawText(name, 0.00f, topTextPosition, topTextSize);
 
-    float manaCostWidth = 11.0f;
-    float spriteHeight = 12.0f;
+    float manaCostWidth = 9.0f;
+    float textureHeight = 9.0f;
+    float textureWidth = getSize().x - 1 - manaCostWidth;
 
-    auto texturePosition = glm::vec2(getPosition().x - 1, getPosition().y + 8);
-    auto textureSize = glm::vec2(getSize().x + 1 - manaCostWidth, spriteHeight);
+    // draw bottom texture
+    auto texturePosition = glm::vec2(getPosition().x + 1, getPosition().y + 8);
+    auto textureSize = glm::vec2(textureWidth, textureHeight);
+
     spriteRenderer->drawSprite(name, 0.00f, texturePosition, textureSize);
 
+    // draw bottom mana symbol and mana cost
+    auto manaCostSize = glm::vec2(manaCostWidth, textureHeight);
     auto manaCostPosition = glm::vec2(getPosition().x + getSize().x - manaCostWidth, getPosition().y + 8);
-    auto manaCostTextPosition =
-          glm::vec2(getPosition().x + getSize().x - manaCostWidth - 1, getPosition().y + 12);
+    auto manaCostTextSize = topTextSize;
+    auto manaCostTextPosition = glm::vec2(getPosition().x + getSize().x - manaCostWidth + 2,
+          getPosition().y + 10);
 
-    auto manaCostSize = glm::vec2(manaCostWidth, spriteHeight);
-    spriteRenderer->drawSprite("mana_small", 0.00f, manaCostPosition, manaCostSize,
-                               glm::vec3{1.0f}, 0.6f);
+    spriteRenderer->drawSprite("mana_small", 0.0f, manaCostPosition, manaCostSize,
+                               glm::vec3{1.0f});
 
-    textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, textSize,
-                           Utilities::color2Vec3("0xd4a5fa"));
+    textRenderer->drawText("^" + std::to_string(cost) + "^", 0.0f, manaCostTextPosition, manaCostTextSize,
+                           glm::vec3(1.0f));
 
 }
 

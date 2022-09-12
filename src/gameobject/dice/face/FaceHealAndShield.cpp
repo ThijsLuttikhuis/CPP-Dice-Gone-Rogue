@@ -1,22 +1,25 @@
 //
-// Created by thijs on 06-09-22.
+// Created by thijs on 09-09-22.
 //
 
-#include "FaceHeal.h"
+#include "FaceHealAndShield.h"
+#include "gameobject/Character.h"
 
 namespace DGR {
 
-std::shared_ptr<Face> FaceHeal::makeCopy() const {
-    return std::make_shared<FaceHeal>(*this);
+std::shared_ptr<Face> FaceHealAndShield::makeCopy() const {
+    return std::make_shared<FaceHealAndShield>(*this);
 }
 
-std::string FaceHeal::toString() const {
-    return "heal";
+std::string FaceHealAndShield::toString() const {
+    return "heal and shield";
 }
 
-bool FaceHeal::interactFriendly(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
+bool FaceHealAndShield::interactFriendly(std::shared_ptr<Character> character,
+                                         std::shared_ptr<BattleController> battleController) {
 
     character->addHP(value);
+    character->addShield(value);
 
     if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
         character->setPoison(0);

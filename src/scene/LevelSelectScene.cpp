@@ -170,16 +170,10 @@ void LevelSelectScene::pressButton(const std::unique_ptr<Button> &button) {
             heroesCopy.push_back(hero->makeCopy(true));
         }
 
-        std::shared_ptr<BattleScene> battleScene = std::dynamic_pointer_cast<BattleScene>(
-              gameStatePtr->getScene("BattleScene"));
-        if (!battleScene) {
-            std::cerr << "CharacterSelectScene::pressButton: error: \"BattleScene\" not found" << std::endl;
-            exit(404);
-        }
-
-        battleScene->reset();
-        battleScene->setHeroes(heroesCopy);
-        battleScene->setEnemiesFromLevel(selectedLevel);
+        auto &battleController = gameStatePtr->getBattleController();
+        battleController->reset();
+        battleController->setHeroes(heroesCopy);
+        battleController->setEnemiesFromLevel(selectedLevel);
 
         gameStatePtr->popSceneFromStack();
         gameStatePtr->pushSceneToStack("BattleScene");

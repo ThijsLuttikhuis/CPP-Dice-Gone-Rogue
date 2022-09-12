@@ -23,7 +23,7 @@ class Spell;
 
 class GameStateManager;
 
-class BattleScene;
+class BattleController;
 
 class Character : public std::enable_shared_from_this<Character>, public Button {
 public:
@@ -64,22 +64,23 @@ private:
 
     int getMaxHpAtLevel(int level);
 
-    void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
 
-    void applySpellTypeCleanse(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleScene> &battleScene);
+    void applySpellTypeDamage(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleController> &battleController);
 
-    void applyFaceTypeDamage(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
+    void applySpellTypeCleanse(const std::shared_ptr<Spell> &spell, const std::shared_ptr<BattleController> &battleController);
 
-    void applyFaceTypeHeal(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
-
-    void applyFaceTypeShield(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
-
-    void applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
-
-    void applyFaceModifierCleanse(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleScene> &battleScene);
-
-    void applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
-                                       const std::shared_ptr<BattleScene> &battleScene);
+//    void applyFaceTypeDamage(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleController> &battleController);
+//
+//    void applyFaceTypeHeal(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleController> &battleController);
+//
+//    void applyFaceTypeShield(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleController> &battleController);
+//
+//    void applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleController> &battleController);
+//
+//    void applyFaceModifierCleanse(const std::shared_ptr<Face> &face, const std::shared_ptr<BattleController> &battleController);
+//
+//    void applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
+//                                       const std::shared_ptr<BattleController> &battleController);
 
     void drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                        const std::unique_ptr<TextRenderer> &textRenderer) const;
@@ -191,11 +192,11 @@ public:
     void toggleDiceLock();
 
     bool interact(const std::shared_ptr<Character> &otherCharacter,
-                  const std::shared_ptr<BattleScene> &battleScene,
+                  const std::shared_ptr<BattleController> &battleScene,
                   bool storeAction = true);
 
     bool interact(const std::shared_ptr<Spell> &clickedSpell,
-                  const std::shared_ptr<BattleScene> &battleScene,
+                  const std::shared_ptr<BattleController> &battleScene,
                   bool storeAction = true);
 
     void applyDamageStep();

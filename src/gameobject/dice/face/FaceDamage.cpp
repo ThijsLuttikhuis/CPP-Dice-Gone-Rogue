@@ -8,11 +8,16 @@
 
 namespace DGR {
 
+
 std::shared_ptr<Face> FaceDamage::makeCopy() const {
     return std::make_shared<FaceDamage>(*this);
 }
 
-bool FaceDamage::interactFoe(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) {
+bool FaceDamage::interactFoe(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
+
+    if (modifiers.hasModifier(FaceModifier::modifier::instant)) {
+        //TODO: undo to before damage applied step and do this first :x
+    }
 
     int damage = value;
     if (modifiers.hasModifier(FaceModifier::modifier::backstab)) {
@@ -27,13 +32,10 @@ bool FaceDamage::interactFoe(std::shared_ptr<Character> character, std::shared_p
     }
 
     if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applySweepingEdge(character, getSharedFromThis(), battleScene, true);
+        applySweepingEdge(character, getSharedFromThis(), battleController, true);
     }
 
-    if (modifiers.hasModifier(FaceModifier::modifier::self_shield)) {
-        auto thisCharacterPtr =  std::shared_ptr<Dice>(dice)->getCharacter();
-        thisCharacterPtr->addShield(damage);
-    }
+    applyValueModifiers(getSharedFromThis(), character, battleController, true);
 
     return true;
 }
@@ -41,5 +43,7 @@ bool FaceDamage::interactFoe(std::shared_ptr<Character> character, std::shared_p
 std::string FaceDamage::toString() const {
     return "damage";
 }
+
+
 
 }

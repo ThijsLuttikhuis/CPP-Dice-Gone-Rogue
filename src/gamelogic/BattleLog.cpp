@@ -5,17 +5,16 @@
 #include <iostream>
 #include <utility>
 #include <fstream>
-#include <sstream>
 #include <string>
 
-#include "scene/BattleScene.h"
 #include "BattleLog.h"
 #include "GameStateManager.h"
+#include "BattleController.h"
 
 namespace DGR {
 
-BattleLog::BattleLog(std::weak_ptr<BattleScene> battleScene)
-      : battleScene(std::move(battleScene)) {}
+BattleLog::BattleLog(std::weak_ptr<BattleController> battleController)
+      : battleController(std::move(battleController)) {}
 
 std::shared_ptr<Character> BattleLog::getStoredCharacter(int id) {
     for (auto &hero : heroes) {
@@ -71,8 +70,8 @@ void BattleLog::undo() {
     if (thisTurn.attackOrder.empty()) {
         return;
     }
-    auto battleScenePtr = std::shared_ptr<BattleScene>(battleScene);
-    battleScenePtr->setMana(mana);
+    auto battleControllerPtr = std::shared_ptr<BattleController>(battleController);
+    battleControllerPtr->setMana(mana);
 
     // create new copies
     std::vector<std::shared_ptr<Character>> heroes_ = {};
@@ -86,8 +85,8 @@ void BattleLog::undo() {
         enemies_.push_back(copy);
     }
 
-    battleScenePtr->setHeroes(heroes);
-    battleScenePtr->setEnemies(enemies);
+    battleControllerPtr->setHeroes(heroes);
+    battleControllerPtr->setEnemies(enemies);
 
     // apply attacks until index-1
     int undoTillIndex = (int) thisTurn.attackOrder.size() - 1;
@@ -96,7 +95,7 @@ void BattleLog::undo() {
             auto ids = thisTurn.attackOrderIDs[i];
             auto character = getStoredCharacter(ids.first);
             auto otherCharacter = ids.second >= 0 ? getStoredCharacter(ids.second) : nullptr;
-            auto success = character->interact(otherCharacter, battleScenePtr, false);
+            auto success = character->interact(otherCharacter, battleControllerPtr, false);
             if (!success) {
                 std::cerr << "BattleLog::undo(): character->interact(character) unsuccessful!" << std::endl;
                 exit(-10);
@@ -110,12 +109,12 @@ void BattleLog::undo() {
             auto ids = thisTurn.attackOrderIDs[i];
             auto character = getStoredCharacter(ids.first);
             auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
-            auto success = character->interact(spell, battleScenePtr, false);
+            auto success = character->interact(spell, battleControllerPtr, false);
             if (!success) {
                 std::cerr << "BattleLog::undo(): character->interact(spell) unsuccessful!" << std::endl;
                 exit(-10);
             }
-            battleScenePtr->addMana(-spell->getCost());
+            battleControllerPtr->addMana(-spell->getCost());
         }
     }
 
@@ -204,9 +203,9 @@ std::string BattleLog::idsCharacternamesToString() const {
     return idCharacterString;
 }
 
-std::shared_ptr<BattleLog> BattleLog::loadBattle(const std::shared_ptr<GameStateManager> &gameState,
+std::unique_ptr<BattleLog> BattleLog::loadBattle(const std::shared_ptr<GameStateManager> &gameState,
                                                  const std::string &fileName) {
-    auto battle = std::make_shared<BattleLog>();
+    auto battle = std::make_unique<BattleLog>();
 
     std::ifstream ifile;
     ifile.open(fileName);
@@ -234,7 +233,7 @@ std::shared_ptr<BattleLog> BattleLog::loadBattle(const std::shared_ptr<GameState
 }
 
 std::string BattleLog::loadBattleHeader(const std::shared_ptr<GameStateManager> &gameState, std::string battleString,
-                                        std::shared_ptr<BattleLog> &battleLog) {
+                                        std::unique_ptr<BattleLog> &battleLog) {
 
     std::vector<std::shared_ptr<Character>> heroes;
     std::vector<std::shared_ptr<Character>> enemies;
@@ -291,7 +290,7 @@ std::string BattleLog::loadBattleHeader(const std::shared_ptr<GameStateManager> 
 }
 
 bool BattleLog::doRerunBattleAttack(int &currentTurn, int &currentAttack) {
-    auto battleScenePtr = std::shared_ptr<BattleScene>(battleScene);
+    auto battleControllerPtr = std::shared_ptr<BattleController>(battleController);
 
     /// update turn
     if (currentTurn >= (int) turns.size()) {
@@ -299,8 +298,8 @@ bool BattleLog::doRerunBattleAttack(int &currentTurn, int &currentAttack) {
     }
     thisTurn = turns[currentTurn];
     if (currentAttack >= (int) thisTurn.attackOrder.size()) {
-        battleScenePtr->setNextGameState(false);
-        battleScenePtr->setNextGameState(false);
+        battleControllerPtr->setNextGameState(false);
+        battleControllerPtr->setNextGameState(false);
         currentTurn++;
         currentAttack = 0;
         return false;
@@ -317,7 +316,7 @@ bool BattleLog::doRerunBattleAttack(int &currentTurn, int &currentAttack) {
         auto ids = thisTurn.attackOrderIDs[currentAttack];
         auto character = getStoredCharacter(ids.first);
         auto otherCharacter = ids.second >= 0 ? getStoredCharacter(ids.second) : nullptr;
-        auto success = character->interact(otherCharacter, battleScenePtr, false);
+        auto success = character->interact(otherCharacter, battleControllerPtr, false);
         if (!success) {
             std::cerr << "BattleLog::doRerunBattleAttack(): character->interact(character) unsuccessful!"
                       << std::endl;
@@ -332,19 +331,19 @@ bool BattleLog::doRerunBattleAttack(int &currentTurn, int &currentAttack) {
         auto ids = thisTurn.attackOrderIDs[currentAttack];
         auto character = getStoredCharacter(ids.first);
         auto spell = ids.second >= 0 ? getStoredSpell(ids.second) : nullptr;
-        auto success = character->interact(spell, battleScenePtr, false);
+        auto success = character->interact(spell, battleControllerPtr, false);
         if (!success) {
             std::cerr << "BattleLog::doRerunBattleAttack(): character->interact(spell) unsuccessful!" << std::endl;
             exit(-10);
         }
-        battleScenePtr->addMana(-spell->getCost());
+        battleControllerPtr->addMana(-spell->getCost());
     }
     currentAttack++;
     return false;
 }
 
-void BattleLog::setBattleScene(std::weak_ptr<BattleScene> battleScene_) {
-    battleScene = std::move(battleScene_);
+void BattleLog::setBattleController(std::weak_ptr<BattleController> battleController_) {
+    battleController = std::move(battleController_);
 }
 
 std::string BattleLog::Turn::toString() const {
@@ -366,7 +365,7 @@ std::string BattleLog::Turn::toString() const {
 
 std::string BattleLog::Turn::getTurnFromString(const std::shared_ptr<GameStateManager> &gameState,
                                                std::string battleString,
-                                               std::shared_ptr<BattleLog> &battleLog) {
+                                               std::unique_ptr<BattleLog> &battleLog) {
     (void) gameState;
 
     Turn turn;

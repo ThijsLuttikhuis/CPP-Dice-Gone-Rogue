@@ -24,7 +24,7 @@ public:
 
     std::string toString() const override;
 
-    bool interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) override;
+    bool interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) override;
 };
 
 }

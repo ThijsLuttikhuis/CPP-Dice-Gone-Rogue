@@ -237,7 +237,7 @@ void Character::levelUp() {
 }
 
 bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
-                         const std::shared_ptr<BattleScene> &battleScene,
+                         const std::shared_ptr<BattleController> &battleController,
                          bool storeAction) {
 
     bool success = false;
@@ -253,14 +253,14 @@ bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
         case SpellType::damage:
             if (differentCharacterType) {
                 if (!backRow) {
-                    applySpellTypeDamage(clickedSpell, battleScene);
+                    applySpellTypeDamage(clickedSpell, battleController);
                     success = true;
                 }
             }
             break;
         case SpellType::cleanse:
             if (!differentCharacterType) {
-                applySpellTypeCleanse(clickedSpell, battleScene);
+                applySpellTypeCleanse(clickedSpell, battleController);
                 success = true;
             }
             break;
@@ -277,13 +277,13 @@ bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
     }
 
     if (success && storeAction) {
-        battleScene->getBattleLog()->addAttack(clickedSpell.get(), this);
+        battleController->getBattleLog()->addAttack(clickedSpell.get(), this);
     }
 
     if (!success) {
         std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
 
-        auto gameStatePtr = std::shared_ptr<GameStateManager>(battleScene->getGameStateManager());
+        auto gameStatePtr = std::shared_ptr<GameStateManager>(battleController->getGameStateManager());
         gameStatePtr->addOnScreenMessage(message);
     }
 
@@ -292,7 +292,7 @@ bool Character::interact(const std::shared_ptr<Spell> &clickedSpell,
 
 
 bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
-                         const std::shared_ptr<BattleScene> &battleScene,
+                         const std::shared_ptr<BattleController> &battleController,
                          bool storeAction) {
 
     bool differentCharacterType = false;
@@ -302,125 +302,18 @@ bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
     if (!otherCharacter) {
         face = getDice()->getCurrentFace();
 
-        success = face->interactSelf(getSharedFromThis(), battleScene);
+        success = face->interactSelf(getSharedFromThis(), battleController);
     } else {
         face = otherCharacter->getDice()->getCurrentFace();
 
         differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
         if (differentCharacterType) {
-            success = face->interactFoe(getSharedFromThis(), battleScene);
+            success = face->interactFoe(getSharedFromThis(), battleController);
         } else {
-            success = face->interactFriendly(getSharedFromThis(), battleScene);
+            success = face->interactFriendly(getSharedFromThis(), battleController);
         }
     }
 
-
-
-    // single character interactions
-//    if (!otherCharacter) {
-//        face = getDice()->getCurrentFace();
-//        if (face->interact()) {
-//
-//
-//
-//
-//        face = getDice()->getCurrentFace();
-//        type = face->getFaceType();
-//
-//        switch (type.getType()) {
-//            case FaceType::empty:
-//                success = true;
-//                break;
-//            case FaceType::mana:
-//                battleScene->addMana(face->getValue());
-//                success = true;
-//                break;
-//            case FaceType::dodge:
-//                isDodging = true;
-//                success = true;
-//                break;
-//            default:
-//                break;
-//        }
-//    } else {
-//        // interaction with another character of the same type or not
-//        differentCharacterType = (getCharacterType() != otherCharacter->getCharacterType());
-//
-//        face = otherCharacter->getDice()->getCurrentFace();
-//        type = face->getFaceType();
-//
-//        switch (type.getType()) {
-//            case FaceType::damage:
-//                if (differentCharacterType) {
-//                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-//                        applyFaceTypeDamage(face, battleScene);
-//                        success = true;
-//                    }
-//                }
-//                break;
-//            case FaceType::heal:
-//                if (!differentCharacterType) {
-//                    applyFaceTypeHeal(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::shield:
-//                if (!differentCharacterType) {
-//                    applyFaceTypeShield(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::bonus_health:
-//                if (!differentCharacterType) {
-//                    applyFaceTypeBonusHealth(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::undying:
-//                //TODO:
-//                return false;
-//            case FaceType::heal_and_shield:
-//                if (!differentCharacterType) {
-//                    applyFaceTypeShield(face, battleScene);
-//                    applyFaceTypeHeal(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::heal_and_mana:
-//                if (!differentCharacterType) {
-//                    battleScene->addMana(face->getValue());
-//                    applyFaceTypeHeal(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::shield_and_mana:
-//                if (!differentCharacterType) {
-//                    battleScene->addMana(face->getValue());
-//                    applyFaceTypeShield(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            case FaceType::damage_and_mana:
-//                if (differentCharacterType) {
-//                    if (!backRow || (backRow && face->getModifiers().hasModifier(FaceModifier::modifier::ranged))) {
-//                        battleScene->addMana(face->getValue());
-//                        applyFaceTypeDamage(face, battleScene);
-//                        success = true;
-//                    }
-//                }
-//                break;
-//            case FaceType::damage_and_self_shield:
-//                if (differentCharacterType) {
-//                    otherCharacter->applyFaceTypeShield(face, battleScene);
-//                    applyFaceTypeDamage(face, battleScene);
-//                    success = true;
-//                }
-//                break;
-//            default:
-//                return false;
-//
-//        }
-//    }
     if (success) {
         if (face->getModifiers().hasModifier(FaceModifier::modifier::growth)) {
             face->setValue(face->getValue() + 1);
@@ -436,7 +329,7 @@ bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
     }
 
     if (success && storeAction) {
-        battleScene->getBattleLog()->addAttack(this, otherCharacter.get());
+        battleController->getBattleLog()->addAttack(this, otherCharacter.get());
     }
 
     if (!success && otherCharacter) {
@@ -445,7 +338,7 @@ bool Character::interact(const std::shared_ptr<Character> &otherCharacter,
 
             std::string message = differentCharacterType ? "Please select an ally!" : "Please select an enemy!";
 
-            auto gameStatePtr = std::shared_ptr<GameStateManager>(battleScene->getGameStateManager());
+            auto gameStatePtr = std::shared_ptr<GameStateManager>(battleController->getGameStateManager());
             gameStatePtr->addOnScreenMessage(message);
         }
     }
@@ -499,134 +392,134 @@ void Character::applyDamageStep() {
 }
 
 void Character::applySpellTypeDamage(const std::shared_ptr<Spell> &spell_,
-                                     const std::shared_ptr<BattleScene> &battleScene) {
-    (void) battleScene;
+                                     const std::shared_ptr<BattleController> &battleController) {
+    (void) battleController;
 
     int value = spell_->getValue();
     incomingDamage += value;
 }
 
 void Character::applySpellTypeCleanse(const std::shared_ptr<Spell> &spell_,
-                                      const std::shared_ptr<BattleScene> &battleScene) {
-    (void) spell_, (void) battleScene;
+                                      const std::shared_ptr<BattleController> &battleController) {
+    (void) spell_, (void) battleController;
 
     poison = 0;
     incomingPoison = 0;
 }
 
-
-void Character::applyFaceTypeDamage(const std::shared_ptr<Face> &face,
-                                    const std::shared_ptr<BattleScene> &battleScene) {
-
-    int value = face->getValue();
-    FaceModifier modifiers = face->getModifiers();
-
-    if (modifiers.hasModifier(FaceModifier::modifier::backstab)) {
-        if (hp == maxHP && incomingDamage == 0) {
-            value *= 2;
-        }
-    }
-
-    incomingDamage += value;
-    if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
-        incomingPoison += value;
-    }
-
-    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
-    }
-}
-
-void Character::applyFaceTypeHeal(const std::shared_ptr<Face> &face,
-                                  const std::shared_ptr<BattleScene> &battleScene) {
-
-    int value = face->getValue();
-    FaceModifier modifiers = face->getModifiers();
-
-    hp += value;
-    hp = std::min(hp, maxHP);
-    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, battleScene);
-    }
-
-    if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
-        incomingRegen += value;
-    }
-
-    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applyFaceModifierSweepingEdge(FaceType::heal, face, battleScene);
-    }
-}
-
-void Character::applyFaceTypeShield(const std::shared_ptr<Face> &face,
-                                    const std::shared_ptr<BattleScene> &battleScene) {
-
-    int value = face->getValue();
-    FaceModifier modifiers = face->getModifiers();
-
-    shield += value;
-    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, battleScene);
-    }
-
-    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applyFaceModifierSweepingEdge(FaceType::shield, face, battleScene);
-    }
-}
-
-void Character::applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face,
-                                         const std::shared_ptr<BattleScene> &battleScene) {
-    int value = face->getValue();
-    FaceModifier modifiers = face->getModifiers();
-
-    maxHP += value;
-    hp += value;
-    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
-        applyFaceModifierCleanse(face, battleScene);
-    }
-
-    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
-        applyFaceModifierSweepingEdge(FaceType::bonus_health, face, battleScene);
-    }
-}
-
-void Character::applyFaceModifierCleanse(const std::shared_ptr<Face> &face,
-                                         const std::shared_ptr<BattleScene> &battleScene) {
-    (void) face, (void) battleScene;
-    poison = 0;
-    incomingPoison = 0;
-}
-
-void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
-                                              const std::shared_ptr<BattleScene> &battleScene) {
-
-    face->removeModifier(FaceModifier::modifier::sweep);
-    auto neighbours = battleScene->getNeighbours(shared_from_this());
-    for (auto &neighbour : {neighbours.first, neighbours.second}) {
-        if (neighbour) {
-            switch (type) {
-                case FaceType::damage:
-                    neighbour->applyFaceTypeDamage(face, battleScene);
-                    break;
-                case FaceType::heal:
-                    neighbour->applyFaceTypeHeal(face, battleScene);
-                    break;
-                case FaceType::shield:
-                    neighbour->applyFaceTypeShield(face, battleScene);
-                    break;
-                case FaceType::bonus_health:
-                    neighbour->applyFaceTypeBonusHealth(face, battleScene);
-                    break;
-                case FaceType::undying:
-                    //TODO:
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    face->addModifier(FaceModifier::modifier::sweep);
-}
+//
+//void Character::applyFaceTypeDamage(const std::shared_ptr<Face> &face,
+//                                    const std::shared_ptr<BattleScene> &battleScene) {
+//
+//    int value = face->getValue();
+//    FaceModifier modifiers = face->getModifiers();
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::backstab)) {
+//        if (hp == maxHP && incomingDamage == 0) {
+//            value *= 2;
+//        }
+//    }
+//
+//    incomingDamage += value;
+//    if (modifiers.hasModifier(FaceModifier::modifier::poison)) {
+//        incomingPoison += value;
+//    }
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
+//        applyFaceModifierSweepingEdge(FaceType::damage, face, battleScene);
+//    }
+//}
+//
+//void Character::applyFaceTypeHeal(const std::shared_ptr<Face> &face,
+//                                  const std::shared_ptr<BattleScene> &battleScene) {
+//
+//    int value = face->getValue();
+//    FaceModifier modifiers = face->getModifiers();
+//
+//    hp += value;
+//    hp = std::min(hp, maxHP);
+//    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
+//        applyFaceModifierCleanse(face, battleScene);
+//    }
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::regen)) {
+//        incomingRegen += value;
+//    }
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
+//        applyFaceModifierSweepingEdge(FaceType::heal, face, battleScene);
+//    }
+//}
+//
+//void Character::applyFaceTypeShield(const std::shared_ptr<Face> &face,
+//                                    const std::shared_ptr<BattleScene> &battleScene) {
+//
+//    int value = face->getValue();
+//    FaceModifier modifiers = face->getModifiers();
+//
+//    shield += value;
+//    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
+//        applyFaceModifierCleanse(face, battleScene);
+//    }
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
+//        applyFaceModifierSweepingEdge(FaceType::shield, face, battleScene);
+//    }
+//}
+//
+//void Character::applyFaceTypeBonusHealth(const std::shared_ptr<Face> &face,
+//                                         const std::shared_ptr<BattleScene> &battleScene) {
+//    int value = face->getValue();
+//    FaceModifier modifiers = face->getModifiers();
+//
+//    maxHP += value;
+//    hp += value;
+//    if (modifiers.hasModifier(FaceModifier::modifier::cleanse)) {
+//        applyFaceModifierCleanse(face, battleScene);
+//    }
+//
+//    if (modifiers.hasModifier(FaceModifier::modifier::sweep)) {
+//        applyFaceModifierSweepingEdge(FaceType::bonus_health, face, battleScene);
+//    }
+//}
+//
+//void Character::applyFaceModifierCleanse(const std::shared_ptr<Face> &face,
+//                                         const std::shared_ptr<BattleScene> &battleScene) {
+//    (void) face, (void) battleScene;
+//    poison = 0;
+//    incomingPoison = 0;
+//}
+//
+//void Character::applyFaceModifierSweepingEdge(FaceType::faceType type, const std::shared_ptr<Face> &face,
+//                                              const std::shared_ptr<BattleScene> &battleScene) {
+//
+//    face->removeModifier(FaceModifier::modifier::sweep);
+//    auto neighbours = battleScene->getNeighbours(shared_from_this());
+//    for (auto &neighbour : {neighbours.first, neighbours.second}) {
+//        if (neighbour) {
+//            switch (type) {
+//                case FaceType::damage:
+//                    neighbour->applyFaceTypeDamage(face, battleScene);
+//                    break;
+//                case FaceType::heal:
+//                    neighbour->applyFaceTypeHeal(face, battleScene);
+//                    break;
+//                case FaceType::shield:
+//                    neighbour->applyFaceTypeShield(face, battleScene);
+//                    break;
+//                case FaceType::bonus_health:
+//                    neighbour->applyFaceTypeBonusHealth(face, battleScene);
+//                    break;
+//                case FaceType::undying:
+//                    //TODO:
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//    }
+//    face->addModifier(FaceModifier::modifier::sweep);
+//}
 
 void Character::drawHealthBar(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                               const std::unique_ptr<TextRenderer> &textRenderer) const {

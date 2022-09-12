@@ -7,14 +7,14 @@
 
 
 #include <gameobject/Character.h>
-#include <io/BattleLog.h>
+#include <gamelogic/BattleLog.h>
 #include "Scene.h"
 
 namespace DGR {
 
 class LoadGameScene : public Scene {
 private:
-    std::map<std::string, std::shared_ptr<BattleLog>> loadedGames;
+    std::map<std::string, std::unique_ptr<BattleLog>> loadedGames;
     std::vector<std::string> loadedGameNames;
 
     int selectedGame = 0;

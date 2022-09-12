@@ -20,7 +20,7 @@
 
 namespace DGR {
 
-class BattleScene;
+class BattleController;
 
 class Dice;
 
@@ -50,7 +50,10 @@ protected:
                          glm::vec2 position) const;
 
     static void applySweepingEdge(const std::shared_ptr<Character> &character, const std::shared_ptr<Face> &face,
-                                  const std::shared_ptr<BattleScene> &battleScene, bool isFoe);
+                                  const std::shared_ptr<BattleController> &battleScene, bool isFoe);
+
+    static void applyValueModifiers(const std::shared_ptr<Face> &face, std::shared_ptr<Character> character,
+                                    const std::shared_ptr<BattleController> &battleScene, bool isFoe);
 
 public:
     explicit Face(int face_) : face_(face_) {};
@@ -64,6 +67,8 @@ public:
 
     /// getters
     [[nodiscard]] std::shared_ptr<Face> getSharedFromThis();
+
+    [[nodiscard]] std::shared_ptr<Dice> getDice();
 
     [[nodiscard]] glm::vec2 getPosition(Dice::dicePos dicePos = Dice::dice_layout_pos) const;
 
@@ -109,11 +114,14 @@ public:
     /// functions
     void levelUp();
 
-    virtual bool interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
+    virtual bool interactSelf(std::shared_ptr<Character> character,
+                              std::shared_ptr<BattleController> battleController);
 
-    virtual bool interactFriendly(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
+    virtual bool interactFriendly(std::shared_ptr<Character> character,
+                                  std::shared_ptr<BattleController> battleController);
 
-    virtual bool interactFoe(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene);
+    virtual bool interactFoe(std::shared_ptr<Character> character,
+                             std::shared_ptr<BattleController> battleController);
 
     /// render
     void drawHover(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
@@ -135,6 +143,8 @@ public:
 
     void drawLevelUpComparison(const std::unique_ptr<SpriteRenderer> &spriteRenderer,
                                const std::unique_ptr<TextRenderer> &textRenderer, glm::vec2 position);
+
+
 };
 
 }

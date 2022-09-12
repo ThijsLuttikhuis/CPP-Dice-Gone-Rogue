@@ -18,7 +18,7 @@ public:
 
     FaceEmpty(int face_, int value, int bonusValuePerLevel, FaceModifier modifiers = {})
           : Face(face_, 0, 0, FaceModifier()) {
-        (void)value, (void)bonusValuePerLevel, (void)modifiers;
+        (void) value, (void) bonusValuePerLevel, (void) modifiers;
     }
 
     void setValue(int value_) override;
@@ -41,7 +41,8 @@ public:
 
     std::string toString() const override;
 
-    bool interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) override;
+    bool interactSelf(std::shared_ptr<Character> character,
+                      std::shared_ptr<BattleController> battleController) override;
 
 };
 

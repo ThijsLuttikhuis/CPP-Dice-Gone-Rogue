@@ -51,11 +51,11 @@ void Scene::reset() {
 }
 
 void Scene::update(double dt) {
-    t += dt;
+    (void) dt;
 }
 
 void Scene::updateDefaults(double dt) {
-    (void) dt;
+    t += dt;
 
     if (buttons.size() > 100) {
         std::cout << "RRRRR" << std::endl;

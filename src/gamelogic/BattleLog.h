@@ -16,7 +16,7 @@
 
 namespace DGR {
 
-class BattleScene;
+class BattleController;
 
 class BattleLog {
 public:
@@ -25,8 +25,10 @@ public:
         spell
     };
 
-private:
     struct Turn {
+        std::vector<std::shared_ptr<Character>> heroesAtStart;
+        std::vector<std::shared_ptr<Character>> enemiesAtStart;
+
         std::map<int, int> idsToCurrentFace = {};
         std::vector<attackType> attackOrder = {};
         std::vector<std::pair<int, int>> attackOrderIDs = {};
@@ -34,15 +36,16 @@ private:
 
         static std::string getTurnFromString(const std::shared_ptr<GameStateManager> &gameState,
                                              std::string battleString,
-                                             std::shared_ptr<BattleLog> &battleLog);
+                                             std::unique_ptr<BattleLog> &battleLog);
 
         [[nodiscard]] std::string toString() const;
     };
 
+private:
     Turn thisTurn;
     std::vector<Turn> turns;
 
-    std::weak_ptr<BattleScene> battleScene;
+    std::weak_ptr<BattleController> battleController;
 
     int mana{};
     std::vector<std::shared_ptr<Character>> heroes;
@@ -58,33 +61,33 @@ private:
     [[nodiscard]] std::string idsCharacternamesToString() const;
 
     static std::string loadBattleHeader(const std::shared_ptr<GameStateManager> &gameState,
-                                        std::string battleString, std::shared_ptr<BattleLog> &battleLog);
+                                        std::string battleString, std::unique_ptr<BattleLog> &battleLog);
 
 public:
     BattleLog() = default;
 
-    explicit BattleLog(std::weak_ptr<BattleScene> battleScene);
+    explicit BattleLog(std::weak_ptr<BattleController> battleController);
 
     /// getters
-    static std::shared_ptr<BattleLog> loadBattle(const std::shared_ptr<GameStateManager> &gameState,
+    static std::unique_ptr<BattleLog> loadBattle(const std::shared_ptr<GameStateManager> &gameState,
                                                  const std::string &fileName);
 
     [[nodiscard]] std::tuple<std::vector<std::shared_ptr<Character>>*,
           std::vector<std::shared_ptr<Character>>*, int> getState();
 
     /// setters
-    void reset();
-
     void setState(const std::vector<std::shared_ptr<Character>> &heroes_,
                   const std::vector<std::shared_ptr<Character>> &enemies_, int mana_);
 
-    void setBattleScene(std::weak_ptr<BattleScene> battleScene_);
+    void setBattleController(std::weak_ptr<BattleController> battleController_);
 
     void addAttack(Character* character, Character* otherCharacter = nullptr);
 
     void addAttack(Spell* spell, Character* character);
 
     /// functions
+    void reset();
+
     void undo();
 
     void saveTurn(bool heroesAttacked);
@@ -92,6 +95,7 @@ public:
     bool doRerunBattleAttack(int &currentTurn, int &currentAttack);
 
     void clearAutoSave();
+
 };
 
 }

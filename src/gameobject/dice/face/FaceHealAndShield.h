@@ -1,22 +1,22 @@
 //
-// Created by thijs on 05-09-22.
+// Created by thijs on 09-09-22.
 //
 
-#ifndef DICEGONEROGUE_FACESHIELD_H
-#define DICEGONEROGUE_FACESHIELD_H
+#ifndef DICEGONEROGUE_FACEHEALANDSHIELD_H
+#define DICEGONEROGUE_FACEHEALANDSHIELD_H
 
 
 #include "Face.h"
 
 namespace DGR {
 
-class FaceShield : public Face {
+class FaceHealAndShield : public Face {
 private:
 
 public:
-    explicit FaceShield(int face_) : Face(face_) {};
+    explicit FaceHealAndShield(int face_) : Face(face_) {};
 
-    FaceShield(int face_, int value, int bonusValuePerLevel, FaceModifier modifiers = {})
+    FaceHealAndShield(int face_, int value, int bonusValuePerLevel, FaceModifier modifiers = {})
           : Face(face_, value, bonusValuePerLevel, modifiers) {}
 
     std::shared_ptr<Face> makeCopy() const override;
@@ -30,4 +30,4 @@ public:
 }
 
 
-#endif //DICEGONEROGUE_FACESHIELD_H
+#endif //DICEGONEROGUE_FACEHEALANDSHIELD_H

@@ -15,10 +15,13 @@ std::string FaceMana::toString() const {
     return "mana";
 }
 
-bool FaceMana::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) {
+bool FaceMana::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
     (void)character;
 
-    battleScene->addMana(value);
+    battleController->addMana(value);
+
+    applyValueModifiers(getSharedFromThis(), character, battleController, true);
+
     return true;
 }
 }

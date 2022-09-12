@@ -13,7 +13,7 @@ namespace DGR {
 
 class CharacterSelectScene : public Scene {
 private:
-    int maxSelect = 2;
+    int maxSelect = 4;
     std::vector<std::shared_ptr<Character>> selectedHeroes;
 
     int maxCharactersOnRow = 4;

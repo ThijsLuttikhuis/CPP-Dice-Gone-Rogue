@@ -5,6 +5,7 @@
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include <io/yamlreader/YamlReader.h>
+
 #include <scene/MainMenuScene.h>
 #include <scene/SettingsScene.h>
 #include <scene/BattleVictoryScene.h>
@@ -13,9 +14,14 @@
 #include <scene/LoadGameScene.h>
 #include <scene/AreYouSureScene.h>
 #include <scene/LevelSelectScene.h>
+#include "scene/BattleScene.h"
+
+#include "gamelogic/BattleController.h"
+#include "gamelogic/GameProgress.h"
+#include "gamelogic/Inventory.h"
+
 #include "GameStateManager.h"
 #include "ui/Button.h"
-#include "scene/BattleScene.h"
 
 namespace DGR {
 
@@ -45,12 +51,27 @@ GameStateManager::GameStateManager(const std::shared_ptr<Window> &window) : wind
 //    allItems = *std::static_pointer_cast<std::vector<std::shared_ptr<Item>>>(
 //          yamlReaderItems.getData()->getFeature()).get();
 
-    inventory = std::make_unique<Inventory>();
-    gameProgress = std::make_unique<GameProgress>();
+
 }
 
 std::shared_ptr<Window> GameStateManager::getWindow() const {
     return window;
+}
+
+std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
+    return shared_from_this();
+}
+
+const std::unique_ptr<Inventory> &GameStateManager::getInventory() const {
+    return inventory;
+}
+
+const std::unique_ptr<GameProgress> &GameStateManager::getGameProgress() const {
+    return gameProgress;
+}
+
+const std::shared_ptr<BattleController> &GameStateManager::getBattleController() const {
+    return battleController;
 }
 
 void GameStateManager::update() {
@@ -72,8 +93,9 @@ void GameStateManager::update() {
 
     for (auto &scene : sceneStack) {
         if (scene->isEnabled()) {
-            scene->update(dt);
             scene->updateDefaults(dt);
+            scene->update(dt);
+            break;
         }
     }
 
@@ -201,7 +223,14 @@ void GameStateManager::addOnScreenMessage(const std::string &message) {
     onScreenMessages.push_back(std::move(onScreenMessage));
 }
 
-void GameStateManager::initializeScenes() {
+void GameStateManager::initialize() {
+    inventory = std::make_unique<Inventory>();
+
+    gameProgress = std::make_unique<GameProgress>();
+
+    battleController = std::make_shared<BattleController>(getSharedFromThis());
+    battleController->initialize();
+
     allScenes = {};
 
     auto sharedFromThis = getSharedFromThis();
@@ -259,18 +288,6 @@ void GameStateManager::render() {
         glClear(GL_DEPTH_BUFFER_BIT);
         message->draw(spriteRenderer, textRenderer);
     }
-}
-
-std::shared_ptr<GameStateManager> GameStateManager::getSharedFromThis() {
-    return shared_from_this();
-}
-
-const std::unique_ptr<Inventory> &GameStateManager::getInventory() const {
-    return inventory;
-}
-
-const std::unique_ptr<GameProgress> &GameStateManager::getGameProgress() const {
-    return gameProgress;
 }
 
 }

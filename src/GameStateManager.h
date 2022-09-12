@@ -7,13 +7,14 @@
 
 #include <memory>
 #include <vector>
-#include <io/BattleLog.h>
+#include <gamelogic/BattleLog.h>
 
 #include "ui/Window.h"
 #include "ui/OnScreenMessage.h"
 #include "gameobject/spell/Spell.h"
-#include "Inventory.h"
-#include "GameProgress.h"
+#include "gamelogic/Inventory.h"
+#include "gamelogic/GameProgress.h"
+#include "gamelogic/BattleController.h"
 
 namespace DGR {
 
@@ -26,6 +27,7 @@ private:
     double tPrev = 0.0;
 
     std::shared_ptr<Window> window;
+
     std::unique_ptr<TextRenderer> textRenderer;
     std::unique_ptr<SpriteRenderer> spriteRenderer;
 
@@ -43,6 +45,7 @@ private:
 
     std::unique_ptr<Inventory> inventory;
     std::unique_ptr<GameProgress> gameProgress;
+    std::shared_ptr<BattleController> battleController;
 
 public:
     explicit GameStateManager(const std::shared_ptr<Window> &window);
@@ -64,9 +67,11 @@ public:
 
     [[nodiscard]] const std::shared_ptr<Character> &getCharacterByID(int id) const;
 
-    [[nodiscard]] const std::unique_ptr<Inventory> & getInventory() const;
+    [[nodiscard]] const std::unique_ptr<Inventory> &getInventory() const;
 
-    [[nodiscard]] const std::unique_ptr<GameProgress> & getGameProgress() const;
+    [[nodiscard]] const std::unique_ptr<GameProgress> &getGameProgress() const;
+
+    [[nodiscard]] const std::shared_ptr<BattleController> &getBattleController() const;
 
     /// setters
     bool pushSceneToStack(const std::string &sceneName, bool disableOtherScenes = true);
@@ -76,7 +81,7 @@ public:
     void addOnScreenMessage(const OnScreenMessage &message);
 
     /// functions
-    void initializeScenes();
+    void initialize();
 
     void handleKeyboard(int key, int action, const std::unique_ptr<std::vector<bool>> &keysPressed);
 

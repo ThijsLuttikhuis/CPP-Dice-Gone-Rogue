@@ -20,6 +20,14 @@ include_directories(include
 add_library(GLAD "src/glad.c")
 set(LIBS ${LIBS} GLAD)
 
+set(INCLUDE_GAMELOGIC
+        src/gamelogic/Inventory.cpp
+        src/gamelogic/Inventory.h
+        src/gamelogic/GameProgress.cpp
+        src/gamelogic/GameProgress.h
+        src/gamelogic/BattleController.cpp
+        src/gamelogic/BattleController.h)
+
 set(INCLUDE_GAMEOBJECT
         src/gameobject/dice/Dice.cpp
         src/gameobject/dice/Dice.h
@@ -39,10 +47,10 @@ set(INCLUDE_GAMEOBJECT
         src/gameobject/dice/face/FaceDodge.h
         src/gameobject/dice/face/FaceMana.cpp
         src/gameobject/dice/face/FaceMana.h
-        src/gameobject/dice/face/FaceShieldAndMana.cpp
-        src/gameobject/dice/face/FaceShieldAndMana.h
         src/gameobject/dice/face/FaceDamage.cpp
         src/gameobject/dice/face/FaceDamage.h
+        src/gameobject/dice/face/FaceHealAndShield.cpp
+        src/gameobject/dice/face/FaceHealAndShield.h
 
         src/gameobject/item/Item.cpp
         src/gameobject/item/Item.h
@@ -69,8 +77,8 @@ set(INCLUDE_IOFILEMANAGER
         src/io/yamlreader/YamlReaderCharacters.h
         src/io/yamlreader/YamlReaderItems.h
 
-        src/io/BattleLog.cpp
-        src/io/BattleLog.h
+        src/gamelogic/BattleLog.cpp
+        src/gamelogic/BattleLog.h
         )
 
 set(INCLUDE_SCENE
@@ -130,11 +138,11 @@ set(INCLUDE_UTILITIES
         src/utilities/Constants.h
         )
 
-
 add_executable(DiceGoneRogue main.cpp
         src/glad.c
         src/stb_image.h
 
+        ${INCLUDE_GAMELOGIC}
         ${INCLUDE_GAMEOBJECT}
         ${INCLUDE_IOFILEMANAGER}
         ${INCLUDE_SCENE}
@@ -144,10 +152,6 @@ add_executable(DiceGoneRogue main.cpp
 
         src/GameStateManager.cpp
         src/GameStateManager.h
-        src/Inventory.cpp
-        src/Inventory.h
-        src/GameProgress.cpp
-        src/GameProgress.h
         )
 
 target_link_libraries(DiceGoneRogue

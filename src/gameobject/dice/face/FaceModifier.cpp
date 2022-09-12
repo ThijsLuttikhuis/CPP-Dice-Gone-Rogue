@@ -21,12 +21,15 @@ BiDirectionalMap<std::string, FaceModifier::modifier> FaceModifier::stringsAndMo
             {"backstab",    modifier::backstab},
             {"growth",      modifier::growth},
             {"self shield", modifier::self_shield},
+            {"instant",     modifier::instant},
+            {"mana gain",   modifier::mana_gain},
+            {"charged",     modifier::charged},
             {"decay",       modifier::decay}}
       );
 
 std::map<FaceModifier::modifier, glm::vec3> FaceModifier::modifierToColor =
       {{{modifier::none},        {1.0f, 1.0f, 1.0f}},
-       {{modifier::ranged},      {0.9f, 0.5f, 0.5f}},
+       {{modifier::ranged},      {0.7f, 0.5f, 0.5f}},
        {{modifier::sweep},       {1.5f, 2.0f, 0.6f}},
        {{modifier::single_use},  {1.0f, 0.5f, 1.0f}},
        {{modifier::poison},      {0.2f, 0.7f, 0.1f}},
@@ -35,6 +38,9 @@ std::map<FaceModifier::modifier, glm::vec3> FaceModifier::modifierToColor =
        {{modifier::backstab},    {1.5f, 0.4f, 0.2f}},
        {{modifier::growth},      {1.0f, 1.4f, 1.0f}},
        {{modifier::self_shield}, {0.8f, 0.8f, 0.8f}},
+       {{modifier::instant},     {1.3f, 0.6f, 0.6f}},
+       {{modifier::mana_gain},   {0.6f, 0.9f, 1.2f}},
+       {{modifier::charged},     {0.2f, 0.5f, 1.2f}},
        {{modifier::decay},       {1.0f, 0.8f, 0.8f}}};
 
 FaceModifier::modifier FaceModifier::stringToModifier(const std::string &modifierStr) {

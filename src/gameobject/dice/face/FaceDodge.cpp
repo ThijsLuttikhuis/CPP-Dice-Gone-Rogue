@@ -28,8 +28,8 @@ std::shared_ptr<Face> FaceDodge::makeCopy() const {
     return std::make_shared<FaceDodge>(*this);
 }
 
-bool FaceDodge::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) {
-    (void) battleScene;
+bool FaceDodge::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
+    (void) battleController;
 
     character->setDodging(true);
 

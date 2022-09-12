@@ -11,7 +11,7 @@
 #include <gameobject/dice/face/FaceHeal.h>
 #include <gameobject/dice/face/FaceDodge.h>
 #include <gameobject/dice/face/FaceMana.h>
-#include <gameobject/dice/face/FaceShieldAndMana.h>
+#include <gameobject/dice/face/FaceHealAndShield.h>
 #include "YamlReader.h"
 
 namespace DGR {
@@ -200,11 +200,11 @@ public:
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::shield_and_mana:
-                face = std::make_shared<FaceShieldAndMana>(face_);
+                face = std::make_shared<FaceEmpty>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::heal_and_shield:
-                face = std::make_shared<FaceEmpty>(face_);
+                face = std::make_shared<FaceHealAndShield>(face_);
                 value = *std::static_pointer_cast<int>(yamlHandle->getFeature()).get();
                 break;
             case stringCode::damage_and_self_shield:

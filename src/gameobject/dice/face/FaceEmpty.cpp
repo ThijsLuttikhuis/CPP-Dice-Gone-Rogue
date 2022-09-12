@@ -18,8 +18,8 @@ std::string FaceEmpty::toString() const {
     return "empty";
 }
 
-bool FaceEmpty::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleScene> battleScene) {
-    (void) character, (void) battleScene;
+bool FaceEmpty::interactSelf(std::shared_ptr<Character> character, std::shared_ptr<BattleController> battleController) {
+    (void) character, (void) battleController;
 
     return true;
 }
