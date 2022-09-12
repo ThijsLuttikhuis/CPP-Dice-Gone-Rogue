@@ -6,6 +6,7 @@
 #include <string>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
+#include <utilities/Utilities.h>
 
 #include "TextRenderer.h"
 #include "utilities/Constants.h"
@@ -29,7 +30,7 @@ const std::vector<int> TextRenderer::letterWidths = {
 };
 
 
-TextRenderer::TextRenderer( std::shared_ptr<Shader> shader, glm::mat4 projection)
+TextRenderer::TextRenderer(std::shared_ptr<Shader> shader, glm::mat4 projection)
       : shader(shader) {
 
 
@@ -110,7 +111,7 @@ TextRenderer::~TextRenderer() {
 void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 textStart, glm::vec2 size,
                             glm::vec3 color, float alpha) const {
 
-    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0,0);
+    glm::vec2 basePos = baseUI ? baseUI->getPosition() : glm::vec2(0, 0);
     glm::vec2 baseSize = baseUI ? baseUI->getSize() : glm::vec2(DGR_WIDTH, DGR_HEIGHT);
     glm::vec2 screenPos = textStart + basePos;
 
@@ -129,10 +130,14 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 tex
     glActiveTexture(GL_TEXTURE0);
     texture->bind();
 
+    // "1 damage (^single use^, ^#123456backstab^)"
     std::vector<int> wordVAO = {};
-    for (char letter : text) {
+    char letterPrev = ' ';
+    for (unsigned long i = 0; i < text.length(); i++) {
+        char letter = text[i];
+
         /// add letter to word
-        if (letter != '^') {
+        if (letter != '^' && letter != '#') {
             wordVAO.push_back(letter - (int) ' ');
         }
 
@@ -145,8 +150,17 @@ void TextRenderer::drawText(const std::string &text, float zIndex, glm::vec2 tex
         /// special text color
         if (letter == '^') {
             textColor = textColor == white ? color : white;
-            continue;
+        } else if (letter == '#' && letterPrev == '^') {
+            unsigned long colorEnd = i + 9;
+            if (colorEnd < text.length()) {
+                std::string hexColorString = text.substr(i + 1, 8);
+                glm::vec3 hexColor = Utilities::color2Vec3(hexColorString);
+                textColor = hexColor;
+                i += 8;
+            }
         }
+
+        letterPrev = letter;
     }
 
     /// display final word
@@ -196,7 +210,7 @@ glm::vec2 TextRenderer::displayWord(const glm::vec2 &initialTextPos, const glm::
     return currentTextPos;
 }
 
-void TextRenderer::setBaseUI( std::shared_ptr<DGR::UIElement> baseUI_) {
+void TextRenderer::setBaseUI(std::shared_ptr<DGR::UIElement> baseUI_) {
     baseUI = baseUI_;
 }
 

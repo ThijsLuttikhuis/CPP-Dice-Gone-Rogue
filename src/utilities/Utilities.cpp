@@ -111,18 +111,45 @@ bool Utilities::isPositionInBox(double xPos, double yPos, glm::vec2 boxPosition,
 }
 
 float Utilities::colorHex2Float(const std::string &color_) {
-    char** ptr = nullptr;
-    auto hex = (double) std::strtol(color_.c_str(), ptr, 16);
-    return (float) (hex / std::pow(16, (int) color_.size()));
+    int sum = 0;
+    for (unsigned long i = 0; i < color_.length(); i++) {
+        char c = color_[i];
+        int value = c >= '0' && c <= '9' ? c - '0' : c - 'A' + 10;
+        sum += value * (int)std::pow(16, color_.length() - i - 1);
+    }
+    auto colorFloat = (float)(sum / std::pow(16, color_.length()));
+    return colorFloat;
+}
+
+std::string Utilities::float2ColorHex(const float &color_) {
+    int color = (int) (color_ * 256.0f);
+    int char1 = color / 16;
+    int char2 = color % 16;
+
+    char1 = char1 > 9 ? (char1 + 'A' - 10) : char1 + '0';
+    char2 = char2 > 9 ? (char2 + 'A' - 10) : char2 + '0';
+
+    std::stringstream hexStr;
+    hexStr << (char)char1 << (char)char2;
+    std::string str = hexStr.str();
+    return str;
 }
 
 glm::vec3 Utilities::color2Vec3(const std::string &color_) {
-    glm::vec3 color;
+    auto color = glm::vec3(-1.0f);
     if (color_.size() == 8 && color_[0] == '0' && color_[1] == 'x') {
         for (int i = 0; i < 3; i++) {
             std::string str = color_.substr(2 * i + 2, 2);
             color[i] = colorHex2Float(str);
         }
+    }
+    return color;
+}
+
+std::string Utilities::vec32Color(const glm::vec3 &color_) {
+    std::string color = "0x";
+    for (int i = 0; i < 3; i++) {
+        color += Utilities::float2ColorHex(color_[i]);
     }
     return color;
 }
@@ -176,7 +203,7 @@ std::string Utilities::keyPressToName(int key) {
         return std::to_string(key - GLFW_KEY_0);
     }
     if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
-        return std::string(1, (char)('A' + key - GLFW_KEY_A));
+        return std::string(1, (char) ('A' + key - GLFW_KEY_A));
     }
     switch (key) {
         case GLFW_KEY_ESCAPE:

@@ -333,8 +333,10 @@ void Face::drawFaceToolTip(const std::unique_ptr<SpriteRenderer> &spriteRenderer
 
 
     std::string toolTipString = getToolTipString();
+
     glm::vec3 color = modifiers.toColor();
     textRenderer->drawText(toolTipString, 0.0f, position + tooltipDPos, tooltipSize, color);
+
 
 #if DGR_DEBUG
     std::cout << "                       face: " << face_ << " -- value: " << value << " -- type: "
@@ -350,10 +352,18 @@ std::string Face::getToolTipString() const {
     std::ostringstream tooltipOSS;
     tooltipOSS << value << " " << toString();
 
-    auto modStr = modifiers.toString();
-    if (!modStr.empty()) {
-        tooltipOSS << " (^" << modStr << "^)";
+    int nMods = modifiers.getNumberOfModifiers();
+    if (nMods <= 1) {
+        auto modStr = modifiers.toString();
+        if (!modStr.empty()) {
+            tooltipOSS << " (^" << modStr << "^)";
+        }
     }
+    else {
+        auto modStr = modifiers.toAllModifiersString();
+        tooltipOSS << "(" << modStr << ")";
+    }
+
     std::string toolTipString = tooltipOSS.str();
     return toolTipString;
 }
@@ -383,22 +393,22 @@ bool Face::interactSelf(std::shared_ptr<Character> character,
 }
 
 bool Face::interactFriendly(std::shared_ptr<Character> character,
-                        std::shared_ptr<BattleController> battleController) {
+                            std::shared_ptr<BattleController> battleController) {
     (void) character, (void) battleController;
 
     return false;
 }
 
 bool Face::interactFoe(std::shared_ptr<Character> character,
-                        std::shared_ptr<BattleController> battleController) {
+                       std::shared_ptr<BattleController> battleController) {
     (void) character, (void) battleController;
 
     return false;
 }
 
 
-void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const std::shared_ptr<Face> &face,
-                                              const std::shared_ptr<BattleController> &battleController, bool isFoe) {
+void Face::applySweepingEdge(const std::shared_ptr<Character> &character, const std::shared_ptr<Face> &face,
+                             const std::shared_ptr<BattleController> &battleController, bool isFoe) {
 
     face->removeModifier(FaceModifier::modifier::sweep);
     auto neighbours = battleController->getNeighbours(character);
@@ -406,8 +416,7 @@ void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const 
         if (neighbour) {
             if (isFoe) {
                 face->interactFoe(neighbour, battleController);
-            }
-            else {
+            } else {
                 face->interactFriendly(neighbour, battleController);
             }
         }
@@ -415,8 +424,8 @@ void Face::applySweepingEdge(const std::shared_ptr<Character>& character, const 
     face->addModifier(FaceModifier::modifier::sweep);
 }
 
-void Face::applyValueModifiers(const std::shared_ptr<Face>& face, std::shared_ptr<Character> character,
-                               const std::shared_ptr<BattleController>& battleController, bool isFoe) {
+void Face::applyValueModifiers(const std::shared_ptr<Face> &face, std::shared_ptr<Character> character,
+                               const std::shared_ptr<BattleController> &battleController, bool isFoe) {
 
     (void) character;
     (void) isFoe;

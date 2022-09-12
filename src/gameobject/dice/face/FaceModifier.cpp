@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utilities/Utilities.h>
 
 #include "FaceModifier.h"
 
@@ -73,8 +74,49 @@ std::string FaceModifier::toString() const {
     return modString;
 }
 
+std::string FaceModifier::toAllModifiersString() const {
+    if (getNumberOfModifiers() <= 1) {
+        return toString();
+    }
+
+    std::string modString;
+
+    auto allMods = getAllModifiers();
+    auto allColors = toAllColors();
+
+    for (unsigned long i = 0; i < allColors.size(); i++) {
+        modString += "^#" + Utilities::vec32Color(allColors[i]);
+        modString += stringsAndModifiers.at(allMods[i]) + "^";
+        if (i < allColors.size() - 1) {
+            modString += ", ";
+        }
+    }
+
+    return modString;
+}
+
 glm::vec3 FaceModifier::toColor() const {
     return modifierToColor.at(getMainModifier());
+}
+
+std::vector<FaceModifier::modifier> FaceModifier::getAllModifiers() const {
+    std::vector<FaceModifier::modifier> allMods;
+    unsigned int modifiers_ = modifiers;
+    while (modifiers_) {
+        auto modi = (modifier) (modifiers_ & ~(modifiers_ - 1));
+        int modifiersInt_ = (int) modifiers_;
+        modifiers_ = (unsigned int) (modifiersInt_ & (modifiersInt_ - 1));
+        allMods.push_back(modi);
+    }
+    return allMods;
+}
+
+std::vector<glm::vec3> FaceModifier::toAllColors() const {
+    std::vector<glm::vec3> allColors;
+    for (auto &mod : getAllModifiers()) {
+        allColors.push_back(modifierToColor.at(mod));
+    }
+    return allColors;
 }
 
 unsigned int FaceModifier::getModifiers() const {
@@ -112,6 +154,18 @@ void FaceModifier::addModifier(modifier modifier_) {
 
 FaceModifier::modifier FaceModifier::getMainModifier() const {
     return (modifier) (modifiers & ~(modifiers - 1));
+}
+
+int FaceModifier::getNumberOfModifiers() const {
+    // `count` stores the total bits set in modifiers
+    int count = 0;
+    int modifiers_ = (int) modifiers;
+    while (modifiers_) {
+        modifiers_ = modifiers_ & (modifiers_ - 1);    // clear the least significant bit set
+        count++;
+    }
+
+    return count;
 }
 
 }

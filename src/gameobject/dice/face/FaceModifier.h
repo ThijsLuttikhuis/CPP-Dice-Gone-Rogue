@@ -67,6 +67,8 @@ public:
 
     [[nodiscard]] modifier getMainModifier() const;
 
+    [[nodiscard]] int getNumberOfModifiers() const;
+
     /// setters
     bool removeModifier(modifier modifier);
 
@@ -75,6 +77,12 @@ public:
     void addModifier(modifier modifier_);
 
     void addModifier(const std::string &modifierStr);
+
+    std::vector<glm::vec3> toAllColors() const;
+
+    std::vector<FaceModifier::modifier> getAllModifiers() const;
+
+    std::string toAllModifiersString() const;
 };
 
 

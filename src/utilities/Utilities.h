@@ -25,7 +25,11 @@ public:
 
     static glm::vec3 color2Vec3(const std::string &color_);
 
+    static std::string vec32Color(const glm::vec3 &color_);
+
     static float colorHex2Float(const std::string &color_);
+
+    static std::string float2ColorHex(const float &color_);
 
     static std::string trim(const std::string &str, const std::string &whitespace = " \t\n\f\r\t\v");
 
@@ -41,6 +45,7 @@ public:
     static glm::vec2 rotateVec2(glm::vec2 vec, float rotate);
 
     static glm::vec2 rotateVec2(float x, float y, float rotate);
+
 };
 
 }

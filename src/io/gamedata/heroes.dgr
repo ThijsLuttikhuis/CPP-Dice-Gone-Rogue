@@ -8,6 +8,10 @@
         face0:
           damage: 30;
           mod: "sweep";
+          mod: "self shield";
+          mod: "mana gain";
+          mod: "poison";
+          mod: "ranged";
           bonus: 2;
         ;
         face1:
